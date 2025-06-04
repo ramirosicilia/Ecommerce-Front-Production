@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión de Categorías</title>
+  <link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+  <style> 
+    
+    body {
+      width: 97%;
+      margin: auto;
+    }
+  
+    .floating-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1000;
+    }
+
+    /* Estilo para el contenedor del buscador */
+    .search-container {
+      display: flex;
+      justify-content: flex-start;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 20px;
+    } 
+
+    .imagenes-categoria{
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    /* Estilo para el input de búsqueda */
+    #searchCategory {
+      width: 250px;
+      padding: 5px 10px;
+      font-size: 16px;
+    }
+
+    /* Botón de búsqueda */
+    #searchButton {
+      background-color: #4CAF50; /* Verde */
+      color: white;
+      border: none;
+      padding: 5px 15px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+    }
+
+    #searchButton:hover {
+      background-color: #45a049;
+    }
+
+    /* Botón de limpiar */
+    #clearButton {
+      background-color: #f44336; /* Rojo */
+      color: white;
+      border: none;
+      padding: 5px 15px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+    }
+
+    #clearButton:hover {
+      background-color: #e53935;
+    }
+
+    /* Estilo para los botones de eliminar y actualizar */
+    #deleteSelected, #updateSelected {
+      display: none;
+    } 
+
+    .table_danger {
+      background-color: #f8d7da !important;
+      opacity: .6;
+    }  
+
+
+  /* Modal content */
+.modal-content {
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    border: none;
+}
+
+/* Modal header */
+.modal-header {
+    background: rgba(255, 0, 0, 0.1);
+    border-bottom: none;
+}
+
+.modal-title {
+    font-weight: bold;
+    color: #dc3545; /* Rojo */
+}
+
+/* Texto del cuerpo */
+.modal-body p {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #555;
+}  
+
+.fade-out {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+
+/* Botones */
+.modal-content .btn {
+    border-radius: 8px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.modal-content .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Botón "Eliminar" */
+.btn-danger {
+    background-color: #ff3b3b;
+    border-color: #ff3b3b;
+}
+
+.btn-danger:hover {
+    background-color: #ff1e1e;
+    border-color: #ff1e1e;
+}
+
+/* Botón "Cancelar" */
+.btn-secondary {
+    background-color: #f1f1f1;
+    color: #333;
+    border-color: #ddd;
+}
+
+.btn-secondary:hover {
+    background-color: #e2e2e2;
+    border-color: #ccc;
+} 
+
+#allCategoriesButton {
+    border-radius: 25px; /* Botón con bordes redondeados */
+    font-weight: bold; /* Texto más grueso */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra para un efecto flotante */
+    transition: transform 0.2s, box-shadow 0.2s; /* Animación al hacer hover */
+  }
+
+  #allCategoriesButton:hover {
+    transform: scale(1.05); /* Efecto de agrandamiento */
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15); /* Sombra más profunda */
+  }
+
+
+
+  </style>
+</head>
+<body>
+
+<div class="container-fluid">
+  <div class="header d-flex justify-content-between align-items-center my-4">
+    <h1>Gestión de Categorías</h1>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCategoryModal"><i class="fas fa-plus"></i> Agregar Categoría</button>
+  </div>
+
+  <!-- Buscador de Categorías -->
+  <div class="search-container d-flex justify-content-between align-items-center">
+    <div class="d-flex gap-2">
+        <input type="text" class="form-control" id="searchCategory" placeholder="Buscar Categoría">
+        <button class="btn btn-primary" type="submit" id="searchButton" class="searchButton">
+            <i class="fas fa-search"></i> Buscar
+        </button>
+        <button class="btn btn-secondary" id="clearButton">
+            <i class="fas fa-times"></i> Limpiar
+        </button>
+    </div>
+    <button class="btn btn-primary btn-lg px-8"  id="allCategoriesButton">Todas</button>
+</div>
+
+
+
+
+  <!-- Tabla de Categorías -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <h5 class="card-title">Lista de Categorías</h5>
+      <div class="d-flex justify-content-start mb-3">
+        <!-- Botones de Eliminar y Actualizar -->
+        <button class="btn btn-danger me-2" id="deleteSelected"><i class="fas fa-trash"></i> Eliminar Seleccionadas</button>
+        <button class="btn btn-warning" id="updateSelected"><i class="fas fa-edit"></i> Actualizar Seleccionadas</button>
+      </div>
+      <table class="table table-striped" id="tabla-categorias">
+        <thead>
+          <tr>
+            <th>Inhabilitar</th>
+            <th>Categoría</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="cuerpo-categorias">
+          <!-- Aquí se agregarán las categorías dinámicamente -->
+          <!--<tr>
+            <td><input type="checkbox" class="form-check-input select-category"></td>
+            <td>Ejemplo Categoría</td>
+            <td>
+              <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editCategoryModal"><i class="fas fa-edit"></i> Editar</button>
+              <button class="btn btn-danger btn-sm"  data-bs-toggle="modal" data-bs-target="#deleteCategoryModal"><i class="fas fa-trash"></i> Eliminar</button>
+            </td>
+          </tr>-->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div> 
+
+
+<!-- Modal Agregar Categoría -->
+<!-- Modal para Agregar Categoría -->
+<div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addCategoryModalLabel">Agregar Categoría</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form  id="formulario-categoria-ingreso" >
+          <div class="mb-3">
+            <label for="categoryName" class="form-label">Nombre de la Categoría</label>
+            <input type="text" class="form-control" name="category" id="categoryName_new" placeholder="Ingrese el nombre de la categoría" required>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Guardar Categoría</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<!-- Modal Editar Categoría -->
+<!-- Modal Editar Categoría -->
+<div class="modal fade" id="editCategoryModal" tabindex="-1" aria-labelledby="editCategoryModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editCategoryModalLabel">Editar Categoría</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="formulario-categoria-update" action="http://localhost:1200/actualizar-categoria" method="put">
+          <!-- Campo para mostrar el valor actual -->
+          <!-- Campo para ingresar el nuevo valor -->
+          <div class="mb-3">
+            <label for="newCategoryName" class="form-label">Nueva Categoría</label>
+            <input type="text" class="form-control" id="newCategoryName" name="nuevoNombre" required>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Actualizar Categoría</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div> 
+
+
+
+<div class="modal fade" id="deleteCategoryModal" tabindex="-1" aria-labelledby="deleteCategoryModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+          <!-- Encabezado del modal -->
+          <div class="modal-header">
+              <h5 class="modal-title" id="deleteCategoryModalLabel">¿Eliminar Categoría?</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <!-- Cuerpo del modal -->
+          <div class="modal-body text-center">
+              <p>
+                  ¿Estás seguro de que deseas eliminar la categoría 
+                  <strong id="categoryToDelete"></strong>? 
+                  Esta acción no se puede deshacer.
+              </p>
+              <!-- Botones de acción -->
+              <div class="d-flex justify-content-center gap-3">
+                  <button type="button" class="btn btn-danger btn-borrar-confirm" id="confirmDelete">Sí, eliminar</button>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No, cancelar</button>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+
+
+<!-- Floating Button -->
+<div class="floating-btn">
+  <button class="btn btn-danger rounded-circle"><i class="fas fa-cogs"></i></button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+<script type="module" src="../js/agregarCategorias.js"></script>
+<script type="module" src="../js/Categorias.js"></script>
+<script type="module" src="../js/allCategorys.js"></script>
+
+</body>
+</html>
