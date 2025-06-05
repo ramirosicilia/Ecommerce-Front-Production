@@ -412,8 +412,7 @@ async function selectorCategorys() {
 
     const obtenerUSer = usuario.usuario?.find(user => usuarioActual.includes(user.usuario)); 
     console.log(obtenerUSer,"USER")
-   
-        
+     
     console.log(filtradoCategoryYProduct) 
 
     let imagenSeleccionada;
