@@ -9,7 +9,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-  <link rel="stylesheet" href="./styles/registroProductos.css">
+  <link rel="stylesheet" href="./src/styles/registroProductos.css">
   <script src="https://kit.fontawesome.com/a076d05399.js"></script>
 </head>
   <body>
@@ -71,8 +71,8 @@
                               <label for="productName-update" class="form-label">Nombre del Producto</label>
                               <input type="text" class="form-control input-nombre-update" name="nombre_productoUpdate" id="productName-update">
                               <div class="text-danger" id="error-nombre-update"></div>
-                              <button type="button" class="btn btn-primary btn-sm mt-2 px-1 fs-7 me-3" id="update-ProductName">Actualizar</button>
-                              <button type="button" class="btn btn-danger btn-sm px-1 fs-7 mt-2 boton__eliminar-nombre" id="delete-ProductName-1">Eliminar</button>
+                              <button type="submit" class="btn btn-primary btn-sm mt-2 px-1 fs-7 me-3" id="update-ProductName">Actualizar</button>
+                              <button type="submit" class="btn btn-danger btn-sm px-1 fs-7 mt-2 boton__eliminar-nombre" id="delete-ProductName-1">Eliminar</button>
                               
                           
                           </div>
@@ -82,8 +82,8 @@
                               <label for="productPrice-update" class="form-label">Precio</label>
                               <input type="number" class="form-control input-precio-update" name="precioUpdate" id="productPrice-update">
                               <div class="text-danger" id="error-precio-update"></div>
-                              <button type="button" class="btn btn-primary btn-sm px-1 fs-7 mt-2 me-3" id="update-ProductPrice">Actualizar</button>
-                              <button type="button" class="btn btn-danger btn-sm px-1 fs-7 mt-2 boton__eliminar-precio" id="delete-ProductPrice">Eliminar</button>
+                              <button type="submit" class="btn btn-primary btn-sm px-1 fs-7 mt-2 me-3" id="update-ProductPrice">Actualizar</button>
+                              <button type="submit" class="btn btn-danger btn-sm px-1 fs-7 mt-2 boton__eliminar-precio" id="delete-ProductPrice">Eliminar</button>
                           </div>
                         
                           <!-- Categoría -->
@@ -103,8 +103,8 @@
                             <input type="text" class="form-control" name="tallesUpdate" id="update-productSizes" placeholder="Ej: S, M, L, XL">
                             <select class="form-select mt-2 select-productSizes-update" id="select-productSizes-update" name="talleSeleccionado"><option disabled selected>Seleccioná un talle existente</option></select>
                             <div class="text-danger" id="error-talle-update"></div>
-                            <button type="button" class="btn btn-primary btn-sm mt-2 px-1 fs-7 me-3" id="update-productSize">Actualizar</button>
-                            <button type="button" class="btn btn-danger btn-sm px-1 fs-7 mt-2 boton__eliminar-talle"  id="delete-ProductSize">Eliminar</button>
+                            <button type="submit" class="btn btn-primary btn-sm mt-2 px-1 fs-7 me-3" id="update-productSize">Actualizar</button>
+                            <button type="submit" class="btn btn-danger btn-sm px-1 fs-7 mt-2 boton__eliminar-talle"  id="delete-ProductSize">Eliminar</button>
                           </div>
                        
                           <!-- Colores -->
@@ -114,7 +114,7 @@
                             <select   class="form-select mt-2" id="select-productColors-update-2" name="colorSeleccionado"><option >Seleccioná un color existente</option>
                             </select>
                             <div class="text-danger" id="error-color-update"></div>
-                            <button type="button" class="btn btn-primary btn-sm mt-2 px-1 fs-7 me-3" id="update-product-Colors">Actualizar</button>
+                            <button type="submit" class="btn btn-primary btn-sm mt-2 px-1 fs-7 me-3" id="update-product-Colors">Actualizar</button>
                             <button type="button" class="btn btn-danger btn-sm px-1 fs-7 mt-2 boton__eliminar-color" id="delete-Product-Colors">Eliminar</button>
 
                           </div>
@@ -140,8 +140,8 @@
                               <label for="detailName-update" class="form-label">Nombre del Detalle</label>
                               <input type="text" class="form-control input-detalle_nombre-update" name="detalle_nombreUpdate" id="detailName-update" placeholder="Ej: Material, Instrucciones">
                               <div class="text-danger" id="error-detalles-update"></div>
-                              <button type="button" class="btn btn-primary btn-sm mt-2 px-1 fs-7 me-3" id="update-productNameDetail">Actualizar</button>
-                              <button type="button" class="btn btn-danger btn-sm px-1 fs-7 mt-2 boton__eliminar-nombre-detalle" id="delete-ProductNameDetail">Eliminar</button>
+                              <button type="submit" class="btn btn-primary btn-sm mt-2 px-1 fs-7 me-3" id="update-productNameDetail">Actualizar</button>
+                              <button type="submit" class="btn btn-danger btn-sm px-1 fs-7 mt-2 boton__eliminar-nombre-detalle" id="delete-ProductNameDetail">Eliminar</button>
                           </div>
                         
                           <!-- Descripción del Detalle -->
@@ -149,8 +149,8 @@
                               <label for="detailDescription-update" class="form-label">Descripción del Detalle</label>
                               <textarea class="form-control input-detalle_descripcionUpdate" name="detalle_descripcionUpdate" id="detailDescription-update" rows="4" placeholder="Ej: Hecho con algodón 100%"></textarea>
                               <div class="text-danger" id="error-descripcion-update"></div>
-                              <button type="button" class="btn btn-primary btn-sm px-1 fs-7 mt-2 me-3" id="updateDetailDescription">Actualizar</button>
-                              <button type="button" class="btn btn-danger btn-sm px-1 fs-7 mt-2 boton__eliminar-descripcion" id="deleteDetailDescription">Eliminar</button>
+                              <button type="submit" class="btn btn-primary btn-sm px-1 fs-7 mt-2 me-3" id="updateDetailDescription">Actualizar</button>
+                              <button type="submit" class="btn btn-danger btn-sm px-1 fs-7 mt-2 boton__eliminar-descripcion" id="deleteDetailDescription">Eliminar</button>
                           </div> 
                         
                           <button type="button"  class="btn btn-primary btn-sm mt-2" id="openImageModal-2" style="margin-top: -2rem;">
@@ -257,9 +257,9 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script type="module" src="./js/mostrarProductosAdmin.js"></script>
-    <script type="module" src="./js/productosInactivos.js"></script> 
-    <script type="module" src="./js/filtradoProductosAdmin.js"></script>
+    <script type="module" src="./src/js/mostrarProductosAdmin.js"></script>
+    <script type="module" src="./src/js/productosInactivos.js"></script> 
+    <script type="module" src="./src/js/filtradoProductosAdmin.js"></script>
 
    
   

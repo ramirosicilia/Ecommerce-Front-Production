@@ -1,7 +1,10 @@
 import './styles/index.css'
 import "./js/Authenticated.js"
 import "./js/Categorias.js"
+
+import 'bootstrap'; // Esto importa el JS de Bootstrap (incluye el bundle con Popper)
 import "./js/api/administradorApi.js"
+import "./js/api/productos.js"
 import "./js/agregarCategorias.js"
 import "./js/allCategorys.js"
 import "./js/carrito.js"

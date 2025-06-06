@@ -5,9 +5,14 @@
   "type": "module",
   "scripts": {
     "start": "vite",
+    "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview",
-     "vite": "^6.3.5"
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^6.3.5"
+  },
+  "dependencies": {
+    "bootstrap": "^5.3.6"
   }
-  
 }
