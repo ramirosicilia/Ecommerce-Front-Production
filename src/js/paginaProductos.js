@@ -266,7 +266,7 @@ async function selectorCategorys() {
              <div class="card-body">
                <h5 class="card-title">${producto.nombre_producto}</h5>
                <p class="card-text">$${producto.precio.toFixed(2)}</p>
-               <button class="btn btn-agregar btn-primary add-to-cart"data-productos="${producto.producto_id}">
+               <button class="btn btn-agregar btn-primary add-to-cart" data-productos="${producto.producto_id}">
                  Agregar al carrito
                </button>
              </div>
@@ -416,7 +416,7 @@ async function selectorCategorys() {
       const obtenerUSer = usuario.user?.find(user=>user.usuario===usuarioActual[usuarioActual.length-1].toString())
   
       
-
+   
 
     console.log(obtenerUSer,"USER")
 
@@ -448,7 +448,10 @@ async function selectorCategorys() {
   
    const imagenOpciones=imagenSeleccionada?.urls[0] 
 
-    const varianteSeleccionada=filtradoCategoryYProduct.find(variante=>variante.producto_id===producto_ID)
+    const varianteSeleccionada=filtradoCategoryYProduct.find(variante=>variante.producto_id===producto_ID) 
+
+     const stockStorage=JSON.parse(localStorage.getItem('stocks')) || [] 
+
 
    const talles=varianteSeleccionada.productos_variantes.map(talles=>{
     const varianteTalle=talles.talles.insertar_talle 
@@ -700,24 +703,50 @@ div.innerHTML = `
       }
 
 
-       let primerProductoCarrito = carritoCompras.find(producto => 
-        
-        producto.color === colorTexto &&
-        producto.talle === sizesTexto
-      );
+       let primerProductoCarrito =carritoCompras.find(producto =>
+        producto.producto_id === producto_ID && 
+        (producto.color || "").trim().toLowerCase() === colorTexto &&
+        (producto.talle || "").trim().toLowerCase() === sizesTexto 
       
+      );
 
-      if (primerProductoCarrito) {
-        console.log('Coincidencia encontrada:', primerProductoCarrito);
-        primerProductoCarrito.cantidad++;
+      let stock=null
+   
+     console.log(productos)
+
+    const productoSeleccionado=productos.find(producto=>producto.producto_id===producto_ID) 
+       
+     for (const element of productoSeleccionado.productos_variantes) { 
+
+      
+      
+       if(element.talles.insertar_talle===sizesTexto&& element.colores.insertar_color===colorTexto){ 
+
+  
+        stock=element.stock
+        break
+
+       } 
+
+     } 
+
+    
         
-      } else {
-        console.log('No encontrado, se agrega nuevo:', objectoStorage);
-        carritoCompras.push(objectoStorage);
+      if (stock === null) {
+        alert("No se pudo determinar el stock.");
+        return;
       }
       
-
-
+      if (!primerProductoCarrito) {
+        carritoCompras.push({ ...objectoStorage });
+      } else {
+        if (primerProductoCarrito.cantidad < stock) {
+          primerProductoCarrito.cantidad += 1;
+        } else {
+          alert("Ya has agregado el máximo disponible de este producto.");
+        }
+      }
+      
        localStorage.setItem("productos",JSON.stringify(carritoCompras))  
 
        
@@ -921,24 +950,22 @@ div.innerHTML = `
 
 
 
-  export function actualizarCarrito() { 
-  
-    const carrito=JSON.parse(localStorage.getItem("productos"))||[]
-    console.log(carrito)
+  export async function actualizarCarrito() {
+  const carrito = JSON.parse(localStorage.getItem("productos")) || [];
 
-    let iconCart = document.getElementById("cart-count");
-    console.log(iconCart) 
-
-    if(iconCart){
-      
+  const iconCart = document.getElementById("cart-count");
+  if (iconCart) {
     iconCart.innerHTML = carrito.reduce((acc, producto) => acc + producto.cantidad, 0);
-
-    }
-
-
   }
+}
 
+// ✅ Ejecutar al cargar la página normalmente
+actualizarCarrito();
 
+// ✅ Ejecutar también cuando el usuario vuelve con el botón "Atrás"
+window.addEventListener("pageshow", function () {
+  actualizarCarrito();
+});
 
 
   

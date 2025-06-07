@@ -293,17 +293,16 @@ async function reendedizarDetallesProductos() {
     console.log(categorias)
   
 
-    const usuarioNombre = JSON.parse(localStorage.getItem('usuario')) || [];
+    const usuarioActual=JSON.parse(localStorage.getItem('usuario'))||[]
   
     let sizesTexto = "";
     let colorTexto = "";
   
-
-
    
-    console.log(usuarioNombre, '22');
+
   
-    const obtenerUSer = usuarios.user?.find(user => usuarioNombre.includes(user.usuario));
+  const obtenerUSer = usuarios.user?.find(user=>user.usuario===usuarioActual[usuarioActual.length-1].toString())
+  
     const { usuario, usuario_id } = obtenerUSer;
   
     let imagenSeleccionada;
@@ -324,8 +323,15 @@ async function reendedizarDetallesProductos() {
     const { nombre_producto, detalles, precio } = productoSeleccionado;
   
     const imagenOpciones = imagenSeleccionada?.urls[0];
+    let stock=null
   
-    const varianteSeleccionada = filtradoCategoryYProduct.find(variante => variante.producto_id === producto_ID);
+    const varianteSeleccionada = filtradoCategoryYProduct.find(variante => variante.producto_id === producto_ID); 
+
+
+        
+          
+
+
   
     const talles = varianteSeleccionada.productos_variantes.map(talles => {
       const varianteTalle = talles.talles.insertar_talle;
@@ -379,7 +385,9 @@ async function reendedizarDetallesProductos() {
         colorTexto = color.textContent;
         if (sizesTexto) activarBoton();
       });
-    });
+    });  
+          
+     
 
     modal.style.display = "flex";
   
@@ -399,13 +407,26 @@ async function reendedizarDetallesProductos() {
     });
     let carritoCompras = JSON.parse(localStorage.getItem('productos')) || [];
   
-    btnOpciones.addEventListener("click", async () => {
+    btnOpciones.addEventListener("click", async () => {   
+      
+
+      for (const element of varianteSeleccionada.productos_variantes) { 
+
+             if(element.talles.insertar_talle===sizesTexto && element.colores.insertar_color===colorTexto){ 
+           
+      
+                stock=element.stock
+                break
+
+       } 
+          
+         }
      
   
       let objectoStorage = {
         user: usuario,
         user_id: usuario_id,
-        producto_id: producto_ID,
+        producto_id:producto_ID,
         nombre_producto: nombre_producto,
         precio_producto: precio,
         cantidad: 1,
@@ -450,18 +471,37 @@ async function reendedizarDetallesProductos() {
         producto.user_id === usuario_id // Asegura que sea del mismo usuario
       );
       
-      if (existeProducto) {
-        existeProducto.cantidad ++;
-        actualizarCarrito()
-      } else {
-        carritoCompras.push({...objectoStorage});
-        actualizarCarrito()
-      }
-      
-  
-      localStorage.setItem("productos", JSON.stringify(carritoCompras));
-  
-      manejarCantidadesDescripcion(producto_ID, sizesTexto, colorTexto);
+ 
+                if (stock === null) {
+                    alert("No se pudo determinar el stock.");
+                    return;
+                                      }
+
+                    if (!existeProducto) {
+                      carritoCompras.push({ ...objectoStorage }); 
+
+            
+                    } else {
+                      if (existeProducto.cantidad < stock) {
+                       existeProducto.cantidad += 1;
+                      } else {
+                        alert("Ya has agregado el máximo disponible de este producto.");
+                      }
+                    }
+                     actualizarCarrito()
+
+
+
+
+
+
+
+
+
+     localStorage.setItem("productos", JSON.stringify(carritoCompras));
+    actualizarCarrito(); // ⬅️ Mover fuera para que siempre se actualice
+
+    manejarCantidadesDescripcion(producto_ID, sizesTexto, colorTexto);
     });
   }
   
@@ -815,19 +855,26 @@ async function reendedizarDetallesProductos() {
                  console.log(primerProducto) 
 
                  
-  
-                  if(primerProducto){  
-                 
-                    primerProducto.cantidad++
-                    actualizarCarrito()
-  
-                  }
-  
-                 else{ 
-                  carritoCompras.push({...objectoStorage}) 
-                  actualizarCarrito()
-                
-                 }
+ 
+
+                  if (stock === null) {
+                    alert("No se pudo determinar el stock.");
+                    return;
+                                      }
+
+                    if (!primerProducto) {
+                      carritoCompras.push({ ...objectoStorage });
+                    } else {
+                      if (primerProducto.cantidad < stock) {
+                       primerProducto.cantidad += 1;
+                      } else {
+                        alert("Ya has agregado el máximo disponible de este producto.");
+                      }
+                    }
+                     actualizarCarrito()
+
+
+
       
         
 

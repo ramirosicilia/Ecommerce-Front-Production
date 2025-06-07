@@ -10,7 +10,7 @@ let summary=document.getElementById("summary")
 
 
     
-  async function mostrarProductosCarrito() {  
+     function mostrarProductosCarrito() {  
 
    // Obtener el último número para re-renderizar
     let stockGuardados = JSON.parse(localStorage.getItem('stocks')) || [];
@@ -45,16 +45,16 @@ let summary=document.getElementById("summary")
                           <span class="buy-now">Agregar</span>
                       </div>
                       <div class="quantity">
-                          <button class="boton_eliminar" data-id="${producto.producto_id}">-</button>
-                          <span class="cantidad" data-id="${producto.producto_id}">${producto.cantidad}</span>
-                          <button class="boton_agregar" data-id="${producto.producto_id}">+</button>
+                          <button class="boton_eliminar" data-id="${producto.producto_id}" data-color="${producto.color}" data-talle="${producto.talle}">-</button>
+                          <span class="cantidad" data-id="${producto.producto_id}" data-color="${producto.color}" data-talle="${producto.talle}">${producto.cantidad}</span>
+                          <button class="boton_agregar" data-id="${producto.producto_id}" data-color="${producto.color}" data-talle="${producto.talle}" data-stock="${stockGuardados[index]}">+</button>
                       </div>
                       <div class="detalles">
-                       <p class="talle">Talle:${producto.talle} </p>
-                       <p class="color">Color:${producto.color}  </p>
-                       <p class="stock cantidad-texto" data-id="${producto.producto_id}">Cantidad: ${producto.cantidad}</p>
+                       <p class="talle">Talle:${producto.talle}</p>
+                       <p class="color">Color:${producto.color}</p>
+                       <p class="stock cantidad-texto" data-id="${producto.producto_id}" data-color="${producto.color}" data-talle="${producto.talle}">Cantidad: ${producto.cantidad}</p>
                       </div>
-                      <span class="stock">maximo permitido: ${stockGuardados[index]} unidades </span>
+                      <span class="stock" >maximo permitido: ${stockGuardados[index]} unidades </span>
                       <span class="price">Precio: $${producto.precio_producto.toFixed(2)}</span>
                      
                   </div>
@@ -66,7 +66,7 @@ let summary=document.getElementById("summary")
       
       let botonesAgregar = [...document.querySelectorAll(".boton_agregar")]; 
       let botonesEliminar = [...document.querySelectorAll(".boton_eliminar")];
-
+      
       console.log(botonesAgregar, botonesEliminar); 
 
       activarBotonAgregar(botonesAgregar);
@@ -194,22 +194,37 @@ function iconoProductosSumados() {
 
 function agregarProductoAlCarrito(e) { 
     const idBoton = e.target.dataset.id; 
+    const color= e.target.dataset.color; 
+    const talle= e.target.dataset.talle; 
+     const stock= Number(e.target.dataset.stock); 
     console.log(idBoton)
-    let primerProducto = productosEncarrito.find(producto => producto.producto_id === idBoton); 
-
-    if (primerProducto) {
+      let primerProducto = productosEncarrito.find(producto =>
+          producto.producto_id === idBoton &&
+          producto.color === color &&
+          producto.talle === talle
+      );
+     console.log(primerProducto,"agregar")
+      
+    if (primerProducto && primerProducto.cantidad < stock) {
         primerProducto.cantidad++; // Aumentamos la cantidad
         checkout()
         localStorage.setItem("productos", JSON.stringify(productosEncarrito)); // Guardamos el cambio
-
+        
         // Seleccionamos los elementos correctos dentro del producto modificado
-        let cantidadActualizada = document.querySelector(`.cantidad[data-id="${idBoton}"]`);
-        let cantidadTextoActualizada = document.querySelector(`.cantidad-texto[data-id="${idBoton}"]`);
-
+        let cantidadActualizada = document.querySelector(
+            `.cantidad[data-id="${idBoton}"][data-color="${color}"][data-talle="${talle}"]`
+        );
+       let cantidadTextoActualizada = document.querySelector(
+            `.cantidad-texto[data-id="${idBoton}"][data-color="${color}"][data-talle="${talle}"]`
+        );
         if (cantidadActualizada) cantidadActualizada.innerHTML = primerProducto.cantidad;
         if (cantidadTextoActualizada) cantidadTextoActualizada.innerHTML = `Cantidad: ${primerProducto.cantidad}`; 
 
         iconoProductosSumados()
+    } 
+
+    else{
+      alert('no hay stock dispoible')
     }
 }
   iconoProductosSumados() 
@@ -219,26 +234,34 @@ function agregarProductoAlCarrito(e) {
 
     boton.forEach(boton=>{
       boton.addEventListener("click",()=>{
-        let botonEliminado=boton.dataset.id 
+        let botonEliminadoID=boton.dataset.id 
+         let colorEliminadoID=boton.dataset.color
+          let talleEliminadoID=boton.dataset.talle 
 
-        eliminarDelCarrito(botonEliminado)
+        eliminarDelCarrito(botonEliminadoID,colorEliminadoID,talleEliminadoID)
       })
     })
 
   } 
 
-  function eliminarDelCarrito(botonID) { 
-    let primerProducto = productosEncarrito?.find(producto => producto.producto_id === botonID);
-    console.log(primerProducto)
-
+  function eliminarDelCarrito(botonID,colorID,talleID) { 
+   let primerProducto = productosEncarrito.find(producto =>
+          producto.producto_id === botonID &&
+          producto.color === colorID &&
+          producto.talle === talleID
+      );
 
     if (primerProducto.cantidad > 0) { 
         primerProducto.cantidad--; 
         checkout()
         localStorage.setItem("productos", JSON.stringify(productosEncarrito)); 
 
-        let cantidadActualizada = document.querySelector(`.cantidad[data-id="${botonID}"]`);
-        let cantidadTextoActualizada = document.querySelector(`.cantidad-texto[data-id="${botonID}"]`);
+      let cantidadActualizada = document.querySelector(
+            `.cantidad[data-id="${botonID}"][data-color="${colorID}"][data-talle="${talleID}"]`
+        );
+        let cantidadTextoActualizada = document.querySelector(
+            `.cantidad-texto[data-id="${botonID}"][data-color="${colorID}"][data-talle="${talleID}"]`
+        );
 
         if (cantidadActualizada) cantidadActualizada.innerHTML = primerProducto.cantidad;
         if (cantidadTextoActualizada) cantidadTextoActualizada.innerHTML = `Cantidad: ${primerProducto.cantidad}`; 
@@ -246,7 +269,11 @@ function agregarProductoAlCarrito(e) {
         console.log(primerProducto);
 
         if (primerProducto.cantidad === 0) {
-            productosEncarrito = productosEncarrito.filter(producto => producto.producto_id != botonID);
+           productosEncarrito = productosEncarrito.filter(producto =>
+                !(producto.producto_id === botonID &&
+                  producto.color === colorID &&
+                  producto.talle === talleID)
+            );
             localStorage.setItem("productos", JSON.stringify(productosEncarrito)); 
             mostrarProductosCarrito()
           
