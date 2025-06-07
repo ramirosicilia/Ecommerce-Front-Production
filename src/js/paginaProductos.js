@@ -36,7 +36,7 @@ const userIngresado=document.querySelector('.user__ingresado')
      usuario=usuarios
     
     
-    console.log(usuario) 
+    console.log(usuario,"el usuarioo") 
 
     console.log(administrador)
 
@@ -128,7 +128,7 @@ const userIngresado=document.querySelector('.user__ingresado')
  (async () => { 
 
   await data() ,
-   selectorCategorys(),
+   selectorCategorys()
   await Promise.all([
      usuarioIngresado(),
     mostrarProductosVenta(productos)
@@ -406,12 +406,22 @@ async function selectorCategorys() {
     let sizesTexto=""
     let colorTexto=""
 
- 
+    const usuario11= await obtenerUsuarios()
+
+    console.log(usuario11.user,'recibimos usuario')
     console.log(productos); // Debería ser un array
     console.log( producto_ID); 
+   
+      console.log('usuario actual',usuarioActual)
+      const obtenerUSer = usuario.user?.find(user=>user.usuario===usuarioActual[usuarioActual.length-1].toString())
+  
+      
 
-    const obtenerUSer = usuario.usuario?.find(user => usuarioActual.includes(user.usuario)); 
+
     console.log(obtenerUSer,"USER")
+
+
+
      
     console.log(filtradoCategoryYProduct) 
 
