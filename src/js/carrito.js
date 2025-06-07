@@ -224,7 +224,7 @@ function agregarProductoAlCarrito(e) {
     } 
 
     else{
-      alert('no hay stock dispoible')
+      alert('no hay stock disponible')
     }
 }
   iconoProductosSumados() 
