@@ -2,6 +2,7 @@ import { obtenerCategorys, obtenerProductos, obtenerUsuarios } from "./api/produ
 import { actualizarCarrito } from "./paginaProductos.js";
 
 
+
   let categorias=[]
   let productos=[] 
   let usuarios
@@ -241,6 +242,9 @@ async function reendedizarDetallesProductos() {
 
     
 
+
+
+
   async function activarDescripcion(){ 
 
     await reendedizarDetallesProductos();
@@ -250,7 +254,20 @@ async function reendedizarDetallesProductos() {
    btnDescripcion?.addEventListener("click",(e)=>{ 
     e.stopPropagation()
 
-  
+     let ingreso = localStorage.getItem('admin');
+       let esAdmin = false;
+       try {
+         esAdmin = JSON.parse(ingreso);
+       } catch {
+         esAdmin = false;
+       }
+     
+       if (esAdmin) {
+         // Bloquear para admin 
+         
+        alert('no podes comprarte vos mismo')
+         return;
+       } 
 
     const producto_ID=imgID 
 
@@ -492,14 +509,10 @@ async function reendedizarDetallesProductos() {
 
 
 
-
-
-
-
-
-
      localStorage.setItem("productos", JSON.stringify(carritoCompras));
     actualizarCarrito(); // ⬅️ Mover fuera para que siempre se actualice
+
+
 
     manejarCantidadesDescripcion(producto_ID, sizesTexto, colorTexto);
     });
@@ -512,9 +525,21 @@ async function reendedizarDetallesProductos() {
   async function gestionarTallesYcolores(producto_ID, seleccion) {
     let botonAgregarCarrito = document.querySelector("#boton-agregar-carrito");
   
-    botonAgregarCarrito.addEventListener("click", async (e) => {
+    botonAgregarCarrito.addEventListener("click", async (e) => { 
+
+      let ingreso=JSON.parse(localStorage.getItem("admin")) 
+
+      if(ingreso===true){ 
+        alert('no podes comprarte vos mismo')
+
+        return
+
+      }
+
+
       if (seleccion.talle && seleccion.color) {
         console.log(seleccion.talle, seleccion.color);
+
           manejarCantidadesCarrito(producto_ID, seleccion.talle, seleccion.color);
       }
     });

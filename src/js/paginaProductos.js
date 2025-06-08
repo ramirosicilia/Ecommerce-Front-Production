@@ -7,7 +7,9 @@ let filtradoCategoryYProduct=[]
 let productos
 let categorias 
 let usuario
+let administrador
 
+const userIngresado=document.querySelector('.user__ingresado')    
 
 async function data(){ 
     const [producto,categoria]= await Promise.all([obtenerProductos(),obtenerCategorys()]) 
@@ -16,24 +18,22 @@ async function data(){
 
 
 }
-
-
-   
-
 const selector = document.getElementById("categorySelector");
 const listaProductos = document.getElementById("productos_lista");
-const userIngresado=document.querySelector('.user__ingresado') 
+
 
   const usuarioActual=JSON.parse(localStorage.getItem('usuario'))||[]
-      console.log(usuarioActual) 
+      console.log(usuarioActual)  
 
 
+      let ingreso=""
       
    async function usuarioIngresado() { 
 
-    const [usuarios,administrador]= await Promise.all([obtenerUsuarios(),adminApi()]) 
+    const [usuarios,administradores]= await Promise.all([obtenerUsuarios(),adminApi()]) 
 
      usuario=usuarios
+     administrador=administradores
     
     
     console.log(usuario,"el usuarioo") 
@@ -67,11 +67,10 @@ const userIngresado=document.querySelector('.user__ingresado')
      
 
   
-   if(obtenerUSer){  
+ if (obtenerUSer) { 
 
-  
-    if(userIngresado){ 
-       userIngresado.innerHTML = `
+   ingreso=obtenerUSer.usuario
+  userIngresado.innerHTML = `
     Ingreso: 
     <span style="
       margin-left: 10px;
@@ -84,41 +83,27 @@ const userIngresado=document.querySelector('.user__ingresado')
       display: inline-block;
     ">
       ${obtenerUSer.usuario}
-     
     </span>
   `;
-
-    }
-    return
-
-   }   
-
-    if (!ultimoUsuario?.includes(admin)) {
-    
-  
-      userIngresado.innerHTML = `
-        Ingreso: 
-        <span style="
-          margin-left: 10px;
-          padding: 2px 6px;
-          background-color: #ffe0b2;
-          color: #ef6c00;
-          border-radius: 5px;
-          font-weight: bold;
-          font-size: 16px;
-          display: inline-block;
-        ">
-          ${admin}
-        </span>
-      `; 
-      return
-    } 
-
-    else {
-      // No hay usuario válido, vaciamos el contenido
-      userIngresado.innerHTML = '';
-    }
-
+} else { 
+   ingreso=admin
+  // No se encontró el usuario, mostrar admin
+  userIngresado.innerHTML = `
+    Ingreso: 
+    <span style="
+      margin-left: 10px;
+      padding: 2px 6px;
+      background-color: #ffe0b2;
+      color: #ef6c00;
+      border-radius: 5px;
+      font-weight: bold;
+      font-size: 16px;
+      display: inline-block;
+    ">
+      ${admin}
+    </span>
+  `;
+}
 
   
  } 
@@ -128,13 +113,15 @@ const userIngresado=document.querySelector('.user__ingresado')
  (async () => { 
 
   await data() ,
-   selectorCategorys()
-  await Promise.all([
-     usuarioIngresado(),
-    mostrarProductosVenta(productos)
+
+
+   await  usuarioIngresado() 
+      selectorCategorys()
+   await mostrarProductosVenta(productos) 
+
    
   
-  ]);
+  
 })();
 
 
@@ -275,17 +262,43 @@ async function selectorCategorys() {
        `);
        let imagenDom=document.querySelectorAll(".imagen")
        let section = document.querySelector(`[data-productos="${producto.producto_id}"]`);
+     
  
-    
+    console.log('este es el admin',administrador)
 
      
        stockAgotado(stock,section, producto.producto_id);
        recuperarImagenes( imagenDom) 
- 
+       
 
-     });
+     }); 
+
+      
+       let botonesAgregar=[...document.querySelectorAll(".btn-agregar")] 
+
+         console.log(botonesAgregar,'btn btn') 
+         console.log(userIngresado,"user user ") 
+         console.log('este es el ingreso',ingreso)
+           
+      if(ingreso===administrador){  
+
+     localStorage.setItem("admin", JSON.stringify(true)); // Guardamos true si es admin
  
-     agregarBotonesAlCarrito([...document.querySelectorAll(".btn-agregar")]); 
+        botonesAgregar.forEach(boton=>{
+          boton.style.display="none"
+        })
+
+
+      } 
+
+      else{
+     
+           localStorage.removeItem("admin"); // O guarda false o quita la clave
+
+      }
+
+ 
+     agregarBotonesAlCarrito(botonesAgregar); 
 
    } 
      else {
