@@ -54,8 +54,8 @@ let summary=document.getElementById("summary")
                        <p class="color">Color:${producto.color}</p>
                        <p class="stock cantidad-texto" data-id="${producto.producto_id}" data-color="${producto.color}" data-talle="${producto.talle}">Cantidad: ${producto.cantidad}</p>
                       </div>
-                      <span class="stock" >maximo permitido: ${stockGuardados[index]} unidades </span>
-                      <span class="price">Precio: $${producto.precio_producto.toFixed(2)}</span>
+                      <span class="stock" >maximo permitido: ${stockGuardados[index]??0} unidades </span>
+                      <span class="price">Precio: $${(producto.precio_producto??0).toFixed(2)}</span>
                      
                   </div>
               </div>`; 

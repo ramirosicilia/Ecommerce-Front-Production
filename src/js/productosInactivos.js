@@ -9,10 +9,15 @@ const btnInactivar=document.getElementById("mostrarInactivosBtn")
 console.log(btnInactivar) 
 
 btnInactivar.addEventListener('click',productosInactivos) 
-const tbody=document.getElementById("cuerpo-productos")
+
+
+const tbody=document.getElementById("cuerpo-productos") 
+
    let entrada=true
    
 async function productosInactivos() { 
+
+    btnInactivar
  
   const [productos, categorias] = await Promise.all([
     obtenerProductos(),
@@ -24,15 +29,21 @@ async function productosInactivos() {
     let productosInactivos = productos.filter(producto => producto?.activacion === false);
     let categoriasActivas = categorias.filter(cat => cat?.activo === true);
 
-    let productosFiltrados = productosInactivos.filter(producto =>
-        categoriasActivas.some(cat => cat.categoria_id === producto.categoria_id)
+    let productosFiltrados = productosInactivos.filter(producto =>{ 
+     let categoriaFiltrada=categoriasActivas.some(cat => cat.categoria_id === producto.categoria_id)  
+     return categoriaFiltrada
+
+    }
+       
     );
 
     if (!tbody) return;
 
     tbody.innerHTML = "";
 
-   if(entrada){
+   if(entrada){ 
+
+    btnInactivar.textContent="Mostrar Activos"
      for (let i = 0; i < productosFiltrados.length; i++) {
         const producto = productosFiltrados[i];
 
@@ -108,8 +119,9 @@ async function productosInactivos() {
    } 
 
    else{
-    entrada=false 
-    mostrarProductosAdmin()
+    entrada=false  
+      btnInactivar.textContent="Mostrar Inactivos"
+   await mostrarProductosAdmin()
    }
    
     entrada=!entrada

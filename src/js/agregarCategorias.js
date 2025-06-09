@@ -37,5 +37,10 @@ formularioCategoria.addEventListener("submit", async (e) => {
         });
     }
 
-    formularioCategoria.reset();
+    formularioCategoria.reset(); 
+    
+    setTimeout(() => {
+        window.location.reload()
+        
+    }, 800);
 });

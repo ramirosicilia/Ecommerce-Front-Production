@@ -72,14 +72,14 @@ async function reendedizarDetallesProductos() {
            onclick="document.querySelector('#imagen-principal').src='${url}'">
     `).join('');
 
-    const nombre = productoSeleccionado.nombre_producto || "Producto sin nombre";
-    const descripcion = productoSeleccionado.descripcion || "Sin descripción";
-    const detalle= productoSeleccionado.detalles || "Sin detalle";
+    const nombre = productoSeleccionado?.nombre_producto || "Producto sin nombre";
+    const descripcion = productoSeleccionado?.descripcion || "Sin descripción";
+    const detalle= productoSeleccionado?.detalles || "Sin detalle";
   
-    const precioBase = productoSeleccionado.precio || 0;
-    const precio = (precioBase / 100).toFixed(2);
-    const precioOriginal = (precioBase * 1.3 / 100).toFixed(2);
-    const descuento = Math.round(100 - (precio / precioOriginal) * 100);
+    const precioBase = productoSeleccionado?.precio || 0;
+    const precio = ((precioBase ?? 0) / 100).toFixed(2);
+    const precioOriginal = ((precioBase ?? 0) * 1.3 / 100).toFixed(2);
+    const descuento = Math.round(100 - ((precio ?? 0) / (precioOriginal ?? 1)) * 100);
     
     const talles = productoSeleccionado.productos_variantes.map(v => v.talles);
     const colores = productoSeleccionado.productos_variantes.map(v => v.colores);
@@ -87,17 +87,19 @@ async function reendedizarDetallesProductos() {
 
 
   
-    const tallesHTML = talles.map(talle => `
-      <button class="insertar_talle" style="padding: 10px; border: 1px solid gray; background: white; cursor: pointer; border-radius: 5px; margin: 5px;">
-        ${talle?.insertar_talle}
+      const tallesHTML = talles.map(talle => `
+        <button class="insertar_talle" style="padding: 10px; border: 1px solid gray; background: white; cursor: pointer; border-radius: 5px; margin: 5px;">
+      ${talle?.insertar_talle ?? ''}
+       </button>
+     `).join('');
+
+      
+     const coloresHTML = colores.map(color => `
+      <button class="insertar_color" style="padding: 10px; border: 1px solid gray; background: white; cursor: pointer; border-radius: 5px; margin: 5px;">
+       ${color?.insertar_color ?? ''}
       </button>
     `).join('');
-  
-    const coloresHTML = colores.map(color => `
-      <button class="insertar_color"  style="padding: 10px; border: 1px solid gray; background: white; cursor: pointer; border-radius: 5px; margin: 5px;">
-        ${color?.insertar_color}
-      </button>
-    `).join('');
+
   
     container.innerHTML = `
       <div style="max-width: 1200px; width: 100%; display: flex; justify-content: center; align-items: center; gap: 50px; flex-wrap: wrap;">
@@ -213,7 +215,7 @@ async function reendedizarDetallesProductos() {
 
         tallesDescripcion.forEach(talle=>{
 
-          talle.addEventListener("click",async(e)=>{  
+          talle?.addEventListener("click",async(e)=>{  
              
 
             botonDescripcion.disabled=true
@@ -335,25 +337,21 @@ async function reendedizarDetallesProductos() {
       if (imagenSeleccionada) break;
     }
   
-    const productoSeleccionado = filtradoCategoryYProduct.find(producto => producto.producto_id === producto_ID);
+    const productoSeleccionado = filtradoCategoryYProduct?.find(producto => producto.producto_id === producto_ID);
     if (!productoSeleccionado) return;
     const { nombre_producto, detalles, precio } = productoSeleccionado;
   
     const imagenOpciones = imagenSeleccionada?.urls[0];
     let stock=null
   
-    const varianteSeleccionada = filtradoCategoryYProduct.find(variante => variante.producto_id === producto_ID); 
+    const varianteSeleccionada = filtradoCategoryYProduct?.find(variante => variante.producto_id === producto_ID); 
 
 
-        
-          
-
-
-  
+      
     const talles = varianteSeleccionada.productos_variantes.map(talles => {
       const varianteTalle = talles.talles.insertar_talle;
       return `
-        <button class="sizes" style="padding: 10px 14px; border: 1px solid #ccc; background: white; border-radius: 6px; cursor: pointer; min-width: 50px; text-align: center;">${varianteTalle}</button>
+        <button class="sizes" style="padding: 10px 14px; border: 1px solid #ccc; background: white; border-radius: 6px; cursor: pointer; min-width: 50px; text-align: center;">${varianteTalle??""}</button>
       `;
     }).join(" ");
     console.log(talles);
@@ -361,7 +359,7 @@ async function reendedizarDetallesProductos() {
     const colores = varianteSeleccionada.productos_variantes.map(colores => {
       const varianteColor = colores.colores.insertar_color;
       return `
-        <button class="colors" style="padding: 10px 14px; border: 1px solid #ccc; background: white; border-radius: 6px; cursor: pointer; min-width: 50px; text-align: center;">${varianteColor}</button>
+        <button class="colors" style="padding: 10px 14px; border: 1px solid #ccc; background: white; border-radius: 6px; cursor: pointer; min-width: 50px; text-align: center;">${varianteColor??""}</button>
       `;
     }).join(" ");
     console.log(colores);
@@ -429,7 +427,7 @@ async function reendedizarDetallesProductos() {
 
       for (const element of varianteSeleccionada.productos_variantes) { 
 
-             if(element.talles.insertar_talle===sizesTexto && element.colores.insertar_color===colorTexto){ 
+             if(element?.talles?.insertar_talle===sizesTexto && element?.colores?.insertar_color===colorTexto){ 
            
       
                 stock=element.stock
@@ -459,8 +457,7 @@ async function reendedizarDetallesProductos() {
         console.log('Comparando:');
         console.log('Talle del botón seleccionado:', sizesTexto);
         console.log('Color del botón seleccionado:', colorTexto);
-        console.log('Talle de la variante actual:', variacion.talles.insertar_talle);
-        console.log('Color de la variante actual:', variacion.colores.insertar_color);
+        
   
         const resultadoComparacion =
           variacion.talles.insertar_talle === sizesTexto &&
@@ -568,9 +565,9 @@ async function reendedizarDetallesProductos() {
           
            if(element.talles.insertar_talle.toString().trim()===sizes.toString().trim() && element.colores.insertar_color.toString().trim()===color.toString().trim()){ 
     
-            talleID=element.talles.talle_id || null
-            colorID=element.colores.color_id || null 
-            stock=element.stock
+            talleID=element?.talles.talle_id ?? null
+            colorID=element?.colores.color_id ?? null 
+            stock=element?.stock
             break
     
            } 
@@ -612,8 +609,8 @@ async function reendedizarDetallesProductos() {
     
         let carritoCompras=JSON.parse(localStorage.getItem('productos'))||[]
     
-             const primerProducto=carritoCompras.find(p=>p.producto_id===productoID&&
-                                                      p.color.toString().trim()===color.toString().trim() && p.talle.toString().trim()===sizes.toString().trim()
+             const primerProducto=carritoCompras?.find(p=>p.producto_id===productoID&&
+                                                      p?.color.toString().trim()===color.toString().trim() && p?.talle.toString().trim()===sizes.toString().trim()
              ) 
              if (!primerProducto) {
               console.warn("Producto no encontrado en carrito");
@@ -663,7 +660,11 @@ async function reendedizarDetallesProductos() {
              
              if (!container.contains(div)) {
               container.append(div);
-            }
+            } 
+
+            window.addEventListener("pageshow",()=>{
+               document.querySelector(".modal-2")?.remove();
+            },{once:true})
             
              
              container.addEventListener("click", (e) => {
@@ -785,9 +786,9 @@ async function reendedizarDetallesProductos() {
   
   
   
-  const nombre=filtradoCategoryYProduct.find(producto=>producto.producto_id===productoID)?.nombre_producto 
-  const detalles=filtradoCategoryYProduct.find(producto=>producto.producto_id===productoID)?.detalles
-  const precio=filtradoCategoryYProduct.find(producto=>producto.producto_id===productoID)?.precio 
+  const nombre=filtradoCategoryYProduct?.find(producto=>producto.producto_id===productoID)?.nombre_producto 
+  const detalles=filtradoCategoryYProduct?.find(producto=>producto.producto_id===productoID)?.detalles
+  const precio=filtradoCategoryYProduct?.find(producto=>producto.producto_id===productoID)?.precio 
   
   
   const imagenOpciones=imagenSeleccionada?.urls[0] 
@@ -815,11 +816,11 @@ async function reendedizarDetallesProductos() {
             console.log(sizes);
             console.log(color);
         
-            talleID = element.talles.talle_id || null;
-            colorID = element.colores.color_id || null;
-            colorNombre=element.colores.insertar_color || null;
-            talleNombre=element.talles.insertar_talle || null;
-            stock = element.stock;
+            talleID = element?.talles?.talle_id ?? null;
+            colorID = element?.colores?.color_id ?? null;
+            colorNombre=element?.colores?.insertar_color ?? null;
+            talleNombre=element?.talles?.insertar_talle ?? null;
+            stock = element?.stock;
             
            
             break;
@@ -948,7 +949,14 @@ async function reendedizarDetallesProductos() {
        
        if (!container.classList.contains(section)) {
          container.append(section);
-       }
+       } 
+
+       
+            window.addEventListener("pageshow",()=>{
+               document.querySelector(".nuevo-modal")?.remove();
+            },{once:true})
+            
+             
        
        let cantidadActual = primerProducto?.cantidad || objectoStorage.cantidad;
        const cantidadSpan = section.querySelector(".quantity-selector span"); // referencia al <span>

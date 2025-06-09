@@ -9,7 +9,7 @@ let categorias
 let usuario
 let administrador
 
-const userIngresado=document.querySelector('.user__ingresado')    
+const userIngresado=document?.querySelector('.user__ingresado')    
 
 async function data(){ 
     const [producto,categoria]= await Promise.all([obtenerProductos(),obtenerCategorys()]) 
@@ -44,7 +44,7 @@ const listaProductos = document.getElementById("productos_lista");
 
     if(usuario.user || administrador){ 
         console.log(usuario.user,'USER')
-       reendedizarUsuario(usuario.user,administrador)
+       reendedizarUsuario(usuario?.user,administrador)
      
     }
 
@@ -69,7 +69,7 @@ const listaProductos = document.getElementById("productos_lista");
   
  if (obtenerUSer) { 
 
-   ingreso=obtenerUSer.usuario
+   ingreso=obtenerUSer?.usuario
   userIngresado.innerHTML = `
     Ingreso: 
     <span style="
@@ -177,8 +177,8 @@ async function selectorCategorys() {
             <div class="card">
               <img src="${imagen}"data-imagen-producto="${producto.producto_id}" class="card-img-top imagen-selector" alt="">
               <div class="card-body">
-                <h5 class="card-title">${producto.nombre_producto || ""}</h5>
-                <p class="card-text">$${producto.precio || 0}</p>
+                <h5 class="card-title">${producto.nombre_producto ?? ""}</h5>
+                <p class="card-text">$${(producto?.precio ?? 0).toFixed(2)}</p>
                 <button class="btn btn-agregar btn-primary add-to-cart" data-img="${imagen}" data-productos="${producto.producto_id}">
                   Agregar al carrito
                 </button>
@@ -198,9 +198,29 @@ async function selectorCategorys() {
         let stock= producto.productos_variantes.map(variante=>variante?.stock)
     
         stockAgotado(stock,section, producto.producto_id);
-      });
+      });  
+
+      let botonesSelect=[...document.querySelectorAll(".btn-agregar")] 
+       
+      if(ingreso===administrador){  
+
+     localStorage.setItem("admin", JSON.stringify(true)); // Guardamos true si es admin
+ 
+        botonesSelect.forEach(boton=>{
+          boton.style.display="none"
+        })
+
+
+      } 
+
+      else{
+     
+           localStorage.removeItem("admin"); // O guarda false o quita la clave
+
+      }
+
   
-      agregarBotonesAlCarrito([...document.querySelectorAll(".btn-agregar")]);
+      agregarBotonesAlCarrito(botonesSelect);
      
     } else {
       listaProductos.innerHTML = `<p>No hay productos en esta categoría.</p>`;
@@ -252,7 +272,7 @@ async function selectorCategorys() {
              <img src="${imagen}"data-imagen-producto="${producto.producto_id}" " class="card-img-top imagen" alt="">
              <div class="card-body">
                <h5 class="card-title">${producto.nombre_producto}</h5>
-               <p class="card-text">$${producto.precio.toFixed(2)}</p>
+               <p class="card-text">$${(producto?.precio ?? 0).toFixed(2)}</p>
                <button class="btn btn-agregar btn-primary add-to-cart" data-productos="${producto.producto_id}">
                  Agregar al carrito
                </button>
@@ -454,14 +474,14 @@ async function selectorCategorys() {
    
 
 
-   const nombre=filtradoCategoryYProduct.find(producto=>producto.producto_id===producto_ID)?.nombre_producto 
-   const detalles=filtradoCategoryYProduct.find(producto=>producto.producto_id===producto_ID)?.detalles
-   const precio=filtradoCategoryYProduct.find(producto=>producto.producto_id===producto_ID)?.precio 
+   const nombre=filtradoCategoryYProduct?.find(producto=>producto.producto_id===producto_ID)?.nombre_producto 
+   const detalles=filtradoCategoryYProduct?.find(producto=>producto.producto_id===producto_ID)?.detalles
+   const precio=filtradoCategoryYProduct?.find(producto=>producto.producto_id===producto_ID)?.precio 
 
   
    const imagenOpciones=imagenSeleccionada?.urls[0] 
 
-    const varianteSeleccionada=filtradoCategoryYProduct.find(variante=>variante.producto_id===producto_ID) 
+    const varianteSeleccionada=filtradoCategoryYProduct?.find(variante=>variante.producto_id===producto_ID) 
 
      const stockStorage=JSON.parse(localStorage.getItem('stocks')) || [] 
 
@@ -469,7 +489,7 @@ async function selectorCategorys() {
    const talles=varianteSeleccionada.productos_variantes.map(talles=>{
     const varianteTalle=talles.talles.insertar_talle 
     return `  
-     <button class="sizes-box" style="padding: 10px 14px; border: 1px solid #ccc; background: white; border-radius: 6px; cursor: pointer; min-width: 50px; text-align: center;">${varianteTalle}</button>
+     <button class="sizes-box" style="padding: 10px 14px; border: 1px solid #ccc; background: white; border-radius: 6px; cursor: pointer; min-width: 50px; text-align: center;">${varianteTalle??""}</button>
      
     `
     }).join("")
@@ -479,7 +499,7 @@ async function selectorCategorys() {
   const colores=varianteSeleccionada.productos_variantes.map(colores=>{
     const varianteColor=colores.colores.insertar_color 
     return `   
-     <button class="colors-box" style="padding: 10px 14px; border: 1px solid #ccc; background: white; border-radius: 6px; cursor: pointer; min-width: 50px; text-align: center;">${varianteColor}</button>
+     <button class="colors-box" style="padding: 10px 14px; border: 1px solid #ccc; background: white; border-radius: 6px; cursor: pointer; min-width: 50px; text-align: center;">${varianteColor??""}</button>
   
     `
   }).join("")
@@ -733,10 +753,10 @@ div.innerHTML = `
 
       
       
-       if(element.talles.insertar_talle===sizesTexto&& element.colores.insertar_color===colorTexto){ 
+       if(element?.talles?.insertar_talle===sizesTexto&& element?.colores?.insertar_color===colorTexto){ 
 
   
-        stock=element.stock
+        stock=element?.stock
         break
 
        } 
@@ -790,8 +810,8 @@ div.innerHTML = `
       
        if(element.talles.insertar_talle===sizes && element.colores.insertar_color===color){ 
 
-        talleID=element.talles.talle_id || null
-        colorID=element.colores.color_id || null 
+        talleID=element.talles.talle_id ?? null
+        colorID=element.colores.color_id ?? null 
         stock=element.stock
         break
 
@@ -968,7 +988,7 @@ div.innerHTML = `
 
   const iconCart = document.getElementById("cart-count");
   if (iconCart) {
-    iconCart.innerHTML = carrito.reduce((acc, producto) => acc + producto.cantidad, 0);
+    iconCart.innerHTML = carrito.reduce((acc, producto) => acc + producto.cantidad, 0) || 0
   }
 }
 

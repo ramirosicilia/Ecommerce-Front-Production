@@ -67,9 +67,9 @@ export async function mostrarProductosAdmin() {
   
           
   
-              let colorIds = producto.productos_variantes?.[0]?.colores?.color_id || "N/A";
-              let talleIds = producto.productos_variantes?.[0]?.talles?.talle_id || "N/A"; 
-              let stock=producto.productos_variantes.map(variante=>variante?.stock)
+              let colorIds = producto.productos_variantes?.[0]?.colores?.color_id || "";
+              let talleIds = producto.productos_variantes?.[0]?.talles?.talle_id || ""; 
+              let stock=producto.productos_variantes.map(variante=>variante?.stock)??0
             
               if(stock.length>0){ 
               stocker.push(stock)
@@ -83,7 +83,8 @@ export async function mostrarProductosAdmin() {
                       <input type="checkbox" class="form-check-input pause-checkbox check" data-id="${producto.producto_id}">
                   </td>
                   <td><div class="contenido-celda"><img src="${imagenUrl}" alt="Producto" style="max-width: 50px;"> ${producto.nombre_producto || ""}</div></td>
-                 <td><div class="contenido-celda">${producto.precio ? "$ " + producto.precio.toFixed(2) : ""}</div></td>
+                 <td><div class="contenido-celda">${producto.precio != null ? "$ " + producto.precio.toFixed(2) : ""}</div></td>
+     
 
                   <td><div class="contenido-celda">${categoriaProducto}</div></td>
             
@@ -99,7 +100,7 @@ export async function mostrarProductosAdmin() {
                             producto.productos_variantes.map(variacion => {
                               const talle = variacion.talles?.insertar_talle || '';
                               const color = variacion.colores?.insertar_color || '';
-                              const stock = variacion.stock || 0;
+                              const stock = variacion.stock ?? 0;
                               return `<div style="display: flex; gap: 20px;">
                                         <div data-size="${producto.producto_id}">${talle}</div>
                                         <div data-colour="${producto.producto_id}">${color}</div>
