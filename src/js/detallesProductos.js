@@ -304,6 +304,12 @@ const coloresHTML = colores
    //FUNCION********************************************************************************************************
    
 
+
+
+
+
+
+
    async function recibirDescripcion(producto_ID) { 
      console.log(productos)
     console.log(categorias)
@@ -386,24 +392,66 @@ const coloresHTML = colores
   
     const sizes = document.querySelectorAll('.sizes');
     const colors = document.querySelectorAll('.colors');
-  
-    sizes.forEach(size => {
-      size.addEventListener("click", () => {
-        sizes.forEach(s => s.classList.remove("seleccion_opciones_talles"));
-        size.classList.add("seleccion_opciones_talles");
-        sizesTexto = size.textContent;
-        if (colorTexto) activarBoton();
-      });
-    });
-  
-    colors.forEach(color => {
-      color.addEventListener("click", () => {
-        colors.forEach(c => c.classList.remove("seleccion_opciones_colores"));
-        color.classList.add("seleccion_opciones_colores");
-        colorTexto = color.textContent;
-        if (sizesTexto) activarBoton();
-      });
-    });  
+  // Escucha clics en talles
+sizes.forEach(size => {
+  size.addEventListener("click", () => {
+    sizesTexto = size.textContent.trim();
+
+    // Actualiza visual
+    sizes.forEach(s => s.classList.remove("seleccion_opciones_talles"));
+    size.classList.add("seleccion_opciones_talles");
+
+    // Llama a la validación completa
+    validacionInstantanea();
+  });
+});
+
+// Escucha clics en colores
+colors.forEach(color => {
+  color.addEventListener("click", () => {
+    colorTexto = color.textContent.trim();
+
+    // Actualiza visual
+    colors.forEach(c => c.classList.remove("seleccion_opciones_colores"));
+    color.classList.add("seleccion_opciones_colores");
+
+    // Llama a la validación completa
+    validacionInstantanea();
+  });
+});
+
+// 👇 Esta función se ejecuta solo cuando ambos estén seleccionados
+function validacionInstantanea() {
+  if (sizesTexto && colorTexto) {
+    const combinacionExiste = validarCombinacion(sizesTexto, colorTexto);
+    if (!combinacionExiste) {
+      alert("Esta combinación de talle y color no está disponible.");
+      // Podés resetear las clases visuales si querés:
+      document.querySelectorAll('.sizes').forEach(s => s.classList.remove('seleccion_opciones_talles'));
+      document.querySelectorAll('.colors').forEach(c => c.classList.remove('seleccion_opciones_colores'));
+      sizesTexto = "";
+      colorTexto = "";
+      btnOpciones.disabled = true;
+      btnOpciones.textContent = "Seleccione talla y color";
+      return;
+    }
+
+    // ✅ Si es válida, se activa el botón
+    activarBoton();
+  }
+}
+
+// 👇 Valida si existe esa combinación en tu array
+function validarCombinacion(talle, color) {
+  return varianteSeleccionada.productos_variantes.some(variacion => {
+    const talleVar = variacion?.talles?.insertar_talle?.trim().toLowerCase();
+    const colorVar = variacion?.colores?.insertar_color?.trim().toLowerCase();
+    return talleVar === talle.trim().toLowerCase() &&
+           colorVar === color.trim().toLowerCase();
+  });
+}
+
+
           
      // 🔁 Reinicia las selecciones cada vez que abres el modal
     sizesTexto = "";
@@ -421,7 +469,20 @@ const coloresHTML = colores
     function activarBoton() {
       btnOpciones.textContent = "Agregar al Carrito";
       btnOpciones.disabled = false;
-    }
+    } 
+    function validarCombinacion(talle, color) {
+  return varianteSeleccionada.productos_variantes.some(variacion => {
+    const t = variacion?.talles?.insertar_talle;
+    const c = variacion?.colores?.insertar_color;
+    if (!t || !c) return false;
+
+    return (
+      t.toString().trim().toLowerCase() === talle.toLowerCase() &&
+      c.toString().trim().toLowerCase() === color.toLowerCase()
+    );
+  });
+}
+
   
     console.log(btnOpciones);
   
@@ -448,11 +509,11 @@ const coloresHTML = colores
     );
   });
 
-  if (!combinacionExiste) {
+ 
+ if (!combinacionExiste) {
     alert("Esta combinación de talle y color no está disponible.");
     return; // ⚠️ Salida inmediata: no ejecuta NADA más
   }
-
   // Ahora buscamos el stock SÓLO SI la combinación es válida
   let stock = null;
   for (const element of varianteSeleccionada.productos_variantes) {
@@ -675,9 +736,10 @@ const coloresHTML = colores
              stockStorage.push(stock);
              localStorage.setItem('stocks', JSON.stringify(stockStorage));
 
-                if (!document.getElementById(`${productoID}-${color}-${sizes}`)) {
-                container.append(div);
-              }
+                 if (!container.classList.contains(div)) {
+              container.append(div);
+              } 
+
 
 
             window.addEventListener("pageshow",()=>{
@@ -977,7 +1039,7 @@ const coloresHTML = colores
             
              
        
-       let cantidadActual = primerProducto?.cantidad || objectoStorage.cantidad;
+  
        const cantidadSpan = section.querySelector(".quantity-selector span"); // referencia al <span>
        
        section.addEventListener("click", (e) => {
