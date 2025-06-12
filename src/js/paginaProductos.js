@@ -65,12 +65,14 @@ const listaProductos = document.getElementById("productos_lista");
 
       console.log(obtenerUSer)
      
+const userIngresado=document?.querySelector('.user__ingresado')    
 
   
  if (obtenerUSer) { 
 
    ingreso=obtenerUSer?.usuario
-  userIngresado.innerHTML = `
+   if(userIngresado){ 
+    userIngresado.innerHTML = `
     Ingreso: 
     <span style="
       margin-left: 10px;
@@ -85,6 +87,9 @@ const listaProductos = document.getElementById("productos_lista");
       ${obtenerUSer.usuario}
     </span>
   `;
+    
+   }
+  
 } else { 
    ingreso=admin
   // No se encontró el usuario, mostrar admin
@@ -432,6 +437,10 @@ async function selectorCategorys() {
 
    
 
+
+
+
+ 
  async function opcionesProducto(producto_ID) { 
   
   let carritoCompras=JSON.parse(localStorage.getItem('productos'))||[]
@@ -486,31 +495,39 @@ async function selectorCategorys() {
      const stockStorage=JSON.parse(localStorage.getItem('stocks')) || [] 
 
 
-   const talles=varianteSeleccionada.productos_variantes.map(talles=>{
-    const varianteTalle=talles.talles.insertar_talle 
-    return `  
-     <button class="sizes-box" style="padding: 10px 14px; border: 1px solid #ccc; background: white; border-radius: 6px; cursor: pointer; min-width: 50px; text-align: center;">${varianteTalle??""}</button>
-     
-    `
-    }).join("")
-  console.log(talles)  
-
-   
-  const colores=varianteSeleccionada.productos_variantes.map(colores=>{
-    const varianteColor=colores.colores.insertar_color 
-    return `   
-     <button class="colors-box" style="padding: 10px 14px; border: 1px solid #ccc; background: white; border-radius: 6px; cursor: pointer; min-width: 50px; text-align: center;">${varianteColor??""}</button>
-  
-    `
-  }).join("")
-  console.log(colores)
-
- document.querySelector("#modal")?.remove()
-
-
- const div=document.createElement("div")
- 
-div.innerHTML = `
+     const talles = Array.isArray(varianteSeleccionada?.productos_variantes)
+    ? varianteSeleccionada.productos_variantes
+        .filter(talleObj => talleObj?.talles?.insertar_talle) // filtro valores nulos o indefinidos
+        .map(talleObj => `
+          <button class="sizes-box" style="padding: 10px 14px; border: 1px solid #ccc; background: white; border-radius: 6px; cursor: pointer; min-width: 50px; text-align: center;">
+            ${talleObj.talles.insertar_talle}
+          </button>
+        `)
+        .join("")
+    : "";
+        
+  console.log(talles);
+        
+  const colores = Array.isArray(varianteSeleccionada?.productos_variantes)
+    ? varianteSeleccionada.productos_variantes
+        .filter(colorObj => colorObj?.colores?.insertar_color) // filtro valores nulos o indefinidos
+        .map(colorObj => `
+          <button class="colors-box" style="padding: 10px 14px; border: 1px solid #ccc; background: white; border-radius: 6px; cursor: pointer; min-width: 50px; text-align: center;">
+            ${colorObj.colores.insertar_color}
+          </button>
+        `)
+        .join("")
+    : "";
+        
+  console.log(colores);
+        
+        
+   document.querySelector("#modal")?.remove()
+        
+        
+   const div=document.createElement("div")
+        
+  div.innerHTML = `
   <div id="modal" style="
     position: fixed; top: 50%; left: 50%;
     transform: translate(-50%, -50%);
@@ -705,26 +722,30 @@ div.innerHTML = `
      
 
        console.log(objectoStorage) 
+       console.log(varianteSeleccionada,"la varianteeeee")
 
       /* BUSCAMOS QUE LAS VARIANTES COINCIDAN CON LOS TALLES Y COLORES SELECCIONADOS GRACIAS A LAS VARIANTES */
 
+        const combinacionExiste = varianteSeleccionada.productos_variantes.some(variacion => {
+        const talle = variacion?.talles?.insertar_talle;
+        const color = variacion?.colores?.insertar_color;
 
-       const combinacionExiste = varianteSeleccionada.productos_variantes.some(variacion => {
-        console.log('Comparando:');
-        console.log('Talle del botón seleccionado:', sizesTexto);
-        console.log('Color del botón seleccionado:', colorTexto);
-        console.log('Talle de la variante actual:', variacion.talles.insertar_talle);
-        console.log('Color de la variante actual:', variacion.colores.insertar_color);
-        
+        // Validamos que ambos existan antes de comparar
+        if (!talle || !color) return false;
+
         const resultadoComparacion = 
-          variacion.talles.insertar_talle === sizesTexto &&
-          variacion.colores.insertar_color === colorTexto;
-      
+          talle.toString().trim().toLowerCase() === sizesTexto.toString().trim().toLowerCase() &&
+          color.toString().trim().toLowerCase() === colorTexto.toString().trim().toLowerCase();
+
+        console.log('Comparando normalizados:');
+        console.log('Talle:', talle, 'vs', sizesTexto);
+        console.log('Color:', color, 'vs', colorTexto);
         console.log('¿Coincide esta variante?', resultadoComparacion);
         console.log('------------------------------');
-      
+
         return resultadoComparacion;
       });
+
       
       console.log('¿Existe la combinación talle+color?', combinacionExiste);
       
@@ -748,22 +769,29 @@ div.innerHTML = `
      console.log(productos)
 
     const productoSeleccionado=productos.find(producto=>producto.producto_id===producto_ID) 
+          if (!productoSeleccionado) {
+             alert("Producto no encontrado.");
+             return;
+               }
+
        
-     for (const element of productoSeleccionado.productos_variantes) { 
+     for (const element of productoSeleccionado?.productos_variantes) {
+  const talle = element?.talles?.insertar_talle;
+  const color = element?.colores?.insertar_color;
+  const stockDisponible = element?.stock;
 
-      
-      
-       if(element?.talles?.insertar_talle===sizesTexto&& element?.colores?.insertar_color===colorTexto){ 
+  // Aseguramos que talle, color y stock no sean nulos
+  if (
+    talle && color && stockDisponible !== null &&
+    talle.toString().trim().toLowerCase() === sizesTexto.toString().trim().toLowerCase() &&
+    color.toString().trim().toLowerCase() === colorTexto.toString().trim().toLowerCase()
+  ) {
+    stock = stockDisponible;
+    console.log(stock,'STOCKER')
+    break;
+  }
+}
 
-  
-        stock=element?.stock
-        break
-
-       } 
-
-     } 
-
-    
         
       if (stock === null) {
         alert("No se pudo determinar el stock.");
@@ -794,86 +822,107 @@ div.innerHTML = `
 
 
 
-   async function manejarCantidades(productoID,sizes,color){  
+  async function manejarCantidades(productoID, sizes, color) {
+  let talleID = null;
+  let colorID = null;
+  let stock = null;
 
-    let talleID=null
-    let colorID=null
-    let stock=null
-   
-     console.log(productos)
+  console.log(productos);
 
-    const productoSeleccionado=productos.find(producto=>producto.producto_id===productoID) 
+  // Validar que productos esté definido y sea array
+  if (!Array.isArray(productos)) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'No se encontraron productos disponibles.',
+    });
+    return;
+  }
 
-     for (const element of productoSeleccionado.productos_variantes) { 
+  // Buscar producto seleccionado, validar que exista
+  const productoSeleccionado = productos.find(
+    (producto) => producto?.producto_id?.toString().trim() === productoID.toString().trim()
+  );
 
-      
-      
-       if(element.talles.insertar_talle===sizes && element.colores.insertar_color===color){ 
+  if (!productoSeleccionado) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Producto no encontrado',
+      text: 'El producto seleccionado no existe.',
+    });
+    return;
+  }
 
-        talleID=element.talles.talle_id ?? null
-        colorID=element.colores.color_id ?? null 
-        stock=element.stock
-        break
+  // Validar que productos_variantes exista y sea array
+  if (!Array.isArray(productoSeleccionado.productos_variantes)) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'El producto no tiene variantes disponibles.',
+    });
+    return;
+  }
 
-       } 
+  // Buscar variante que coincida con talle y color
+  for (const element of productoSeleccionado.productos_variantes) {
+    if (
+      element?.talles?.insertar_talle?.toString().trim() === sizes.toString().trim() &&
+      element?.colores?.insertar_color?.toString().trim() === color.toString().trim()
+    ) {
+      talleID = element?.talles?.talle_id ?? null;
+      colorID = element?.colores?.color_id ?? null;
+      stock = element?.stock ?? null;
+      break;
+    }
+  }
 
-     } 
+  if (talleID === null || colorID === null) {
+    await Swal.fire({
+      title: `No hay ese talle con ese color. Ingrese el talle con el color de abajo, única opción disponible en stock`,
+      showClass: {
+        popup: `animate__animated animate__fadeInUp animate__faster`
+      },
+      hideClass: {
+        popup: `animate__animated animate__fadeOutDown animate__faster`
+      }
+    });
+    return;
+  }
 
-     if(talleID===null || colorID===null){ 
-      Swal.fire({
-        title: `No hay ese talle con ese color ingrese el talle con el color de abajo, unica opcion disponible en stock`,
-        showClass: {
-          popup: `
-            animate__animated
-            animate__fadeInUp
-            animate__faster
-          `
-        },
-        hideClass: {
-          popup: `
-            animate__animated
-            animate__fadeOutDown
-            animate__faster
-          `
-        }
-      }); 
+  // Quitar modal anterior si existe
+  const modalPrevio = document.getElementById("modal");
+  if (modalPrevio) modalPrevio.remove();
 
-      return
-     }
-     
+  let carritoCompras = JSON.parse(localStorage.getItem('productos')) || [];
 
+  // Buscar producto en carrito que coincida en id, talle y color
+  const primerProducto = carritoCompras.find(p =>
+    p?.producto_id?.toString().trim() === productoID.toString().trim() &&
+    p?.color?.toString().trim() === color.toString().trim() &&
+    p?.talle?.toString().trim() === sizes.toString().trim()
+  );
 
-  
-    document.getElementById("modal").remove(); 
+  if (!primerProducto) {
+    // Crear nuevo producto para carrito
+    const nuevoProducto = {
+      producto_id: productoID,
+      talle: sizes,
+      color: color,
+      cantidad: 1,
+      imagen: productoSeleccionado.imagen ?? '',
+      nombre_producto: productoSeleccionado.nombre_producto ?? '',
+      detalles: productoSeleccionado.detalles ?? '',
+      precio_producto: productoSeleccionado.precio_producto ?? 0,
+    };
+    carritoCompras.push(nuevoProducto);
+    localStorage.setItem('productos', JSON.stringify(carritoCompras));
+  }
 
-    let carritoCompras=JSON.parse(localStorage.getItem('productos'))||[]
+  // Quitar modal-2 anterior si existe
+  document.querySelector('.modal-2')?.remove();
 
-         const primerProducto=carritoCompras.find(p=>p.producto_id.toString().trim()===productoID.toString().trim()&&
-               p.color.toString().trim()===color && p.talle.toString().trim()===sizes.toString().trim()) 
-
-               if (!primerProducto) {
-                const nuevoProducto = {
-                  producto_id: productoID,
-                  talle: sizes,
-                  color: color,
-                  cantidad: 1,
-                  imagen: productoSeleccionado.imagen,
-                  nombre_producto: productoSeleccionado.nombre_producto,
-                  detalles: productoSeleccionado.detalles,
-                  precio_producto: productoSeleccionado.precio_producto
-                };
-                carritoCompras.push(nuevoProducto);
-                localStorage.setItem('productos', JSON.stringify(carritoCompras));
-              }
-              
-        
-         
-         document.querySelector('.modal-2')?.remove()
-
-        const div=document.createElement("div") 
-
-
-    // Crear el contenido del modal
+  // Crear el modal con los datos del producto agregado
+  const div = document.createElement("div");
   div.innerHTML = `
   <div style="background: white; border-radius: 12px; width: 640px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%);" class="modal-2">
     <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px; border-bottom: 1px solid #ddd;" class="modal-header">
@@ -883,139 +932,121 @@ div.innerHTML = `
       <button type="button" style="font-size: 24px; cursor: pointer; border: none;background: none;" id="close-x" class="modal_close">x</button>
     </div>
     <div style="display: flex; padding: 16px;" class="modal-content">
-      <img style="width: 80px; height: auto; margin-right: 16px;" src="${primerProducto.imagen}" alt="Producto" />
+      <img style="width: 80px; height: auto; margin-right: 16px;" src="${primerProducto?.imagen ?? ''}" alt="Producto" />
       <div style="flex-grow: 1;" class="product-info">
-        <h3 style="font-size: 14px; margin: 0; font-weight: normal;">${primerProducto.nombre_producto}</h3>
-        <strong style="display: block; margin: 4px 0;">${primerProducto.detalles}</strong>
-        <p style="color: red;">talle:${sizes}</p>
-        <p style="color: red;">color:${color}</p>
-        <p style="color: red;">el maximo permitido:${stock}  unidades</p>
-        <div style="font-size: 18px; font-weight: bold;" class="product-price">Precio:$${primerProducto.precio_producto}</div>
+        <h3 style="font-size: 14px; margin: 0; font-weight: normal;">${primerProducto?.nombre_producto ?? ''}</h3>
+        <strong style="display: block; margin: 4px 0;">${primerProducto?.detalles ?? ''}</strong>
+        <p style="color: red;">talle: ${sizes}</p>
+        <p style="color: red;">color: ${color}</p>
+        <p style="color: red;">el máximo permitido: ${stock ?? 0} unidades</p>
+        <div style="font-size: 18px; font-weight: bold;" class="product-price">Precio: $${primerProducto?.precio_producto ?? 0}</div>
         <div style="display: flex; align-items: center; margin-top: 8px;" class="quantity-selector">
-          <button  class="boton-eliminar" id="btn-eliminar" style="width: 28px; height: 28px; font-size: 16px; border: 1px solid #ccc; background: white; cursor: pointer;">-</button>
-          <span class="quantity-selector" style="width: 30px; text-align: center;">${primerProducto.cantidad}</span>
-          <button  class="boton-agregar" id="btn-agregar" style="width: 28px; height: 28px; font-size: 16px; border: 1px solid #ccc; background: white; cursor: pointer;">+</button>
+          <button class="boton-eliminar" id="btn-eliminar" style="width: 28px; height: 28px; font-size: 16px; border: 1px solid #ccc; background: white; cursor: pointer;">-</button>
+          <span class="quantity-selector" style="width: 30px; text-align: center;">${primerProducto?.cantidad ?? 1}</span>
+          <button class="boton-agregar" id="btn-agregar" style="width: 28px; height: 28px; font-size: 16px; border: 1px solid #ccc; background: white; cursor: pointer;">+</button>
         </div>
       </div>
     </div>
     <div style="padding: 16px; display: flex; justify-content: space-between; border-top: 1px solid #ddd;" class="modal-footer">
-      <a style=" font-weight: bold; color: #0046be;" class="seguir_comprando" href="#">Seguir comprando</a>
+      <a style="font-weight: bold; color: #0046be;" class="seguir_comprando" href="#">Seguir comprando</a>
       <a id="carrito" href="./carrito.html" style="background: #3a3f4c; text-decoration:none; color: white; padding: 8px 24px; border: none; border-radius: 20px; font-size: 16px; cursor: pointer;" class="btn-carro">Ir al Carro</a>
     </div>
-  </div>
-  `;
+  </div>`;
 
+  // Guardar stock en localStorage de forma segura
   let stockStorage = JSON.parse(localStorage.getItem('stocks')) || [];
-  stockStorage.push(stock);
+  stockStorage.push(stock ?? 0);
   localStorage.setItem('stocks', JSON.stringify(stockStorage));
 
-  console.log(div); 
-  if(!document.body.contains(div)){
+  if (!document.body.contains(div)) {
     document.body.append(div);
-
   }
 
-
-  // Delegación de eventos
+  // Delegación de eventos dentro del modal
   div.addEventListener('click', (e) => {
-  const cantidadSpan = div.querySelector(".quantity-selector span"); // referencia al <span>
+    const cantidadSpan = div.querySelector(".quantity-selector span");
 
-  // Cerrar el modal
-  if (e.target.matches(".modal_close")) {
-    const modal = div.querySelector(".modal-2");
-    modal.remove();
-  }
-
-  // Seguir comprando (recargar la página)
-  if (e.target.matches(".seguir_comprando")) {
-    window.location.reload();
-  }
-
-  // Botón de agregar cantidad
-  if (e.target.matches(".boton-agregar")) {
-    e.preventDefault();
-    if (primerProducto.cantidad < stock) {
-      primerProducto.cantidad++;
-      cantidadSpan.textContent = primerProducto.cantidad;
-      localStorage.setItem('productos', JSON.stringify(carritoCompras));
-    } 
-    actualizarCarrito()
-  }
-
-  // Botón de eliminar cantidad
- if (e.target.matches(".boton-eliminar")) {
-  e.preventDefault();
-
-  if (primerProducto.cantidad > 0) {
-    primerProducto.cantidad--;
-    cantidadSpan.textContent = primerProducto.cantidad || 0; 
-  }
-
-  if (primerProducto.cantidad === 0) {
-    const index = carritoCompras.findIndex(
-      (producto) =>
-        producto.producto_id.toString() === productoID.toString() &&
-        producto.color.toString().trim() === color.toString().trim() &&
-        producto.talle.toString().trim() === sizes.toString().trim()
-    );
-
-    if (index !== -1) {
-      carritoCompras.splice(index, 1);
+    // Cerrar el modal
+    if (e.target.matches(".modal_close")) {
+      const modal = div.querySelector(".modal-2");
+      if (modal) modal.remove();
     }
 
-    const modal = document.querySelector('.modal-2');
-    if (modal) {
-      modal.remove();
+    // Seguir comprando (recargar página)
+    if (e.target.matches(".seguir_comprando")) {
+      window.location.reload();
     }
-  }
 
-  localStorage.setItem("productos", JSON.stringify(carritoCompras));
-  actualizarCarrito()
+    // Botón agregar cantidad
+    if (e.target.matches(".boton-agregar")) {
+      e.preventDefault();
+      if (primerProducto.cantidad < (stock ?? 0)) {
+        primerProducto.cantidad++;
+        if (cantidadSpan) cantidadSpan.textContent = primerProducto.cantidad;
+        localStorage.setItem('productos', JSON.stringify(carritoCompras));
+      }
+      actualizarCarrito();
+    }
+
+    // Botón eliminar cantidad
+    if (e.target.matches(".boton-eliminar")) {
+      e.preventDefault();
+
+      if (primerProducto.cantidad > 0) {
+        primerProducto.cantidad--;
+        if (cantidadSpan) cantidadSpan.textContent = primerProducto.cantidad || 0;
+      }
+
+      if (primerProducto.cantidad === 0) {
+        const index = carritoCompras.findIndex(
+          (producto) =>
+            producto?.producto_id?.toString() === productoID.toString() &&
+            producto?.color?.toString().trim() === color.toString().trim() &&
+            producto?.talle?.toString().trim() === sizes.toString().trim()
+        );
+        if (index !== -1) {
+          carritoCompras.splice(index, 1);
+        }
+        const modal = document.querySelector('.modal-2');
+        if (modal) modal.remove();
+      }
+
+      localStorage.setItem("productos", JSON.stringify(carritoCompras));
+      actualizarCarrito();
+    }
+  });
 }
 
-  });
-
-
-
-
-     } 
-
-
-
-
-  export async function actualizarCarrito() {
+// Función para actualizar carrito en el icono
+export async function actualizarCarrito() {
   const carrito = JSON.parse(localStorage.getItem("productos")) || [];
 
   const iconCart = document.getElementById("cart-count");
   if (iconCart) {
-    iconCart.innerHTML = carrito.reduce((acc, producto) => acc + producto.cantidad, 0) || 0
+    iconCart.innerHTML = carrito.reduce((acc, producto) => acc + (producto.cantidad ?? 0), 0) || 0;
   }
 }
 
-// ✅ Ejecutar al cargar la página normalmente
+// Ejecutar al cargar la página normalmente
 actualizarCarrito();
 
-// ✅ Ejecutar también cuando el usuario vuelve con el botón "Atrás"
+// Ejecutar cuando el usuario vuelve con el botón "Atrás"
 window.addEventListener("pageshow", function () {
   actualizarCarrito();
 });
 
+function restaurarCarrito() {
+  let carritoStorage = localStorage.getItem('productos');
+  let carritoCompras = carritoStorage ? JSON.parse(carritoStorage) : [];
 
-  
-  function restaurarCarrito() {
-    let carritoStorage = localStorage.getItem('productos');
-    let carritoCompras = carritoStorage ? JSON.parse(carritoStorage) : [];
-
-    let iconCart = document.getElementById("cart-count");
-    if(iconCart){
-      iconCart.innerHTML = carritoCompras.reduce((acc, producto) => acc + producto.cantidad, 0);
-
-    }
-    
+  let iconCart = document.getElementById("cart-count");
+  if (iconCart) {
+    iconCart.innerHTML = carritoCompras.reduce((acc, producto) => acc + (producto.cantidad ?? 0), 0);
   }
+}
 
-  // Ejecutar la función al cargar la página
-   restaurarCarrito()
+// Ejecutar la función al cargar la página
+restaurarCarrito();
 
 
 

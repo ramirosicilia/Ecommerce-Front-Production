@@ -82,23 +82,24 @@ async function reendedizarDetallesProductos() {
     const descuento = Math.round(100 - ((precio ?? 0) / (precioOriginal ?? 1)) * 100);
     
     const talles = productoSeleccionado.productos_variantes.map(v => v.talles);
-    const colores = productoSeleccionado.productos_variantes.map(v => v.colores);
-    
+const colores = productoSeleccionado.productos_variantes.map(v => v.colores);
 
+// ✅ Filtrar los talles que NO sean undefined
+const tallesHTML = talles
+  .filter(talle => talle && talle?.insertar_talle) // filtra si talle es null o undefined o si insertar_talle es falsy
+  .map(talle => `
+    <button class="insertar_talle" style="padding: 10px; border: 1px solid gray; background: white; cursor: pointer; border-radius: 5px; margin: 5px;">
+      ${talle?.insertar_talle}
+    </button>
+  `).join('');
 
-  
-      const tallesHTML = talles.map(talle => `
-        <button class="insertar_talle" style="padding: 10px; border: 1px solid gray; background: white; cursor: pointer; border-radius: 5px; margin: 5px;">
-      ${talle?.insertar_talle ?? ''}
-       </button>
-     `).join('');
-
-      
-     const coloresHTML = colores.map(color => `
-      <button class="insertar_color" style="padding: 10px; border: 1px solid gray; background: white; cursor: pointer; border-radius: 5px; margin: 5px;">
-       ${color?.insertar_color ?? ''}
-      </button>
-    `).join('');
+const coloresHTML = colores
+  .filter(color => color && color?.insertar_color)
+  .map(color => `
+    <button class="insertar_color" style="padding: 10px; border: 1px solid gray; background: white; cursor: pointer; border-radius: 5px; margin: 5px;">
+      ${color?.insertar_color}
+    </button>
+  `).join('');
 
   
     container.innerHTML = `
@@ -300,25 +301,20 @@ async function reendedizarDetallesProductos() {
    console.log(btnOpciones)
 
   
-  
-  
-   
-
    //FUNCION********************************************************************************************************
    
 
    async function recibirDescripcion(producto_ID) { 
      console.log(productos)
     console.log(categorias)
-  
+
+
 
     const usuarioActual=JSON.parse(localStorage.getItem('usuario'))||[]
   
     let sizesTexto = "";
     let colorTexto = "";
   
-   
-
   
   const obtenerUSer = usuarios.user?.find(user=>user.usuario===usuarioActual[usuarioActual.length-1].toString())
   
@@ -341,32 +337,39 @@ async function reendedizarDetallesProductos() {
     if (!productoSeleccionado) return;
     const { nombre_producto, detalles, precio } = productoSeleccionado;
   
-    const imagenOpciones = imagenSeleccionada?.urls[0];
-    let stock=null
+    const imagenOpciones = imagenSeleccionada?.urls[0]; 
+
+    
+
   
     const varianteSeleccionada = filtradoCategoryYProduct?.find(variante => variante.producto_id === producto_ID); 
-
+    console.log('la varianteee',varianteSeleccionada)
 
       
-    const talles = varianteSeleccionada.productos_variantes.map(talles => {
-      const varianteTalle = talles.talles.insertar_talle;
-      return `
-        <button class="sizes" style="padding: 10px 14px; border: 1px solid #ccc; background: white; border-radius: 6px; cursor: pointer; min-width: 50px; text-align: center;">${varianteTalle??""}</button>
-      `;
-    }).join(" ");
-    console.log(talles);
-  
-    const colores = varianteSeleccionada.productos_variantes.map(colores => {
-      const varianteColor = colores.colores.insertar_color;
-      return `
-        <button class="colors" style="padding: 10px 14px; border: 1px solid #ccc; background: white; border-radius: 6px; cursor: pointer; min-width: 50px; text-align: center;">${varianteColor??""}</button>
-      `;
-    }).join(" ");
-    console.log(colores);
-  
-    const container = document.querySelector('.container');
-    console.log(container);
-    console.log(modal);
+    const talles = varianteSeleccionada.productos_variantes
+    .filter(item => item?.talles?.insertar_talle) // filtro solo los que tienen insertar_talle válido
+    .map(item => `
+      <button class="sizes" style="padding: 10px 14px; border: 1px solid #ccc; background: white; border-radius: 6px; cursor: pointer; min-width: 50px; text-align: center;">
+        ${item?.talles?.insertar_talle}
+      </button>
+    `).join(" ");
+
+  console.log(talles);
+
+  const colores = varianteSeleccionada.productos_variantes
+    .filter(item => item?.colores?.insertar_color) // filtro solo los que tienen insertar_color válido
+    .map(item => `
+      <button class="colors" style="padding: 10px 14px; border: 1px solid #ccc; background: white; border-radius: 6px; cursor: pointer; min-width: 50px; text-align: center;">
+        ${item?.colores?.insertar_color}
+      </button>
+    `).join(" ");
+
+   console.log(colores);
+
+    
+      const container = document.querySelector('.container');
+      console.log(container);
+      console.log(modal);
     console.log(sizeContainer);
   
 
@@ -374,7 +377,7 @@ async function reendedizarDetallesProductos() {
     imgModal.src = imagenOpciones;
     name.innerHTML = "Nombre: " + nombre_producto;
     details.innerHTML = "Detalle: " + detalles;
-    price.innerHTML = "precio: $" + precio;
+    price.innerHTML = "precio: $" + precio.toFixed(2);
   
     sizeContainer.innerHTML = talles;
     colorContainer.innerHTML = colores;
@@ -402,8 +405,17 @@ async function reendedizarDetallesProductos() {
       });
     });  
           
-     
+     // 🔁 Reinicia las selecciones cada vez que abres el modal
+    sizesTexto = "";
+    colorTexto = "";
+    btnOpciones.textContent = "Seleccione talla y color";
+    btnOpciones.disabled = true;
 
+    // Borra selecciones visuales previas
+    document.querySelectorAll('.sizes').forEach(el => el.classList.remove('seleccion_opciones_talles'));
+    document.querySelectorAll('.colors').forEach(el => el.classList.remove('seleccion_opciones_colores'));
+
+ 
     modal.style.display = "flex";
   
     function activarBoton() {
@@ -421,98 +433,85 @@ async function reendedizarDetallesProductos() {
       modal.style.display = "none";
     });
     let carritoCompras = JSON.parse(localStorage.getItem('productos')) || [];
+
   
-    btnOpciones.addEventListener("click", async () => {   
-      
+  btnOpciones.addEventListener("click", async () => {
+  const combinacionExiste = varianteSeleccionada.productos_variantes.some(variacion => {
+    const talle = variacion?.talles?.insertar_talle;
+    const color = variacion?.colores?.insertar_color;
 
-      for (const element of varianteSeleccionada.productos_variantes) { 
+    if (!talle || !color) return false;
 
-             if(element?.talles?.insertar_talle===sizesTexto && element?.colores?.insertar_color===colorTexto){ 
-           
-      
-                stock=element.stock
-                break
+    return (
+      talle.toString().trim().toLowerCase() === sizesTexto.toString().trim().toLowerCase() &&
+      color.toString().trim().toLowerCase() === colorTexto.toString().trim().toLowerCase()
+    );
+  });
 
-       } 
-          
-         }
-     
+  if (!combinacionExiste) {
+    alert("Esta combinación de talle y color no está disponible.");
+    return; // ⚠️ Salida inmediata: no ejecuta NADA más
+  }
+
+  // Ahora buscamos el stock SÓLO SI la combinación es válida
+  let stock = null;
+  for (const element of varianteSeleccionada.productos_variantes) {
+    if (
+      element?.talles?.insertar_talle.toString().trim().toLowerCase() === sizesTexto.toString().trim().toLowerCase() &&
+      element?.colores?.insertar_color.toString().trim().toLowerCase() === colorTexto.toString().trim().toLowerCase()
+    ) {
+      stock = element?.stock;
+      break;
+    }
+  }
+
+  if (stock === null) {
+    alert("No se pudo determinar el stock.");
+    return;
+  }
+
+  const colorNormalizado = colorTexto.trim().toLowerCase();
+  const talleNormalizado = sizesTexto.trim().toLowerCase(); 
+  let existeProducto = carritoCompras.find(producto =>
+    producto.producto_id === producto_ID &&
+    (producto.color || "").trim().toLowerCase() === colorNormalizado &&
+    (producto.talle || "").trim().toLowerCase() === talleNormalizado &&
+    producto.user_id === usuario_id
+  );
+
+  let objectoStorage = {
+    user: usuario,
+    user_id: usuario_id,
+    producto_id: producto_ID,
+    nombre_producto: nombre_producto,
+    precio_producto: precio,
+    cantidad: 1,
+    detalles: detalles,
+    imagen: imagenOpciones,
+    color: colorTexto || "",
+    talle: sizesTexto || ""
+  };
+
   
-      let objectoStorage = {
-        user: usuario,
-        user_id: usuario_id,
-        producto_id:producto_ID,
-        nombre_producto: nombre_producto,
-        precio_producto: precio,
-        cantidad: 1,
-        detalles: detalles,
-        imagen: imagenOpciones,
-        color: colorTexto || "",
-        talle: sizesTexto || ""
-      };
+
+  if (!existeProducto) {
+    carritoCompras.push({ ...objectoStorage });
+  } else {
+    if (existeProducto.cantidad < stock) {
+      existeProducto.cantidad += 1;
+    } else {
+      alert("Ya has agregado el máximo disponible de este producto.");
+    }
+  }
+
+  localStorage.setItem("productos", JSON.stringify(carritoCompras));
+  actualizarCarrito();
+
   
-      console.log(objectoStorage);
-  
-      const combinacionExiste = varianteSeleccionada.productos_variantes.some(variacion => {
-        console.log('Comparando:');
-        console.log('Talle del botón seleccionado:', sizesTexto);
-        console.log('Color del botón seleccionado:', colorTexto);
-        
-  
-        const resultadoComparacion =
-          variacion.talles.insertar_talle === sizesTexto &&
-          variacion.colores.insertar_color === colorTexto;
-  
-        console.log('¿Coincide esta variante?', resultadoComparacion);
-        console.log('------------------------------');
-  
-        return resultadoComparacion;
-      });
-  
-      console.log('¿Existe la combinación talle+color?', combinacionExiste);
-  
-      if (!combinacionExiste) {
-        alert("Esta combinación de talle y color no está disponible, combinaciones únicas de talle abajo del color.");
-        return;
-      }
-      let colorNormalizado = (colorTexto || "").trim().toLowerCase();
-      let talleNormalizado = (sizesTexto || "").trim().toLowerCase();
-      
-      let existeProducto = carritoCompras.find(producto =>
-        producto.producto_id === producto_ID &&
-        (producto.color || "").trim().toLowerCase() === colorNormalizado &&
-        (producto.talle || "").trim().toLowerCase() === talleNormalizado &&
-        producto.user_id === usuario_id // Asegura que sea del mismo usuario
-      );
-      
- 
-                if (stock === null) {
-                    alert("No se pudo determinar el stock.");
-                    return;
-                                      }
 
-                    if (!existeProducto) {
-                      carritoCompras.push({ ...objectoStorage }); 
+  manejarCantidadesDescripcion(producto_ID, sizesTexto, colorTexto);
+});
 
-            
-                    } else {
-                      if (existeProducto.cantidad < stock) {
-                       existeProducto.cantidad += 1;
-                      } else {
-                        alert("Ya has agregado el máximo disponible de este producto.");
-                      }
-                    }
-                     actualizarCarrito()
-
-
-
-     localStorage.setItem("productos", JSON.stringify(carritoCompras));
-    actualizarCarrito(); // ⬅️ Mover fuera para que siempre se actualice
-
-
-
-    manejarCantidadesDescripcion(producto_ID, sizesTexto, colorTexto);
-    });
   }
   
 
@@ -552,13 +551,31 @@ async function reendedizarDetallesProductos() {
         let stock=null
        
         
-     console.log(productos)
+           console.log(productos) 
+           if (!sizes || !color) {
+            console.warn("Color o talle no definido.");
+              return;
+              }
+
     
-        const productoSeleccionado=productos.find(producto=>producto.producto_id===productoID) 
-        if(!productoSeleccionado){
-          alert('no hay productos')
+      const productoSeleccionado = productos.find(producto => {
+      
+          return producto.producto_id === productoID &&
+                 producto.productos_variantes.some(variacion =>
+                   variacion.talles.insertar_talle.toString().trim() === sizes.toString().trim() &&
+                   variacion.colores.insertar_color.toString().trim() === color.toString().trim()
+                 );
+        });
+
+        if (!productoSeleccionado) {
+          Swal.fire({
+            title: 'No hay combinación válida de producto, talle y color.',
+            icon: 'warning',
+            confirmButtonText: 'OK'
+          });
+          return;
         }
-    
+
          for (const element of productoSeleccionado.productos_variantes) { 
     
           
@@ -639,7 +656,7 @@ async function reendedizarDetallesProductos() {
                      <p style="color: red;">talle:${sizes}</p>
                      <p style="color: red;">color:${color}</p>
                      <p style="color: red;">el maximo permitido:${stock} unidades</p>
-                     <div style="font-size: 18px; font-weight: bold;" class="product-price">Precio:$${primerProducto.precio_producto}</div>
+                     <div style="font-size: 18px; font-weight: bold;" class="product-price">Precio:$${primerProducto?.precio_producto.toFixed(2)}</div>
                      <div style="display: flex; align-items: center; margin-top: 8px;" class="quantity-selector-container">
                        <button class="boton-eliminar" id="btn-eliminar" style="width: 28px; height: 28px; font-size: 16px; border: 1px solid #ccc; background: white; cursor: pointer;">-</button>
                        <span class="quantity-selector" style="width: 30px; text-align: center;">${primerProducto.cantidad}</span>
@@ -657,10 +674,11 @@ async function reendedizarDetallesProductos() {
              let stockStorage = JSON.parse(localStorage.getItem('stocks')) || [];
              stockStorage.push(stock);
              localStorage.setItem('stocks', JSON.stringify(stockStorage));
-             
-             if (!container.contains(div)) {
-              container.append(div);
-            } 
+
+                if (!document.getElementById(`${productoID}-${color}-${sizes}`)) {
+                container.append(div);
+              }
+
 
             window.addEventListener("pageshow",()=>{
                document.querySelector(".modal-2")?.remove();
@@ -744,6 +762,7 @@ async function reendedizarDetallesProductos() {
 
 
       async function manejarCantidadesCarrito(productoID,sizes,color){ 
+       
 
         let carritoCompras=JSON.parse(localStorage.getItem('productos'))||[]
 
@@ -802,16 +821,16 @@ async function reendedizarDetallesProductos() {
          console.log(productoSeleccionado) 
   
        
-          for (const element of productoSeleccionado.productos_variantes) { 
+          for (const element of productoSeleccionado?.productos_variantes) { 
           
      
            console.log(element) 
     
   
            
-           if (String(element.talles.insertar_talle).trim().toLowerCase() === String(sizes).trim().toLowerCase()
+           if (String(element?.talles?.insertar_talle).trim().toLowerCase() === String(sizes).trim().toLowerCase()
            && 
-            String(element.colores.insertar_color).trim().toLowerCase() === String(color).trim().toLowerCase()
+            String(element?.colores?.insertar_color).trim().toLowerCase() === String(color).trim().toLowerCase()
           ) {
             console.log(sizes);
             console.log(color);

@@ -112,31 +112,47 @@ function activarBotonAgregar(botones) {
     });
 }  
 
-function checkout() { 
+function checkout() {
+  if (!Array.isArray(productosEncarrito)) return;
 
-  
-  let cantidadTotal = productosEncarrito.length; // Contar productos únicos
-  let total = productosEncarrito.reduce((acc, prod) => acc + (prod.cantidad * prod.precio_producto), 0);
-  let tieneRepetidos = productosEncarrito.some(prod => prod.cantidad > 1);
-     console.log(summary) 
-      const button=document.createElement("button")
-      button.id="boton-vaciado"
-  summary.innerHTML = ` 
+  let cantidadTotal = productosEncarrito.length;
+
+  let total = productosEncarrito.reduce((acc, prod) => {
+    if (
+      prod &&
+      typeof prod.cantidad === 'number' &&
+      typeof prod.precio_producto === 'number'
+    ) {
+      return acc + (prod.cantidad * prod.precio_producto);
+    }
+    return acc;
+  }, 0);
+
+  let tieneRepetidos = productosEncarrito.some(prod => prod?.cantidad > 1);
+
+  if (typeof summary !== 'undefined' && summary) {
+    const button = document.createElement("button");
+    button.id = "boton-vaciado";
+
+    summary.innerHTML = ` 
       <h3>Resumen de compra</h3>
-      <p>Productos totales (${cantidadTotal}) ${tieneRepetidos ? "" : ""} <span>$ ${total.toFixed(2)}</span></p>
+      <p>Productos totales (${cantidadTotal}) ${tieneRepetidos ? "" : ""} <span>$${(total ?? 0).toFixed(2)}</span></p>
       <p class="shipping">Calcular costo de envío</p>
-      <hr>
-      <p>Total <span class="total-price">$${total.toFixed(2)}</span></p>
+      <hr> 
+      <p>Total <span class="total-price">$${(total ?? 0).toFixed(2)}</span></p>
       <button class="checkout" id="comprar">Continuar compra</button>
       <p class="shipping-info">El envío gratis está sujeto al peso, precio y distancia.</p>
       <button type="button" class="boton_vaciar btn" 
       id="boton-vaciado">Vaciar Carrito</button>
-  `; 
-  
-  let botonVaciar=document.querySelector("#boton-vaciado")
+    `;
 
-  vaciarCarrito(botonVaciar)
-
+    let botonVaciar = document.querySelector("#boton-vaciado");
+    if (botonVaciar && typeof vaciarCarrito === 'function') {
+      vaciarCarrito(botonVaciar);
+    }
+  } else {
+    console.warn("Elemento 'summary' no encontrado o no definido.");
+  }
 }
 
 
@@ -188,9 +204,20 @@ botonVaciar.addEventListener('click',() => {
 
 
 function iconoProductosSumados() {
-  let iconCart = document.getElementById("cart-count"); 
-  iconCart.innerHTML = productosEncarrito.reduce((acc, produc) => acc + produc.cantidad, 0);
+  let iconCart = document.getElementById("cart-count");
+
+  if (!iconCart) return;
+
+  let totalCantidad = productosEncarrito?.reduce((acc, produc) => {
+    if (produc && typeof produc.cantidad === 'number') {
+      return acc + produc.cantidad;
+    }
+    return acc; // si no es válido, lo ignora
+  }, 0);
+
+  iconCart.innerHTML = isNaN(totalCantidad) ? 0 : totalCantidad;
 }
+
 
 function agregarProductoAlCarrito(e) { 
     const idBoton = e.target.dataset.id; 
@@ -244,19 +271,32 @@ function agregarProductoAlCarrito(e) {
 
   } 
 
-  function eliminarDelCarrito(botonID,colorID,talleID) { 
-   let primerProducto = productosEncarrito.find(producto =>
-          producto.producto_id === botonID &&
-          producto.color === colorID &&
-          producto.talle === talleID
-      );
+  function eliminarDelCarrito(botonID, colorID, talleID) {
+    // Buscar el producto
+    let primerProducto = productosEncarrito.find(producto =>
+        producto?.producto_id === botonID &&
+        producto?.color === colorID &&
+        producto?.talle === talleID
+    );
 
-    if (primerProducto.cantidad > 0) { 
-        primerProducto.cantidad--; 
-        checkout()
-        localStorage.setItem("productos", JSON.stringify(productosEncarrito)); 
+    // Verifica que el producto y su cantidad existan y sean válidos
+    if (primerProducto && typeof primerProducto.cantidad === 'number' && primerProducto.cantidad > 0) {
+        primerProducto.cantidad--;
 
-      let cantidadActualizada = document.querySelector(
+        // Solo llamamos a funciones si existen
+        if (typeof checkout === 'function') checkout();
+
+        // Guardar en localStorage si está disponible
+        if (typeof localStorage !== 'undefined') {
+            try {
+                localStorage.setItem("productos", JSON.stringify(productosEncarrito));
+            } catch (e) {
+                console.error("Error al guardar en localStorage", e);
+            }
+        }
+
+        // Actualizar el DOM si los elementos existen
+        let cantidadActualizada = document.querySelector(
             `.cantidad[data-id="${botonID}"][data-color="${colorID}"][data-talle="${talleID}"]`
         );
         let cantidadTextoActualizada = document.querySelector(
@@ -264,24 +304,33 @@ function agregarProductoAlCarrito(e) {
         );
 
         if (cantidadActualizada) cantidadActualizada.innerHTML = primerProducto.cantidad;
-        if (cantidadTextoActualizada) cantidadTextoActualizada.innerHTML = `Cantidad: ${primerProducto.cantidad}`; 
+        if (cantidadTextoActualizada) cantidadTextoActualizada.innerHTML = `Cantidad: ${primerProducto.cantidad}`;
 
         console.log(primerProducto);
 
+        // Si ya no hay stock, eliminar del array
         if (primerProducto.cantidad === 0) {
-           productosEncarrito = productosEncarrito.filter(producto =>
-                !(producto.producto_id === botonID &&
-                  producto.color === colorID &&
-                  producto.talle === talleID)
+            productosEncarrito = productosEncarrito.filter(producto =>
+                !(producto?.producto_id === botonID &&
+                  producto?.color === colorID &&
+                  producto?.talle === talleID)
             );
-            localStorage.setItem("productos", JSON.stringify(productosEncarrito)); 
-            mostrarProductosCarrito()
-          
+
+            if (typeof localStorage !== 'undefined') {
+                try {
+                    localStorage.setItem("productos", JSON.stringify(productosEncarrito));
+                } catch (e) {
+                    console.error("Error al guardar en localStorage", e);
+                }
+            }
+
+            if (typeof mostrarProductosCarrito === 'function') mostrarProductosCarrito();
         }
 
-        iconoProductosSumados();
+        // Actualizar ícono del carrito
+        if (typeof iconoProductosSumados === 'function') iconoProductosSumados();
     }
-} 
+}
 
 
 
