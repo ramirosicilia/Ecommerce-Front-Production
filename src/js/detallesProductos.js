@@ -324,7 +324,7 @@ const coloresHTML = colores
   
   const obtenerUSer = usuarios.user?.find(user=>user.usuario===usuarioActual[usuarioActual.length-1].toString())
   
-    const { usuario, usuario_id } = obtenerUSer;
+  let { usuario, usuario_id } = obtenerUSer;
   
     let imagenSeleccionada;
   
