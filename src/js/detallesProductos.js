@@ -497,23 +497,7 @@ function validarCombinacion(talle, color) {
 
   
   btnOpciones.addEventListener("click", async () => {
-  const combinacionExiste = varianteSeleccionada.productos_variantes.some(variacion => {
-    const talle = variacion?.talles?.insertar_talle;
-    const color = variacion?.colores?.insertar_color;
-
-    if (!talle || !color) return false;
-
-    return (
-      talle.toString().trim().toLowerCase() === sizesTexto.toString().trim().toLowerCase() &&
-      color.toString().trim().toLowerCase() === colorTexto.toString().trim().toLowerCase()
-    );
-  });
-
- 
- if (!combinacionExiste) {
-    alert("Esta combinación de talle y color no está disponible.");
-    return; // ⚠️ Salida inmediata: no ejecuta NADA más
-  }
+  
   // Ahora buscamos el stock SÓLO SI la combinación es válida
   let stock = null;
   for (const element of varianteSeleccionada.productos_variantes) {
