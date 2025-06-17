@@ -21,8 +21,6 @@ async function recibirKey(){
 
 
 
-
-
  export async function enviarCompra(boton){ 
     let sumary=document.getElementById("summary")
 

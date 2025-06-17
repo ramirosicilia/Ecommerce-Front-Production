@@ -23,6 +23,7 @@ import "./js/validacionAdmin.js"
 import "./js/validacionUsuario.js"
 import "./js/validacionesLogin.js"
 import "./js/validationNewForm.js"
+import "./js/compraRealizada.js"
 
 
 
