@@ -40,14 +40,8 @@ async function recibirKey(){
         }))  
         
        console.log(carritoCompra)
-       console.log(carritoProductos) 
-       const user_id = carritoProductos.length > 0 ? carritoProductos[0].user_id : null;
+       console.log(carritoProductos)
 
-      const total = carritoProductos.reduce((acc, item) => acc + (item.precio_producto * item.cantidad), 0); 
-      const ecommerce = {
-              user_id:user_id,
-              total,
-            };
       
 
     try {  
@@ -57,7 +51,7 @@ async function recibirKey(){
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ mp:carritoCompra,ecommerce:ecommerce})
+            body: JSON.stringify({ mp:carritoCompra,ecommerce:carritoProductos })
         });
 
         const data = await response.json();
