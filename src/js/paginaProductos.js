@@ -492,6 +492,7 @@ async function selectorCategorys() {
 
     const varianteSeleccionada=filtradoCategoryYProduct?.find(variante=>variante.producto_id===producto_ID) 
 
+
      const stockStorage=JSON.parse(localStorage.getItem('stocks')) || [] 
 
 
@@ -702,8 +703,8 @@ async function selectorCategorys() {
         return
 
       }
-
-
+    const colorID=varianteSeleccionada.productos_variantes.find(variante=>variante.colores.insertar_color===colorTexto).color_id
+    const talleID=varianteSeleccionada.productos_variantes.find(variante=>variante.talles.insertar_talle===sizesTexto).talle_id
 
       let objectoStorage={
         
@@ -716,7 +717,9 @@ async function selectorCategorys() {
         detalles:detalles,
         imagen:imagenOpciones,
         color:colorTexto || "",
-        talle:sizesTexto || ""
+        talle:sizesTexto || "",
+        color_id:colorID,
+        talle_id:talleID
 
        } 
      

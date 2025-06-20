@@ -500,12 +500,16 @@ function validarCombinacion(talle, color) {
   
   // Ahora buscamos el stock SÓLO SI la combinación es válida
   let stock = null;
+  let color_id=null
+  let talle_id=null
   for (const element of varianteSeleccionada.productos_variantes) {
     if (
       element?.talles?.insertar_talle.toString().trim().toLowerCase() === sizesTexto.toString().trim().toLowerCase() &&
       element?.colores?.insertar_color.toString().trim().toLowerCase() === colorTexto.toString().trim().toLowerCase()
     ) {
       stock = element?.stock;
+      color_id=element?.colores.color_id 
+      talle_id=element?.talles.talle_id 
       break;
     }
   }
@@ -534,7 +538,10 @@ function validarCombinacion(talle, color) {
     detalles: detalles,
     imagen: imagenOpciones,
     color: colorTexto || "",
-    talle: sizesTexto || ""
+    talle: sizesTexto || "",
+    color_id:color_id,
+    talle_id:talle_id
+  
   };
 
   
@@ -903,7 +910,9 @@ function validarCombinacion(talle, color) {
             detalles:detalles,
             imagen:imagenOpciones,
             color:colorNombre || "",
-            talle:talleNombre || ""
+            talle:talleNombre || "",
+            color_id:colorID,
+            talle_id:talleID
           } 
 
           console.log(colorNombre)
