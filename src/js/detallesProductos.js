@@ -537,8 +537,6 @@ function validarCombinacion(talle, color) {
     cantidad: 1,
     detalles: detalles,
     imagen: imagenOpciones,
-    color: colorTexto || "",
-    talle: sizesTexto || "",
     color_id:color_id,
     talle_id:talle_id
   
@@ -909,8 +907,6 @@ function validarCombinacion(talle, color) {
             cantidad:1,
             detalles:detalles,
             imagen:imagenOpciones,
-            color:colorNombre || "",
-            talle:talleNombre || "",
             color_id:colorID,
             talle_id:talleID
           } 
