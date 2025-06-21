@@ -716,6 +716,8 @@ async function selectorCategorys() {
         cantidad:1,
         detalles:detalles,
         imagen:imagenOpciones,
+        color:colorTexto || "",
+        talle:sizesTexto || "",
         color_id:colorID,
         talle_id:talleID
 
