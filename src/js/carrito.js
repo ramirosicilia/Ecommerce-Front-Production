@@ -10,96 +10,111 @@ let summary=document.getElementById("summary")
 
 
     
-  function mostrarProductosCarrito() {  
-  let stockGuardados = JSON.parse(localStorage.getItem('stocks')) || [];
-  console.log(stockGuardados, "el stock");
+     function mostrarProductosCarrito() {  
 
-  let cantidad = 0;
-  let carritoItem = document?.getElementById("carrito-items");
+   // Obtener el último número para re-renderizar
+    let stockGuardados = JSON.parse(localStorage.getItem('stocks')) || [];
+    
+    console.log(stockGuardados,"el stock"); // Usar este para renderizar la tarjeta
+    
+    let cantidad=0
 
-  if (carritoItem) {
+
+    let carritoItem = document?.getElementById("carrito-items"); 
+
+  
+  
+  if(carritoItem) { 
+
     carritoItem.innerHTML = "";
-    summary.innerHTML = "";
+    summary.innerHTML="" 
 
-    if (productosEncarrito.length > 0) {
-      productosEncarrito.forEach(producto => {
-        const productoID = producto.producto_id?.toString().trim();
-        const color = producto.color?.toString().trim().toLowerCase();
-        const talle = producto.talle?.toString().trim().toLowerCase();
 
-        const stockVariante = stockGuardados.find(s =>
-          s?.producto_id?.toString().trim() === productoID &&
-          s?.color?.toString().trim().toLowerCase() === color &&
-          s?.talle?.toString().trim().toLowerCase() === talle
-        )?.stock ?? 0;
+    if (productosEncarrito.length > 0) { 
+      productosEncarrito.forEach((producto,index )=> {  
+        
 
-        carritoItem.innerHTML += ` 
-          <div class="item">
-            <img src="${producto.imagen}" alt="">
-            <div class="info">
-              <p class="name">${producto.nombre_producto}</p>
-              <div class="actions">
-                <span class="delete">Eliminar</span>
-                <span class="buy-now">Agregar</span>
-              </div>
-              <div class="quantity">
-                <button class="boton_eliminar" 
-                    data-id="${productoID}" 
-                    data-color="${color}" 
-                    data-talle="${talle}">-</button>
+      
+         carritoItem.innerHTML += ` 
+           <div class="item">
+               <img src="${producto.imagen}" alt="">
+               <div class="info">
+                   <p class="name">${producto.nombre_producto}</p>
+                   <div class="actions">
+                       <span class="delete">Eliminar</span>
+                       <span class="buy-now">Agregar</span>
+                   </div>
+                   <div class="quantity">
+                       <button class="boton_eliminar" 
+                           data-id="${producto.producto_id.trim()}" 
+                           data-color="${producto.color.trim()}" 
+                           data-talle="${producto.talle.trim()}">-</button>
+                       
+                       <span class="cantidad" 
+                           data-id="${producto.producto_id.trim()}" 
+                           data-color="${producto.color.trim()}" 
+                           data-talle="${producto.talle.trim()}">
+                           ${producto.cantidad}
+                       </span>
                 
-                <span class="cantidad" 
-                    data-id="${productoID}" 
-                    data-color="${color}" 
-                    data-talle="${talle}">
-                    ${producto.cantidad}
-                </span>
+                       <button class="boton_agregar" 
+                           data-id="${producto.producto_id.trim()}" 
+                           data-color="${producto.color.trim()}" 
+                           data-talle="${producto.talle.trim()}" 
+                           data-stock="${stockGuardados[index]}">+</button>
+                   </div>
+                   <div class="detalles">
+                       <p class="talle">Talle: ${producto.talle}</p>
+                       <p class="color">Color: ${producto.color}</p>
+                       <p class="stock cantidad-texto" 
+                          data-id="${producto.producto_id.trim()}" 
+                          data-color="${producto.color.trim()}" 
+                          data-talle="${producto.talle.trim()}">
+                          Cantidad: ${producto.cantidad}
+                       </p>
+                   </div>
+                   <span class="stock">máximo permitido: ${stockGuardados[index] ?? 0} unidades</span>
+                   <span class="price">Precio: $${(producto.precio_producto ?? 0).toFixed(2)}</span>
+               </div>
+           </div>`;
 
-                <button class="boton_agregar" 
-                    data-id="${productoID}" 
-                    data-color="${color}" 
-                    data-talle="${talle}" 
-                    data-stock="${stockVariante}">+</button>
-              </div>
-              <div class="detalles">
-                <p class="talle">Talle: ${producto.talle}</p>
-                <p class="color">Color: ${producto.color}</p>
-                <p class="stock cantidad-texto" 
-                    data-id="${productoID}" 
-                    data-color="${color}" 
-                    data-talle="${talle}">
-                    Cantidad: ${producto.cantidad}
-                </p>
-              </div>
-              <span class="stock">máximo permitido: ${stockVariante} unidades</span>
-              <span class="price">Precio: $${(producto.precio_producto ?? 0).toFixed(2)}</span>
-            </div>
-          </div>`; 
-      });
+              checkout() 
+              
+      }); 
 
-      checkout();
-
+      
       let botonesAgregar = [...document.querySelectorAll(".boton_agregar")]; 
       let botonesEliminar = [...document.querySelectorAll(".boton_eliminar")];
-
+      
       console.log(botonesAgregar, botonesEliminar); 
 
       activarBotonAgregar(botonesAgregar);
-      activarBotonEliminar(botonesEliminar);   
-    } else {
-      summary.innerHTML = ` 
-        <h3>Resumen de compra</h3>
-        <p>Productos (${cantidad})<span>$${cantidad}</span></p>
-        <p class="shipping">Calcular costo de envío</p>
-        <hr>
-        <p>Total <span class="total-price"></span></p>
-        <button class="checkout" id="comprar">Continuar compra</button>
-        <p class="shipping-info">El envío gratis está sujeto al peso, precio y distancia.</p>
-        <button type="button" class="boton_vaciar btn" id="boton-vaciado">Vaciar Carrito</button>`;
-    }
-  }
-}
 
+
+      activarBotonEliminar(botonesEliminar)   
+  } 
+
+  else{ 
+
+    summary.innerHTML=` 
+    <h3>Resumen de compra</h3>
+           <p>Productos (${cantidad})<span>$${cantidad}</span></p>
+           <p class="shipping">Calcular costo de envío</p>
+           <hr>
+           <p>Total <span class="total-price"></span></p>
+           <button class="checkout" id="comprar">Continuar compra</button>
+           <p class="shipping-info">El envío gratis está sujeto al peso, precio y distancia.</p>
+          <button type="button" class="boton_vaciar btn" id="boton-vaciado">Vaciar Carrito</button> 
+
+              
+    `
+
+  }
+
+  }
+
+   
+} 
 
 (async()=>{ 
      await mostrarProductosCarrito();
