@@ -309,28 +309,42 @@ function agregarProductoAlCarrito(e) {
         console.log(primerProducto);
 
         // Si ya no hay stock, eliminar del array
-        if (primerProducto.cantidad === 0) {
-            productosEncarrito = productosEncarrito.filter(producto =>
-                !(producto?.producto_id === botonID &&
-                  producto?.color === colorID &&
-                  producto?.talle === talleID)
-            );
+       if (primerProducto.cantidad === 0) {
+  productosEncarrito = productosEncarrito.filter(producto =>
+    !(producto?.producto_id === botonID &&
+      producto?.color === colorID &&
+      producto?.talle === talleID)
+  );
 
-            if (typeof localStorage !== 'undefined') {
-                try {
-                    localStorage.setItem("productos", JSON.stringify(productosEncarrito));
-                } catch (e) {
-                    console.error("Error al guardar en localStorage", e);
-                }
-            }
-
-            if (typeof mostrarProductosCarrito === 'function') mostrarProductosCarrito();
+  // Verificamos si esa variante (color + talle) está agotada
+      const productoSeleccionado = productos.find(p => p.producto_id === botonID);
+    
+      const varianteAgotada = productoSeleccionado?.productos_variantes?.find(v =>
+        v?.colores?.color_id === colorID &&
+        v?.talles?.talle_id === talleID
+      );
+    
+      if (varianteAgotada?.stock === 0) {
+        alert("Este talle con este color está agotado y se eliminó del carrito.");
+      }
+    
+      // Guardar en localStorage
+      if (typeof localStorage !== 'undefined') {
+        try {
+          localStorage.setItem("productos", JSON.stringify(productosEncarrito));
+        } catch (e) {
+          console.error("Error al guardar en localStorage", e);
         }
-
-        // Actualizar ícono del carrito
-        if (typeof iconoProductosSumados === 'function') iconoProductosSumados();
+      }
+    
+      // Refrescar el carrito en pantalla
+      if (typeof mostrarProductosCarrito === 'function') mostrarProductosCarrito();
     }
-}
+    
+            // Actualizar ícono del carrito
+            if (typeof iconoProductosSumados === 'function') iconoProductosSumados();
+        }
+    }
 
 
 
