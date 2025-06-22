@@ -8,8 +8,7 @@ let summary=document.getElementById("summary")
 
    
 
-
-  function mostrarProductosCarrito() {  
+function mostrarProductosCarrito() {  
   let stockGuardados = JSON.parse(localStorage.getItem('stocks')) || [];
   console.log("Stocks guardados:", stockGuardados);
 
@@ -22,24 +21,21 @@ let summary=document.getElementById("summary")
 
     if (productosEncarrito.length > 0) {
       productosEncarrito.forEach(producto => {
-        // Normalizamos los datos clave para evitar problemas
         const productoID = producto.producto_id?.toString().trim();
         const color = producto.color?.toString().trim().toLowerCase();
         const talle = producto.talle?.toString().trim().toLowerCase();
 
         if (!productoID || !color || !talle) {
           console.warn("Datos incompletos para producto:", producto);
-          return; // saltear este producto si faltan datos
+          return; // Saltear producto con datos incompletos
         }
 
-        // Buscar stock guardado normalizando igual
         const stockVariante = stockGuardados.find(s =>
           s.producto_id?.toString().trim() === productoID &&
           s.color?.toString().trim().toLowerCase() === color &&
           s.talle?.toString().trim().toLowerCase() === talle
         )?.stock ?? 0;
 
-        // Debug para ver si encuentra stock correctamente
         console.log(`Producto ${productoID} color:${color} talle:${talle} stock encontrado:`, stockVariante);
 
         carritoItem.innerHTML += ` 
@@ -106,7 +102,6 @@ let summary=document.getElementById("summary")
     }
   }
 }
-
 
 
 
@@ -288,63 +283,19 @@ function agregarProductoAlCarrito(e) {
   } 
 
   function eliminarDelCarrito(botonID, colorID, talleID) {
-    // Buscar el producto
-    let primerProducto = productosEncarrito.find(producto =>
-        producto?.producto_id === botonID &&
-        producto?.color === colorID &&
-        producto?.talle === talleID
-    );
-
-    // Verifica que el producto y su cantidad existan y sean válidos
-    if (primerProducto && typeof primerProducto.cantidad === 'number' && primerProducto.cantidad > 0) {
-        primerProducto.cantidad--;
-
-        // Solo llamamos a funciones si existen
-        if (typeof checkout === 'function') checkout();
-
-        // Guardar en localStorage si está disponible
-        if (typeof localStorage !== 'undefined') {
-            try {
-                localStorage.setItem("productos", JSON.stringify(productosEncarrito));
-            } catch (e) {
-                console.error("Error al guardar en localStorage", e);
-            }
-        }
-
-        // Actualizar el DOM si los elementos existen
-        let cantidadActualizada = document.querySelector(
-            `.cantidad[data-id="${botonID}"][data-color="${colorID}"][data-talle="${talleID}"]`
-        );
-        let cantidadTextoActualizada = document.querySelector(
-            `.cantidad-texto[data-id="${botonID}"][data-color="${colorID}"][data-talle="${talleID}"]`
-        );
-
-        if (cantidadActualizada) cantidadActualizada.innerHTML = primerProducto.cantidad;
-        if (cantidadTextoActualizada) cantidadTextoActualizada.innerHTML = `Cantidad: ${primerProducto.cantidad}`;
-
-        console.log(primerProducto);
-
-        // Si ya no hay stock, eliminar del array
-       if (primerProducto.cantidad === 0) {
-  productosEncarrito = productosEncarrito.filter(producto =>
-    !(producto?.producto_id === botonID &&
-      producto?.color === colorID &&
-      producto?.talle === talleID)
+  // Buscar el producto en el carrito
+  let primerProducto = productosEncarrito.find(producto =>
+    producto?.producto_id === botonID &&
+    producto?.color === colorID &&
+    producto?.talle === talleID
   );
 
-  // Verificamos si esa variante (color + talle) está agotada
-    const productoSeleccionado = productos.find(p => p.producto_id === botonID);
-  
-    const varianteAgotada = productoSeleccionado?.productos_variantes?.find(v =>
-      v?.colores?.color_id === colorID &&
-      v?.talles?.talle_id === talleID
-    );
-  
-    if (varianteAgotada?.stock === 0) {
-      alert("Este talle con este color está agotado y se eliminó del carrito.");
-    }
-  
-    // Guardar en localStorage
+  if (primerProducto && typeof primerProducto.cantidad === 'number' && primerProducto.cantidad > 0) {
+    primerProducto.cantidad--;
+
+    if (typeof checkout === 'function') checkout();
+
+    // Guardar carrito actualizado
     if (typeof localStorage !== 'undefined') {
       try {
         localStorage.setItem("productos", JSON.stringify(productosEncarrito));
@@ -352,15 +303,53 @@ function agregarProductoAlCarrito(e) {
         console.error("Error al guardar en localStorage", e);
       }
     }
-  
-    // Refrescar el carrito en pantalla
-    if (typeof mostrarProductosCarrito === 'function') mostrarProductosCarrito();
-  }
-  
-          // Actualizar ícono del carrito
-          if (typeof iconoProductosSumados === 'function') iconoProductosSumados();
+
+    // Actualizar cantidad en DOM
+    const cantidadActualizada = document.querySelector(`.cantidad[data-id="${botonID}"][data-color="${colorID}"][data-talle="${talleID}"]`);
+    const cantidadTextoActualizada = document.querySelector(`.cantidad-texto[data-id="${botonID}"][data-color="${colorID}"][data-talle="${talleID}"]`);
+
+    if (cantidadActualizada) cantidadActualizada.innerHTML = primerProducto.cantidad;
+    if (cantidadTextoActualizada) cantidadTextoActualizada.innerHTML = `Cantidad: ${primerProducto.cantidad}`;
+
+    console.log(primerProducto);
+
+    // Si la cantidad es 0, eliminar el producto del carrito
+    if (primerProducto.cantidad === 0) {
+      productosEncarrito = productosEncarrito.filter(producto =>
+        !(producto?.producto_id === botonID &&
+          producto?.color === colorID &&
+          producto?.talle === talleID)
+      );
+
+      // Buscar variante en productos para stock y alerta
+      const productoSeleccionado = productos.find(p => p.producto_id === botonID);
+      const varianteAgotada = productoSeleccionado?.productos_variantes?.find(v =>
+        v?.colores?.color_id === colorID &&
+        v?.talles?.talle_id === talleID
+      );
+
+      if (varianteAgotada?.stock === 0) {
+        alert("Este talle con este color está agotado y se eliminó del carrito.");
       }
+
+      // Guardar carrito actualizado después de eliminar producto
+      if (typeof localStorage !== 'undefined') {
+        try {
+          localStorage.setItem("productos", JSON.stringify(productosEncarrito));
+        } catch (e) {
+          console.error("Error al guardar en localStorage", e);
+        }
+      }
+
+      // Actualizar carrito en pantalla
+      if (typeof mostrarProductosCarrito === 'function') mostrarProductosCarrito();
+    }
+
+    // Actualizar icono del carrito si existe función
+    if (typeof iconoProductosSumados === 'function') iconoProductosSumados();
   }
+}
+
 
 
 
