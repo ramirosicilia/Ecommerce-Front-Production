@@ -508,8 +508,6 @@ function validarCombinacion(talle, color) {
       element?.colores?.insertar_color.toString().trim().toLowerCase() === colorTexto.toString().trim().toLowerCase()
     ) {
       stock = element?.stock;
-      color_id=element?.colores.color_id 
-      talle_id=element?.talles.talle_id 
       break;
     }
   }
@@ -539,9 +537,7 @@ function validarCombinacion(talle, color) {
     imagen: imagenOpciones,
     color: colorTexto || "",
     talle: sizesTexto || "",
-    color_id:color_id,
-    talle_id:talle_id
-  
+    
   };
 
   
@@ -823,8 +819,7 @@ function validarCombinacion(talle, color) {
      
        
 
-         let talleID=null
-         let colorID=null
+        
          let stock=null 
          let colorNombre=null
          let talleNombre=null
@@ -888,8 +883,7 @@ function validarCombinacion(talle, color) {
             console.log(sizes);
             console.log(color);
         
-            talleID = element?.talles?.talle_id ?? null;
-            colorID = element?.colores?.color_id ?? null;
+          
             colorNombre=element?.colores?.insertar_color ?? null;
             talleNombre=element?.talles?.insertar_talle ?? null;
             stock = element?.stock;
@@ -911,8 +905,7 @@ function validarCombinacion(talle, color) {
             imagen:imagenOpciones,
             color:colorNombre || "",
             talle:talleNombre || "",
-            color_id:colorID,
-            talle_id:talleID
+            
           } 
 
           console.log(colorNombre)

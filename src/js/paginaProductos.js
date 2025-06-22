@@ -703,9 +703,7 @@ async function selectorCategorys() {
         return
 
       }
-    const colorID=varianteSeleccionada.productos_variantes.find(variante=>variante.colores.insertar_color.toString().trim()===colorTexto.toString().trim()).color_id
-    const talleID=varianteSeleccionada.productos_variantes.find(variante=>variante.talles.insertar_talle.toString().trim()===sizesTexto.toString().trim()).talle_id
-
+   
       let objectoStorage={
         
         user:obtenerUSer.usuario,
@@ -718,8 +716,6 @@ async function selectorCategorys() {
         imagen:imagenOpciones,
         color:colorTexto || "",
         talle:sizesTexto || "",
-        color_id:colorID,
-        talle_id:talleID
 
        } 
      

@@ -34,8 +34,8 @@ async function recibirKey(){
         quantity: item.cantidad,             // requerido por MercadoPago
         unit_price: item.precio_producto,    // requerido por MercadoPago
         producto_id: item.producto_id,       // para tu backend
-        color_id: item.color_id,             // para tu backend
-        talle_id: item.talle_id,              // para tu backend
+        color_nombre: item.color,             // para tu backend
+        talle_nombre: item.talle,              // para tu backend
         user_id: item.user_id  // aquí asignás el user_id que ya está en carritoProductos
     }));
 
