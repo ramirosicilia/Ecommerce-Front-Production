@@ -8,9 +8,10 @@ let summary=document.getElementById("summary")
 
    
 
-function mostrarProductosCarrito() {  
+
+    function mostrarProductosCarrito() {  
   let stockGuardados = JSON.parse(localStorage.getItem('stocks')) || [];
-  console.log("Stocks guardados:", stockGuardados);
+  console.log(stockGuardados, "el stock");
 
   let cantidad = 0;
   let carritoItem = document?.getElementById("carrito-items");
@@ -25,18 +26,11 @@ function mostrarProductosCarrito() {
         const color = producto.color?.toString().trim().toLowerCase();
         const talle = producto.talle?.toString().trim().toLowerCase();
 
-        if (!productoID || !color || !talle) {
-          console.warn("Datos incompletos para producto:", producto);
-          return; // Saltear producto con datos incompletos
-        }
-
         const stockVariante = stockGuardados.find(s =>
-          s.producto_id?.toString().trim() === productoID &&
-          s.color?.toString().trim().toLowerCase() === color &&
-          s.talle?.toString().trim().toLowerCase() === talle
+          s?.producto_id?.toString().trim() === productoID &&
+          s?.color?.toString().trim().toLowerCase() === color &&
+          s?.talle?.toString().trim().toLowerCase() === talle
         )?.stock ?? 0;
-
-        console.log(`Producto ${productoID} color:${color} talle:${talle} stock encontrado:`, stockVariante);
 
         carritoItem.innerHTML += ` 
           <div class="item">
@@ -86,6 +80,8 @@ function mostrarProductosCarrito() {
 
       let botonesAgregar = [...document.querySelectorAll(".boton_agregar")]; 
       let botonesEliminar = [...document.querySelectorAll(".boton_eliminar")];
+
+      console.log(botonesAgregar, botonesEliminar); 
 
       activarBotonAgregar(botonesAgregar);
       activarBotonEliminar(botonesEliminar);   
@@ -282,7 +278,7 @@ function agregarProductoAlCarrito(e) {
 
   } 
 
-  function eliminarDelCarrito(botonID, colorID, talleID) {
+ function eliminarDelCarrito(botonID, colorID, talleID) {
   // Buscar el producto en el carrito
   let primerProducto = productosEncarrito.find(producto =>
     producto?.producto_id === botonID &&
@@ -349,9 +345,6 @@ function agregarProductoAlCarrito(e) {
     if (typeof iconoProductosSumados === 'function') iconoProductosSumados();
   }
 }
-
-
-
 
 
  const botonComprar=document.getElementById("comprar") 
