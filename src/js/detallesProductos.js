@@ -948,31 +948,9 @@ function validarCombinacion(talle, color) {
           console.log(talleNombre)
   
        
-          if(talleID===null || colorID===null){ 
-           Swal.fire({
-             title: `No hay ese talle con ese color ingrese el talle con el color de abajo, unica opcion disponible en stock`,
-             showClass: {
-               popup: `
-                 animate__animated
-                 animate__fadeInUp
-                 animate__faster
-               `
-             },
-             hideClass: {
-               popup: `
-                 animate__animated
-                 animate__fadeOutDown
-                 animate__faster
-               `
-             }
-           }); 
-     
-           return
-          }
-          
-     
+         
   
-        
+
            
             console.log(carritoCompras)
       
@@ -1004,26 +982,26 @@ function validarCombinacion(talle, color) {
 
   
        let stockStorage = JSON.parse(localStorage.getItem('stocks')) || [];
-                          
+
         const stockItem = {
           producto_id: productoID.toString().trim(),
           talle: sizes.toString().trim(),
           color: color.toString().trim(),
           stock: stock ?? 0
         };
-        
+
         const indexExistente = stockStorage.findIndex(s =>
           s.producto_id === stockItem.producto_id &&
           s.talle.toLowerCase() === stockItem.talle.toLowerCase() &&
           s.color.toLowerCase() === stockItem.color.toLowerCase()
         );
-        
+
         if (indexExistente !== -1) {
           stockStorage[indexExistente] = stockItem;
         } else {
           stockStorage.push(stockItem);
         }
-        
+
         localStorage.setItem('stocks', JSON.stringify(stockStorage));
 
          localStorage.setItem('productos', JSON.stringify(carritoCompras));
