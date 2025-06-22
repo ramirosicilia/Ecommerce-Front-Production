@@ -689,130 +689,140 @@ async function selectorCategorys() {
 
 
 
-    btnOpciones.addEventListener("click",async()=>{   
+   btnOpciones.addEventListener("click", async () => {
 
-
-      if(!sizes.length || !colors.length){
-        return
-
-      }
-   
-      let objectoStorage={
-        
-        user:obtenerUSer.usuario,
-        user_id:obtenerUSer.usuario_id,
-        producto_id:producto_ID,
-        nombre_producto:nombre,
-        precio_producto:precio,
-        cantidad:1,
-        detalles:detalles,
-        imagen:imagenOpciones,
-        color:colorTexto || "",
-        talle:sizesTexto || "",
-
-       } 
-     
-
-       console.log(objectoStorage) 
-       console.log(varianteSeleccionada,"la varianteeeee")
-
-      /* BUSCAMOS QUE LAS VARIANTES COINCIDAN CON LOS TALLES Y COLORES SELECCIONADOS GRACIAS A LAS VARIANTES */
-
-        const combinacionExiste = varianteSeleccionada.productos_variantes.some(variacion => {
-        const talle = variacion?.talles?.insertar_talle;
-        const color = variacion?.colores?.insertar_color;
-
-        // Validamos que ambos existan antes de comparar
-        if (!talle || !color) return false;
-
-        const resultadoComparacion = 
-          talle.toString().trim().toLowerCase() === sizesTexto.toString().trim().toLowerCase() &&
-          color.toString().trim().toLowerCase() === colorTexto.toString().trim().toLowerCase();
-
-        console.log('Comparando normalizados:');
-        console.log('Talle:', talle, 'vs', sizesTexto);
-        console.log('Color:', color, 'vs', colorTexto);
-        console.log('¿Coincide esta variante?', resultadoComparacion);
-        console.log('------------------------------');
-
-        return resultadoComparacion;
-      });
-
-      
-      console.log('¿Existe la combinación talle+color?', combinacionExiste);
-      
-    
-      if (!combinacionExiste) { 
-        
-        alert("Esta combinación de talle y color no está disponible, combinaciones unicas de talle abajo el color.");
-        return; // No continúa
-      }
-
-
-       let primerProductoCarrito =carritoCompras.find(producto =>
-        producto.producto_id === producto_ID && 
-        (producto.color || "").trim().toLowerCase() === colorTexto &&
-        (producto.talle || "").trim().toLowerCase() === sizesTexto 
-      
-      );
-
-      let stock=null
-   
-     console.log(productos)
-
-    const productoSeleccionado=productos.find(producto=>producto.producto_id===producto_ID) 
-          if (!productoSeleccionado) {
-             alert("Producto no encontrado.");
-             return;
-               }
-
-       
-     for (const element of productoSeleccionado?.productos_variantes) {
-        const talle = element?.talles?.insertar_talle;
-        const color = element?.colores?.insertar_color;
-        const stockDisponible = element?.stock;
-
-  // Aseguramos que talle, color y stock no sean nulos
-  if (
-    talle && color && stockDisponible !== null &&
-    talle.toString().trim().toLowerCase() === sizesTexto.toString().trim().toLowerCase() &&
-    color.toString().trim().toLowerCase() === colorTexto.toString().trim().toLowerCase()
-  ) {
-    stock = stockDisponible;
-    console.log(stock,'STOCKER')
-    break;
+  if (!sizes.length || !colors.length) {
+    return;
   }
-}
 
-        
-      if (stock === null) {
-        alert("No se pudo determinar el stock.");
-        return;
-      } 
+  let objectoStorage = {
+    user: obtenerUSer.usuario,
+    user_id: obtenerUSer.usuario_id,
+    producto_id: producto_ID,
+    nombre_producto: nombre,
+    precio_producto: precio,
+    cantidad: 1,
+    detalles: detalles,
+    imagen: imagenOpciones,
+    color: colorTexto || "",
+    talle: sizesTexto || "",
+  };
 
-       if (stock === 0) {
-        alert("Este talle con este color está agotado.");
-        return;
-      }
-      
-      if (!primerProductoCarrito) {
-        carritoCompras.push({ ...objectoStorage });
-      } else {
-        if (primerProductoCarrito.cantidad < stock) {
-          primerProductoCarrito.cantidad += 1;
-        } else {
-          alert("Ya has agregado el máximo disponible de este producto.");
-        }
-      }
-      
-       localStorage.setItem("productos",JSON.stringify(carritoCompras))  
+  console.log(objectoStorage);
+  console.log(varianteSeleccionada, "la varianteeeee");
 
-       
-        manejarCantidades(producto_ID,sizesTexto,colorTexto)
-        actualizarCarrito()
-      
+  /* BUSCAMOS QUE LAS VARIANTES COINCIDAN CON LOS TALLES Y COLORES SELECCIONADOS GRACIAS A LAS VARIANTES */
+  const combinacionExiste = varianteSeleccionada.productos_variantes.some(variacion => {
+    const talle = variacion?.talles?.insertar_talle;
+    const color = variacion?.colores?.insertar_color;
 
-    })
+    // Validamos que ambos existan antes de comparar
+    if (!talle || !color) return false;
+
+    const resultadoComparacion =
+      talle.toString().trim().toLowerCase() === sizesTexto.toString().trim().toLowerCase() &&
+      color.toString().trim().toLowerCase() === colorTexto.toString().trim().toLowerCase();
+
+    console.log('Comparando normalizados:');
+    console.log('Talle:', talle, 'vs', sizesTexto);
+    console.log('Color:', color, 'vs', colorTexto);
+    console.log('¿Coincide esta variante?', resultadoComparacion);
+    console.log('------------------------------');
+
+    return resultadoComparacion;
+  });
+
+  console.log('¿Existe la combinación talle+color?', combinacionExiste);
+
+  if (!combinacionExiste) {
+    alert("Esta combinación de talle y color no está disponible, combinaciones unicas de talle abajo el color.");
+    return; // No continúa
+  }
+
+  let primerProductoCarrito = carritoCompras.find(producto =>
+    producto.producto_id === producto_ID &&
+    (producto.color || "").trim().toLowerCase() === colorTexto.toLowerCase() &&
+    (producto.talle || "").trim().toLowerCase() === sizesTexto.toLowerCase()
+  );
+
+  // --- PRIMERO calculamos el stock real ---
+  let stock = null;
+
+  const productoSeleccionado = productos.find(producto => producto.producto_id === producto_ID);
+  if (!productoSeleccionado) {
+    alert("Producto no encontrado.");
+    return;
+  }
+
+  for (const element of productoSeleccionado?.productos_variantes) {
+    const talle = element?.talles?.insertar_talle;
+    const color = element?.colores?.insertar_color;
+    const stockDisponible = element?.stock;
+
+    // Aseguramos que talle, color y stock no sean nulos
+    if (
+      talle && color && stockDisponible !== null &&
+      talle.toString().trim().toLowerCase() === sizesTexto.toString().trim().toLowerCase() &&
+      color.toString().trim().toLowerCase() === colorTexto.toString().trim().toLowerCase()
+    ) {
+      stock = stockDisponible;
+      console.log(stock, 'STOCKER');
+      break;
+    }
+  }
+
+  if (stock === null) {
+    alert("No se pudo determinar el stock.");
+    return;
+  }
+
+  if (stock === 0) {
+    alert("Este talle con este color está agotado.");
+    return;
+  }
+
+  // --- DESPUÉS guardamos el stock en localStorage ---
+  let stockStorage = JSON.parse(localStorage.getItem('stocks')) || [];
+
+  const stockItem = {
+    producto_id: producto_ID.toString().trim(),
+    talle: sizesTexto.toString().trim().toLowerCase(),
+    color: colorTexto.toString().trim().toLowerCase(),
+    stock: stock
+  };
+
+  const indexExistente = stockStorage.findIndex(s =>
+    s.producto_id === stockItem.producto_id &&
+    s.talle === stockItem.talle &&
+    s.color === stockItem.color
+  );
+
+  if (indexExistente !== -1) {
+    stockStorage[indexExistente] = stockItem;
+  } else {
+    stockStorage.push(stockItem);
+  }
+
+  localStorage.setItem('stocks', JSON.stringify(stockStorage));
+
+  // --- Finalmente agregamos o actualizamos el carrito ---
+  if (!primerProductoCarrito) {
+    carritoCompras.push({ ...objectoStorage });
+  } else {
+    if (primerProductoCarrito.cantidad < stock) {
+      primerProductoCarrito.cantidad += 1;
+    } else {
+      alert("Ya has agregado el máximo disponible de este producto.");
+    }
+  }
+
+  localStorage.setItem("productos", JSON.stringify(carritoCompras));
+
+  manejarCantidades(producto_ID, sizesTexto, colorTexto);
+  actualizarCarrito();
+
+});
+
 
   } 
  
@@ -968,7 +978,7 @@ const stockItem = {
       s.talle.toLowerCase() === stockItem.talle.toLowerCase() &&
       s.color.toLowerCase() === stockItem.color.toLowerCase()
     );
-    
+
     if (indexExistente !== -1) {
       // Lo reemplazamos
       stockStorage[indexExistente] = stockItem;
@@ -976,7 +986,7 @@ const stockItem = {
       // Lo agregamos
       stockStorage.push(stockItem);
     }
-    
+
     localStorage.setItem('stocks', JSON.stringify(stockStorage));
 
 
