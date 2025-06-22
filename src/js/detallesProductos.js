@@ -723,10 +723,30 @@ function validarCombinacion(talle, color) {
                  </div>
                </div>
              `;
-             
-             let stockStorage = JSON.parse(localStorage.getItem('stocks')) || [];
-             stockStorage.push(stock);
-             localStorage.setItem('stocks', JSON.stringify(stockStorage));
+
+          let stockStorage = JSON.parse(localStorage.getItem('stocks')) || [];
+
+        const stockItem = {
+          producto_id: productoID.toString().trim(),
+          talle: sizes.toString().trim(),
+          color: color.toString().trim(),
+          stock: stock ?? 0
+        };
+
+        const indexExistente = stockStorage.findIndex(s =>
+          s.producto_id === stockItem.producto_id &&
+          s.talle.toLowerCase() === stockItem.talle.toLowerCase() &&
+          s.color.toLowerCase() === stockItem.color.toLowerCase()
+        );
+
+        if (indexExistente !== -1) {
+          stockStorage[indexExistente] = stockItem;
+        } else {
+          stockStorage.push(stockItem);
+        }
+
+        localStorage.setItem('stocks', JSON.stringify(stockStorage));
+
 
                  if (!container.classList.contains(div)) {
               container.append(div);
@@ -983,9 +1003,29 @@ function validarCombinacion(talle, color) {
                      actualizarCarrito()
 
   
-         let stockStorage = JSON.parse(localStorage.getItem('stocks')) || [];
-         stockStorage.push(stock);
-         localStorage.setItem('stocks', JSON.stringify(stockStorage)); 
+       let stockStorage = JSON.parse(localStorage.getItem('stocks')) || [];
+                          
+        const stockItem = {
+          producto_id: productoID.toString().trim(),
+          talle: sizes.toString().trim(),
+          color: color.toString().trim(),
+          stock: stock ?? 0
+        };
+        
+        const indexExistente = stockStorage.findIndex(s =>
+          s.producto_id === stockItem.producto_id &&
+          s.talle.toLowerCase() === stockItem.talle.toLowerCase() &&
+          s.color.toLowerCase() === stockItem.color.toLowerCase()
+        );
+        
+        if (indexExistente !== -1) {
+          stockStorage[indexExistente] = stockItem;
+        } else {
+          stockStorage.push(stockItem);
+        }
+        
+        localStorage.setItem('stocks', JSON.stringify(stockStorage));
+
          localStorage.setItem('productos', JSON.stringify(carritoCompras));
       
      
@@ -1022,7 +1062,9 @@ function validarCombinacion(talle, color) {
              <a id="carrito" href="./carrito.html" style="background: #3a3f4c; text-decoration:none; color: white; padding: 8px 24px; border: none; border-radius: 20px; font-size: 16px; cursor: pointer;" class="btn-carro">Ir al Carro</a>
            </div>
          </div>
-       `;
+       `; 
+
+       
        
        if (!container.classList.contains(section)) {
          container.append(section);
