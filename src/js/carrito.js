@@ -233,9 +233,9 @@ function agregarProductoAlCarrito(e) {
      const stock= Number(e.target.dataset.stock); 
     console.log(idBoton)
       let primerProducto = productosEncarrito.find(producto =>
-          producto.producto_id === idBoton &&
-          producto.color === color &&
-          producto.talle === talle
+          producto.producto_id.toString().trim() === idBoton.toString().trim() &&
+          producto.color.toString().trim() === color.toString().trim() &&
+          producto.talle.toString().trim() === talle.toString().trim()
       );
      console.log(primerProducto,"agregar")
       
@@ -281,9 +281,9 @@ function agregarProductoAlCarrito(e) {
  function eliminarDelCarrito(botonID, colorID, talleID) {
   // Buscar el producto en el carrito
   let primerProducto = productosEncarrito.find(producto =>
-    producto?.producto_id === botonID &&
-    producto?.color === colorID &&
-    producto?.talle === talleID
+    producto?.producto_id.toString().trim() === botonID.toString().trim() &&
+    producto?.color.toString().trim() === colorID.toString().trim() &&
+    producto?.talle.toString().trim() === talleID.toString().trim()
   );
 
   if (primerProducto && typeof primerProducto.cantidad === 'number' && primerProducto.cantidad > 0) {
