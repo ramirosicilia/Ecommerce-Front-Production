@@ -312,9 +312,9 @@ function agregarProductoAlCarrito(e) {
     // Si la cantidad es 0, eliminar el producto del carrito
     if (primerProducto.cantidad === 0) {
       productosEncarrito = productosEncarrito.filter(producto =>
-        !(producto?.producto_id === botonID &&
-          producto?.color === colorID &&
-          producto?.talle === talleID)
+        !(producto?.producto_id.toString().trim() === botonID.toString().trim() &&
+          producto?.color.toString().trim() === colorID.toString().trim() &&
+          producto?.talle.toString().trim() === talleID.toString().trim())
       );
 
       // Buscar variante en productos para stock y alerta 
