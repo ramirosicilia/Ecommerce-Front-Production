@@ -9,10 +9,9 @@ let summary=document.getElementById("summary")
    
 
 
-    
-    function mostrarProductosCarrito() {  
+  function mostrarProductosCarrito() {  
   let stockGuardados = JSON.parse(localStorage.getItem('stocks')) || [];
-  console.log(stockGuardados, "el stock");
+  console.log("Stocks guardados:", stockGuardados);
 
   let cantidad = 0;
   let carritoItem = document?.getElementById("carrito-items");
@@ -23,15 +22,25 @@ let summary=document.getElementById("summary")
 
     if (productosEncarrito.length > 0) {
       productosEncarrito.forEach(producto => {
+        // Normalizamos los datos clave para evitar problemas
         const productoID = producto.producto_id?.toString().trim();
         const color = producto.color?.toString().trim().toLowerCase();
         const talle = producto.talle?.toString().trim().toLowerCase();
 
+        if (!productoID || !color || !talle) {
+          console.warn("Datos incompletos para producto:", producto);
+          return; // saltear este producto si faltan datos
+        }
+
+        // Buscar stock guardado normalizando igual
         const stockVariante = stockGuardados.find(s =>
-          s?.producto_id?.toString().trim() === productoID &&
-          s?.color?.toString().trim().toLowerCase() === color &&
-          s?.talle?.toString().trim().toLowerCase() === talle
+          s.producto_id?.toString().trim() === productoID &&
+          s.color?.toString().trim().toLowerCase() === color &&
+          s.talle?.toString().trim().toLowerCase() === talle
         )?.stock ?? 0;
+
+        // Debug para ver si encuentra stock correctamente
+        console.log(`Producto ${productoID} color:${color} talle:${talle} stock encontrado:`, stockVariante);
 
         carritoItem.innerHTML += ` 
           <div class="item">
@@ -82,8 +91,6 @@ let summary=document.getElementById("summary")
       let botonesAgregar = [...document.querySelectorAll(".boton_agregar")]; 
       let botonesEliminar = [...document.querySelectorAll(".boton_eliminar")];
 
-      console.log(botonesAgregar, botonesEliminar); 
-
       activarBotonAgregar(botonesAgregar);
       activarBotonEliminar(botonesEliminar);   
     } else {
@@ -99,6 +106,11 @@ let summary=document.getElementById("summary")
     }
   }
 }
+
+
+
+
+
 
 
 (async()=>{ 
