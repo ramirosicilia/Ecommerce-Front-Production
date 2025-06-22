@@ -485,10 +485,6 @@ async function selectorCategorys() {
 
     const varianteSeleccionada=filtradoCategoryYProduct?.find(variante=>variante.producto_id===producto_ID) 
 
-
-     const stockStorage=JSON.parse(localStorage.getItem('stocks')) || [] 
-
-
      const talles = Array.isArray(varianteSeleccionada?.productos_variantes)
     ? varianteSeleccionada.productos_variantes
         .filter(talleObj => talleObj?.talles?.insertar_talle) // filtro valores nulos o indefinidos
@@ -513,7 +509,33 @@ async function selectorCategorys() {
         .join("")
     : "";
         
-  console.log(colores);
+  console.log(colores); 
+
+   let stock=null 
+
+   // --- DESPUÉS guardamos el stock en localStorage ---
+  let stockStorage = JSON.parse(localStorage.getItem('stocks')) || [];
+
+  const stockItem = {
+    producto_id: producto_ID.toString().trim(),
+    talle: sizesTexto.toString().trim().toLowerCase(),
+    color: colorTexto.toString().trim().toLowerCase(),
+    stock: stock
+  };
+
+  const indexExistente = stockStorage.findIndex(s =>
+    s.producto_id === stockItem.producto_id &&
+    s.talle === stockItem.talle &&
+    s.color === stockItem.color
+  );
+
+  if (indexExistente !== -1) {
+    stockStorage[indexExistente] = stockItem;
+  } else {
+    stockStorage.push(stockItem);
+  }
+
+  localStorage.setItem('stocks', JSON.stringify(stockStorage));
         
         
    document.querySelector("#modal")?.remove()
@@ -781,29 +803,7 @@ async function selectorCategorys() {
     return;
   }
 
-  // --- DESPUÉS guardamos el stock en localStorage ---
-  let stockStorage = JSON.parse(localStorage.getItem('stocks')) || [];
-
-  const stockItem = {
-    producto_id: producto_ID.toString().trim(),
-    talle: sizesTexto.toString().trim().toLowerCase(),
-    color: colorTexto.toString().trim().toLowerCase(),
-    stock: stock
-  };
-
-  const indexExistente = stockStorage.findIndex(s =>
-    s.producto_id === stockItem.producto_id &&
-    s.talle === stockItem.talle &&
-    s.color === stockItem.color
-  );
-
-  if (indexExistente !== -1) {
-    stockStorage[indexExistente] = stockItem;
-  } else {
-    stockStorage.push(stockItem);
-  }
-
-  localStorage.setItem('stocks', JSON.stringify(stockStorage));
+  
 
   // --- Finalmente agregamos o actualizamos el carrito ---
   if (!primerProductoCarrito) {
@@ -831,8 +831,7 @@ async function selectorCategorys() {
 
   async function manejarCantidades(productoID, sizes, color) {
 
-  let talleID = null;
-  let colorID = null;
+  
   let stock = null;
 
   console.log(productos);
@@ -877,25 +876,13 @@ async function selectorCategorys() {
       element?.talles?.insertar_talle?.toString().trim() === sizes.toString().trim() &&
       element?.colores?.insertar_color?.toString().trim() === color.toString().trim()
     ) {
-      talleID = element?.talles?.talle_id ?? null;
-      colorID = element?.colores?.color_id ?? null;
+     
       stock = element?.stock ?? null;
       break;
     }
   }
 
-  if (talleID === null || colorID === null) {
-    await Swal.fire({
-      title: `No hay ese talle con ese color. Ingrese el talle con el color de abajo, única opción disponible en stock`,
-      showClass: {
-        popup: `animate__animated animate__fadeInUp animate__faster`
-      },
-      hideClass: {
-        popup: `animate__animated animate__fadeOutDown animate__faster`
-      }
-    });
-    return;
-  }
+ 
 
   // Quitar modal anterior si existe
   const modalPrevio = document.getElementById("modal");
@@ -924,7 +911,30 @@ async function selectorCategorys() {
     };
     carritoCompras.push(nuevoProducto);
     localStorage.setItem('productos', JSON.stringify(carritoCompras));
+  } 
+  // --- DESPUÉS guardamos el stock en localStorage ---
+  let stockStorage = JSON.parse(localStorage.getItem('stocks')) || [];
+
+  const stockItem = {
+    producto_id: productoID.toString().trim(),
+    talle: sizes.toString().trim().toLowerCase(),
+    color: color.toString().trim().toLowerCase(),
+    stock: stock
+  };
+
+  const indexExistente = stockStorage.findIndex(s =>
+    s.producto_id === stockItem.producto_id &&
+    s.talle === stockItem.talle &&
+    s.color === stockItem.color
+  );
+
+  if (indexExistente !== -1) {
+    stockStorage[indexExistente] = stockItem;
+  } else {
+    stockStorage.push(stockItem);
   }
+
+  localStorage.setItem('stocks', JSON.stringify(stockStorage));
 
   // Quitar modal-2 anterior si existe
   document.querySelector('.modal-2')?.remove();
@@ -961,34 +971,7 @@ async function selectorCategorys() {
     </div>
   </div>`;
 
-  // Guardar stock en localStorage de forma segura
- // Guardar stock por producto/talle/color en localStorage
-let stockStorage = JSON.parse(localStorage.getItem('stocks')) || [];
-
-const stockItem = {
-  producto_id: productoID.toString().trim(),
-  talle: sizes.toString().trim(),
-  color: color.toString().trim(),
-  stock: stock ?? 0
-};
-
-// Buscar si ya existe este stock en el storage
-    const indexExistente = stockStorage.findIndex(s =>
-      s.producto_id === stockItem.producto_id &&
-      s.talle.toLowerCase() === stockItem.talle.toLowerCase() &&
-      s.color.toLowerCase() === stockItem.color.toLowerCase()
-    );
-
-    if (indexExistente !== -1) {
-      // Lo reemplazamos
-      stockStorage[indexExistente] = stockItem;
-    } else {
-      // Lo agregamos
-      stockStorage.push(stockItem);
-    }
-
-    localStorage.setItem('stocks', JSON.stringify(stockStorage));
-
+ 
 
   if (!document.body.contains(div)) {
     document.body.append(div);
