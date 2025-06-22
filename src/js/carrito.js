@@ -31,37 +31,58 @@ let summary=document.getElementById("summary")
 
 
     if (productosEncarrito.length > 0) { 
-      productosEncarrito.forEach((producto,index )=> {  
-        
+     productosEncarrito.forEach(producto => {
+  const stockVariante = stockGuardados.find(s =>
+    s.producto_id === producto.producto_id &&
+    s.color.trim().toLowerCase() === producto.color.trim().toLowerCase() &&
+    s.talle.trim().toLowerCase() === producto.talle.trim().toLowerCase()
+  )?.stock ?? 0;
 
-      
-          carritoItem.innerHTML += ` 
-              <div class="item">
-                  <img src="${producto.imagen}" alt="">
-                  <div class="info">
-                      <p class="name">${producto.nombre_producto}</p>
-                      <div class="actions">
-                          <span class="delete">Eliminar</span>
-                          <span class="buy-now">Agregar</span>
-                      </div>
-                      <div class="quantity">
-                          <button class="boton_eliminar" data-id="${producto.producto_id}" data-color="${producto.color}" data-talle="${producto.talle}">-</button>
-                          <span class="cantidad" data-id="${producto.producto_id}" data-color="${producto.color}" data-talle="${producto.talle}">${producto.cantidad}</span>
-                          <button class="boton_agregar" data-id="${producto.producto_id}" data-color="${producto.color}" data-talle="${producto.talle}" data-stock="${stockGuardados[index]}">+</button>
-                      </div>
-                      <div class="detalles">
-                       <p class="talle">Talle:${producto.talle}</p>
-                       <p class="color">Color:${producto.color}</p>
-                       <p class="stock cantidad-texto" data-id="${producto.producto_id}" data-color="${producto.color}" data-talle="${producto.talle}">Cantidad: ${producto.cantidad}</p>
-                      </div>
-                      <span class="stock" >maximo permitido: ${stockGuardados[index]??0} unidades </span>
-                      <span class="price">Precio: $${(producto.precio_producto??0).toFixed(2)}</span>
-                     
-                  </div>
-              </div>`; 
-              checkout() 
-              
-      }); 
+  carritoItem.innerHTML += ` 
+    <div class="item">
+      <img src="${producto.imagen}" alt="">
+      <div class="info">
+        <p class="name">${producto.nombre_producto}</p>
+        <div class="actions">
+          <span class="delete">Eliminar</span>
+          <span class="buy-now">Agregar</span>
+        </div>
+        <div class="quantity">
+          <button class="boton_eliminar" 
+              data-id="${producto.producto_id.trim()}" 
+              data-color="${producto.color.trim()}" 
+              data-talle="${producto.talle.trim()}">-</button>
+          
+          <span class="cantidad" 
+              data-id="${producto.producto_id.trim()}" 
+              data-color="${producto.color.trim()}" 
+              data-talle="${producto.talle.trim()}">
+              ${producto.cantidad}
+          </span>
+
+          <button class="boton_agregar" 
+              data-id="${producto.producto_id.trim()}" 
+              data-color="${producto.color.trim()}" 
+              data-talle="${producto.talle.trim()}" 
+              data-stock="${stockVariante}">+</button>
+        </div>
+        <div class="detalles">
+          <p class="talle">Talle: ${producto.talle}</p>
+          <p class="color">Color: ${producto.color}</p>
+          <p class="stock cantidad-texto" 
+              data-id="${producto.producto_id.trim()}" 
+              data-color="${producto.color.trim()}" 
+              data-talle="${producto.talle.trim()}">
+              Cantidad: ${producto.cantidad}
+          </p>
+        </div>
+        <span class="stock">máximo permitido: ${stockVariante} unidades</span>
+        <span class="price">Precio: $${(producto.precio_producto ?? 0).toFixed(2)}</span>
+      </div>
+    </div>`; 
+
+    checkout()
+});
 
       
       let botonesAgregar = [...document.querySelectorAll(".boton_agregar")]; 
@@ -318,7 +339,7 @@ function agregarProductoAlCarrito(e) {
 
   // Verificamos si esa variante (color + talle) está agotada
       const productoSeleccionado = productos.find(p => p.producto_id === botonID);
-    
+
       const varianteAgotada = productoSeleccionado?.productos_variantes?.find(v =>
         v?.colores?.color_id === colorID &&
         v?.talles?.talle_id === talleID
@@ -340,7 +361,7 @@ function agregarProductoAlCarrito(e) {
       // Refrescar el carrito en pantalla
       if (typeof mostrarProductosCarrito === 'function') mostrarProductosCarrito();
     }
-    
+
             // Actualizar ícono del carrito
             if (typeof iconoProductosSumados === 'function') iconoProductosSumados();
         }
