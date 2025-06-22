@@ -511,31 +511,7 @@ async function selectorCategorys() {
         
   console.log(colores); 
 
-   let stock=null 
-
-   // --- DESPUÉS guardamos el stock en localStorage ---
-  let stockStorage = JSON.parse(localStorage.getItem('stocks')) || [];
-
-  const stockItem = {
-    producto_id: producto_ID.toString().trim(),
-    talle: sizesTexto.toString().trim().toLowerCase(),
-    color: colorTexto.toString().trim().toLowerCase(),
-    stock: stock
-  };
-
-  const indexExistente = stockStorage.findIndex(s =>
-    s.producto_id === stockItem.producto_id &&
-    s.talle === stockItem.talle &&
-    s.color === stockItem.color
-  );
-
-  if (indexExistente !== -1) {
-    stockStorage[indexExistente] = stockItem;
-  } else {
-    stockStorage.push(stockItem);
-  }
-
-  localStorage.setItem('stocks', JSON.stringify(stockStorage));
+  
         
         
    document.querySelector("#modal")?.remove()
