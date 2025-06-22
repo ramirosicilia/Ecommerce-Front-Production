@@ -711,7 +711,7 @@ async function selectorCategorys() {
 
 
 
-   btnOpciones.addEventListener("click", async () => {
+  btnOpciones.addEventListener("click", async () => {
 
   if (!sizes.length || !colors.length) {
     return;
@@ -803,8 +803,6 @@ async function selectorCategorys() {
     return;
   }
 
-  
-
   // --- Finalmente agregamos o actualizamos el carrito ---
   if (!primerProductoCarrito) {
     carritoCompras.push({ ...objectoStorage });
@@ -818,10 +816,35 @@ async function selectorCategorys() {
 
   localStorage.setItem("productos", JSON.stringify(carritoCompras));
 
+  // ✅ Guardar correctamente el stock después de haberlo encontrado
+  let stockStorage = JSON.parse(localStorage.getItem('stocks')) || [];
+
+  const stockItem = {
+    producto_id: producto_ID.toString().trim(),
+    talle: sizesTexto.toString().trim().toLowerCase(),
+    color: colorTexto.toString().trim().toLowerCase(),
+    stock: stock
+  };
+
+  const indexExistente = stockStorage.findIndex(s =>
+    s.producto_id === stockItem.producto_id &&
+    s.talle === stockItem.talle &&
+    s.color === stockItem.color
+  );
+
+  if (indexExistente !== -1) {
+    stockStorage[indexExistente] = stockItem;
+  } else {
+    stockStorage.push(stockItem);
+  }
+
+  localStorage.setItem('stocks', JSON.stringify(stockStorage));
+
   manejarCantidades(producto_ID, sizesTexto, colorTexto);
   actualizarCarrito();
 
 });
+
 
 
   } 
