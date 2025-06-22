@@ -317,8 +317,9 @@ function agregarProductoAlCarrito(e) {
           producto?.talle === talleID)
       );
 
-      // Buscar variante en productos para stock y alerta
-      const productoSeleccionado = productos.find(p => p.producto_id === botonID);
+      // Buscar variante en productos para stock y alerta 
+      
+      const productoSeleccionado = productosEncarrito.find(p => p.producto_id === botonID);
       const varianteAgotada = productoSeleccionado?.productos_variantes?.find(v =>
         v?.colores?.color_id === colorID &&
         v?.talles?.talle_id === talleID
