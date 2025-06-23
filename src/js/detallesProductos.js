@@ -519,6 +519,22 @@ function validarCombinacion(talle, color) {
    if (stock === 0) {
         alert("Este talle con este color está agotado.");
         return;
+      } 
+
+
+          if(stock>0){ 
+          
+           let productosAgotados=JSON.parse(localStorage.getItem("productosAgotados"))||[]
+          
+            let index=productosAgotados.findIndex(id=>id===producto_ID) 
+          
+            if(index > -1){ 
+           productosAgotados.splice(index,1) 
+        
+           localStorage.setItem("productosAgotados",JSON.stringify(productosAgotados))
+        
+        }
+      
       }
       
 
@@ -751,17 +767,32 @@ function validarCombinacion(talle, color) {
                }
              
                // Botón agregar cantidad
-               if (target.matches(".boton-agregar")) {
-                 e.preventDefault();
-                 if (primerProducto.cantidad < stock) {
-                   primerProducto.cantidad++;
-                   const cantidadSpan = target.closest(".quantity-selector-container").querySelector(".quantity-selector");
-                   cantidadSpan.textContent = primerProducto.cantidad;
-             
-                   localStorage.setItem("productos", JSON.stringify(carritoCompras));
-                   actualizarCarrito()
-                 }
-               }
+          if (target.matches(".boton-agregar")) {
+            e.preventDefault();
+          
+            if (primerProducto.cantidad < stock) {
+              primerProducto.cantidad++;
+            
+              const cantidadSpan = target.closest(".quantity-selector-container").querySelector(".quantity-selector");
+              cantidadSpan.textContent = primerProducto.cantidad;
+            
+              // ✅ Actualizar localStorage del carrito
+              localStorage.setItem("productos", JSON.stringify(carritoCompras));
+              actualizarCarrito();
+            
+              // ✅ Verificamos si estaba marcado como agotado y lo sacamos
+              if (stock > 0) {
+                let productosAgotados = JSON.parse(localStorage.getItem("productosAgotados")) || [];
+                    
+                let index = productosAgotados.findIndex(id => id === productoID);
+                if (index > -1) {
+                  productosAgotados.splice(index, 1);
+                  localStorage.setItem("productosAgotados", JSON.stringify(productosAgotados));
+                }
+              }
+            }
+          }
+
              
                // Botón eliminar cantidad
                if (target.matches(".boton-eliminar")) {
@@ -1047,7 +1078,7 @@ function validarCombinacion(talle, color) {
        
          if (e.target.matches(".boton-agregar")) {
           e.preventDefault();
-        
+
           // Recalcular el producto actual desde el carrito
           let productoActual = carritoCompras.find(producto => 
             producto.producto_id.toString().trim() === productoID.toString().trim() &&
@@ -1059,19 +1090,30 @@ function validarCombinacion(talle, color) {
             if (productoActual.cantidad < stock) {
               productoActual.cantidad++;
               cantidadSpan.textContent = productoActual.cantidad;
-              actualizarCarrito()
+              actualizarCarrito();
             }
           } else {
             if (objectoStorage.cantidad < stock) {
-              carritoCompras.push({...objectoStorage});
+              carritoCompras.push({ ...objectoStorage });
               cantidadSpan.textContent = objectoStorage.cantidad;
-              actualizarCarrito()
+              actualizarCarrito();
             }
           }
         
           localStorage.setItem("productos", JSON.stringify(carritoCompras));
         
-        }
+          // ✅ Si hay stock, remover el producto de productosAgotados (si está)
+          if (stock > 0) {
+            let productosAgotados = JSON.parse(localStorage.getItem("productosAgotados")) || [];
+          
+            let index = productosAgotados.findIndex(id => id === productoID);
+            if (index > -1) {
+              productosAgotados.splice(index, 1);
+              localStorage.setItem("productosAgotados", JSON.stringify(productosAgotados));
+            }
+          }
+      }
+
         
        
          // BOTÓN ELIMINAR
