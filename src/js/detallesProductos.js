@@ -1074,7 +1074,7 @@ function validarCombinacion(talle, color) {
            if (modal) modal.remove();
          }
        
-          if (target.matches(".boton-agregar")) {
+          if (e.target.matches(".boton-agregar")) {
             e.preventDefault();
           
             if (primerProducto.cantidad < stock) {
@@ -1102,7 +1102,7 @@ function validarCombinacion(talle, color) {
 
              
                // Botón eliminar cantidad
-               if (target.matches(".boton-eliminar")) {
+               if (e.target.matches(".boton-eliminar")) {
                  e.preventDefault();
                  if (primerProducto.cantidad > 0) {
                    primerProducto.cantidad--;
