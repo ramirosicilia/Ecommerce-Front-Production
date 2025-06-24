@@ -1012,35 +1012,38 @@ async function selectorCategorys() {
     // Botón agregar cantidad
     if (e.target.matches(".boton-agregar")) {
       e.preventDefault();
-      if (primerProducto.cantidad < (stock ?? 0)) { 
+      if (primerProducto.cantidad < (stock ?? 0) && primerProducto.stock>0) { 
 
 
         primerProducto.cantidad++;
         if (cantidadSpan) cantidadSpan.textContent = primerProducto.cantidad;
-        localStorage.setItem('productos', JSON.stringify(carritoCompras));
-      }
-        actualizarCarrito();
-      }
-
-      // Botón eliminar cantidad
-      if (e.target.matches(".boton-eliminar")) {
-        e.preventDefault();
-
-        if (primerProducto.cantidad > 0 && primerProducto.stock>0) {
-          primerProducto.cantidad--;
-          if (cantidadSpan) cantidadSpan.textContent = primerProducto.cantidad || 0; 
-           let productosAgotados=JSON.parse(localStorage.getItem("productosAgotados"))||[]
+        localStorage.setItem('productos', JSON.stringify(carritoCompras)); 
+         
+         let productosAgotados=JSON.parse(localStorage.getItem("productosAgotados"))||[]
 
             let index=productosAgotados.findIndex(id=>id===productoID) 
 
             if(index > -1){ 
            productosAgotados.splice(index,1) 
 
-            localStorage.setItem("productosAgotados",JSON.stringify(productosAgotados))
+            localStorage.setItem("productosAgotados",JSON.stringify(productosAgotados)) 
 
-    }
+            }
 
- 
+         
+      }
+        actualizarCarrito(); 
+      }
+
+      // Botón eliminar cantidad
+      if (e.target.matches(".boton-eliminar")) {
+        e.preventDefault();
+
+        if (primerProducto.cantidad > 0 ) {
+          primerProducto.cantidad--;
+          if (cantidadSpan) cantidadSpan.textContent = primerProducto.cantidad || 0; 
+          
+    
         } 
         
        if (primerProducto.cantidad === 0) {
@@ -1143,3 +1146,9 @@ async function selectorCategorys() {
 
 
 
+
+
+
+
+
+  
