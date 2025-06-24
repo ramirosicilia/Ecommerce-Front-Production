@@ -1092,7 +1092,7 @@ async function selectorCategorys() {
   // Función para actualizar carrito en el icono
   export async function actualizarCarrito() { 
       const iconCart = document.getElementById("cart-count");
-      let carrito 
+      let carrito=[] 
 
    if (localStorage.getItem("carritoActivo")) {
      carrito = JSON.parse(localStorage.getItem("productos")) || [];
@@ -1111,14 +1111,12 @@ async function selectorCategorys() {
 
   function restaurarCarrito() { 
       let iconCart = document.getElementById("cart-count");
-      let carrito 
+      let carrito=[]
     if (localStorage.getItem("carritoActivo")) {
         carrito = JSON.parse(localStorage.getItem("productos")) || [];
 
     } 
 
-
-  
     if (iconCart) {
       iconCart.innerHTML = carrito.reduce((acc, producto) => acc + (producto.cantidad ?? 0), 0);
     }
