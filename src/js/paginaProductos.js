@@ -1052,8 +1052,10 @@ async function selectorCategorys() {
          
  
         } 
+            localStorage.setItem("productos", JSON.stringify(carritoCompras));
+           if (primerProducto.cantidad === 0) { 
         
-       if (primerProducto.cantidad === 0) {
+        localStorage.removeItem("carritoActivo"); // 🔴 El carrito quedó vacío
           const index = carritoCompras.findIndex(
             (producto) =>
               producto?.producto_id?.toString() === productoID.toString() &&
@@ -1081,8 +1083,6 @@ async function selectorCategorys() {
         }
 
 
-        localStorage.setItem("productos", JSON.stringify(carritoCompras));
-        localStorage.removeItem("carritoActivo"); // 🔴 El carrito quedó vacío
         actualizarCarrito();
       }
     }); 
