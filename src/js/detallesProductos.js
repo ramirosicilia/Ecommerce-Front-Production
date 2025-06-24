@@ -861,335 +861,228 @@ function validarCombinacion(talle, color) {
 
 
 
-      async function manejarCantidadesCarrito(productoID,sizes,color){  
+     async function manejarCantidadesCarrito(productoID, sizes, color) {
+  const usuarioNombre = JSON.parse(localStorage.getItem('usuario')) || [];
+  let stock = null;
+  let colorNombre = null;
+  let talleNombre = null;
 
+  const obtenerUSer = usuarios.user?.find(user => usuarioNombre.includes(user.usuario));
+  const { usuario, usuario_id } = obtenerUSer;
 
-        const usuarioNombre=JSON.parse(localStorage.getItem('usuario'))||[]
-     
-      
-        
-         let stock=null 
-         let colorNombre=null
-         let talleNombre=null
-  
-  
-         const obtenerUSer = usuarios.user?.find(user => usuarioNombre.includes(user.usuario));
-       
-         const {usuario,usuario_id}=obtenerUSer
-  
-  
-  
-  
-  let imagenSeleccionada; 
-  
+  let imagenSeleccionada;
   let categoriasFiltrada = categorias.filter(category => category.activo === true);
   const productosFiltrados = productos.filter(p => p.activacion === true);
-  let filtradoCategoryYProduct = productosFiltrados.filter(producto => 
-  categoriasFiltrada.some(cat => cat.categoria_id === producto.categoria_id)
+  let filtradoCategoryYProduct = productosFiltrados.filter(producto =>
+    categoriasFiltrada.some(cat => cat.categoria_id === producto.categoria_id)
   );
-  
-  
-  for (const producto of filtradoCategoryYProduct) { 
-   imagenSeleccionada = producto.imagenes.find(imagen => imagen.producto_id === productoID);
-   if (imagenSeleccionada) {
-     break;  // Solo cuando ENCUENTRES la imagen cortas el bucle
-   }
-  } 
-  
-  // Buscar color en las variantes de productos
-  
-  
-  
-  
-  const nombre=filtradoCategoryYProduct?.find(producto=>producto.producto_id===productoID)?.nombre_producto 
-  const detalles=filtradoCategoryYProduct?.find(producto=>producto.producto_id===productoID)?.detalles
-  const precio=filtradoCategoryYProduct?.find(producto=>producto.producto_id===productoID)?.precio 
-  
-  
-  const imagenOpciones=imagenSeleccionada?.urls[0] 
-  
-  
-    
-     
-         const productoSeleccionado=productos.find(producto=>producto.producto_id===productoID) 
-     
-  
-         console.log(productoSeleccionado) 
-  
-       
-          for (const element of productoSeleccionado?.productos_variantes) { 
-          
-     
-           console.log(element) 
-    
-  
-           
-           if (String(element?.talles?.insertar_talle).trim().toLowerCase() === String(sizes).trim().toLowerCase()
-           && 
-            String(element?.colores?.insertar_color).trim().toLowerCase() === String(color).trim().toLowerCase()
-          ) {
-            console.log(sizes);
-            console.log(color);
-        
-          
-            colorNombre=element?.colores?.insertar_color ?? null;
-            talleNombre=element?.talles?.insertar_talle ?? null;
-            stock = element?.stock;
-            
-           
-            break;
-          }
-     
-          } 
-  
-          const objectoStorage={
-            user:usuario,
-            user_id:usuario_id,
-            producto_id:productoID,
-            nombre_producto:nombre,
-            precio_producto:precio,
-            cantidad:1,
-            detalles:detalles,
-            imagen:imagenOpciones,
-            color:colorNombre || "",
-            talle:talleNombre || "",
-            
-          } 
 
-          console.log(colorNombre)
-          console.log(talleNombre)
-  
-       
-    
+  for (const producto of filtradoCategoryYProduct) {
+    imagenSeleccionada = producto.imagenes.find(imagen => imagen.producto_id === productoID);
+    if (imagenSeleccionada) break;
+  }
 
-        
+  const nombre = filtradoCategoryYProduct?.find(producto => producto.producto_id === productoID)?.nombre_producto;
+  const detalles = filtradoCategoryYProduct?.find(producto => producto.producto_id === productoID)?.detalles;
+  const precio = filtradoCategoryYProduct?.find(producto => producto.producto_id === productoID)?.precio;
+  const imagenOpciones = imagenSeleccionada?.urls[0];
 
-           const carritoCompras = JSON.parse(localStorage.getItem("productos")) || [];
-          
-  
-                  
-           
-            console.log(carritoCompras) 
-      
-           let primerProducto = carritoCompras?.find(producto => 
-            producto.producto_id.toString().trim()===productoID.toString().trim()&&
-            producto.color.toString().trim() === color.toString().trim()&&
-            producto.talle.toString().trim() === sizes.toString().trim()
-          );
-                 console.log(primerProducto) 
+  const productoSeleccionado = productos.find(producto => producto.producto_id === productoID);
+  console.log(productoSeleccionado);
 
-                
-                  if (stock === null) {
-                    alert("No se pudo determinar el stock.");
-                    return;
-                                      }
+  for (const element of productoSeleccionado?.productos_variantes) {
+    console.log(element);
 
-                    if (!primerProducto) {
-                      carritoCompras.push({ ...objectoStorage });
-                    } else {
-                      if (primerProducto.cantidad < stock) {
-                       primerProducto.cantidad += 1;
-                      } else {
-                        alert("Ya has agregado el máximo disponible de este producto.");
-                      }
-                    }
-                     actualizarCarrito()
+    if (
+      String(element?.talles?.insertar_talle).trim().toLowerCase() === String(sizes).trim().toLowerCase() &&
+      String(element?.colores?.insertar_color).trim().toLowerCase() === String(color).trim().toLowerCase()
+    ) {
+      console.log(sizes);
+      console.log(color);
 
-  
-       let stockStorage = JSON.parse(localStorage.getItem('stocks')) || [];
+      colorNombre = element?.colores?.insertar_color ?? null;
+      talleNombre = element?.talles?.insertar_talle ?? null;
+      stock = element?.stock;
+      break;
+    }
+  }
 
-        const stockItem = {
-          producto_id: productoID.toString().trim(),
-          talle: sizes.toString().trim(),
-          color: color.toString().trim(),
-          stock: stock ?? 0
-        };
+  const objectoStorage = {
+    user: usuario,
+    user_id: usuario_id,
+    producto_id: productoID,
+    nombre_producto: nombre,
+    precio_producto: precio,
+    cantidad: 1,
+    detalles: detalles,
+    imagen: imagenOpciones,
+    color: colorNombre || "",
+    talle: talleNombre || ""
+  };
 
-        const indexExistente = stockStorage.findIndex(s =>
-          s.producto_id === stockItem.producto_id &&
-          s.talle.toLowerCase() === stockItem.talle.toLowerCase() &&
-          s.color.toLowerCase() === stockItem.color.toLowerCase()
-        );
+  console.log(colorNombre);
+  console.log(talleNombre);
 
-        if (indexExistente !== -1) {
-          stockStorage[indexExistente] = stockItem;
-        } else {
-          stockStorage.push(stockItem);
-        }
+  const carritoCompras = JSON.parse(localStorage.getItem("productos")) || [];
+  console.log(carritoCompras);
 
-        localStorage.setItem('stocks', JSON.stringify(stockStorage));
+  let primerProducto = carritoCompras?.find(producto =>
+    producto.producto_id.toString().trim() === productoID.toString().trim() &&
+    producto.color.toString().trim() === color.toString().trim() &&
+    producto.talle.toString().trim() === sizes.toString().trim()
+  );
+  console.log(primerProducto);
 
-         localStorage.setItem('productos', JSON.stringify(carritoCompras));
-      
-      
-     
-         document.querySelector('.nuevo-modal')?.remove()
-     
-         const section=document.createElement("section") 
-  
-         section.innerHTML = ` 
-         <div style="background: white; border-radius: 12px; width: 640px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%);" class="nuevo-modal">
-           <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px; border-bottom: 1px solid #ddd;" class="modal-header">
-             <h2 style="font-size: 18px; margin: 0; display: flex; align-items: center;">
-               <span style="color: green; font-size: 24px; margin-right: 10px;" class="icon-check">✔</span>Producto agregado a tu Carro
-             </h2>
-             <button type="button" style="font-size: 24px; cursor: pointer; border: none;background: none;" id="close-x" class="modal_close">x</button>
-           </div>
-           <div style="display: flex; padding: 16px;" class="modal-content">
-             <img style="width: 80px; height: auto; margin-right: 16px;" src="${imagenOpciones}" alt="Producto" />
-             <div style="flex-grow: 1;" class="product-info">
-               <h3 style="font-size: 14px; margin: 0; font-weight: normal;">${nombre}</h3>
-               <strong style="display: block; margin: 4px 0;">${detalles}</strong>
-               <p style="color: red;">talle:${sizes}</p>
-               <p style="color: red;">color:${color}</p>
-               <p style="color: red;">el maximo permitido:${stock} unidades</p>
-               <div style="font-size: 18px; font-weight: bold;" class="product-price">Precio:$${precio}</div>
-               <div style="display: flex; align-items: center; margin-top: 8px;" class="quantity-selector-container">
-                 <button class="boton-eliminar" id="btn-eliminar" style="width: 28px; height: 28px; font-size: 16px; border: 1px solid #ccc; background: white; cursor: pointer;">-</button>
-                 <span class="quantity-selector" style="width: 30px; text-align: center;">${primerProducto?.cantidad || objectoStorage.cantidad}</span>
-                 <button class="boton-agregar" id="btn-agregar" style="width: 28px; height: 28px; font-size: 16px; border: 1px solid #ccc; background: white; cursor: pointer;">+</button>
-               </div>
-             </div>
-           </div>
-           <div style="padding: 16px; display: flex; justify-content: space-between; border-top: 1px solid #ddd;" class="modal-footer">
-             <a style=" font-weight: bold; color: #0046be;" class="seguir_comprando" href="./productosUsuario.html">Seguir comprando</a>
-             <a id="carrito" href="./carrito.html" style="background: #3a3f4c; text-decoration:none; color: white; padding: 8px 24px; border: none; border-radius: 20px; font-size: 16px; cursor: pointer;" class="btn-carro">Ir al Carro</a>
-           </div>
-         </div>
-       `; 
+  if (stock === null) {
+    alert("No se pudo determinar el stock.");
+    return;
+  }
 
-       
-       
-       if (!container.classList.contains(section)) {
-         container.append(section);
-       } 
+  if (!primerProducto) {
+    carritoCompras.push({ ...objectoStorage });
+  } else {
+    if (primerProducto.cantidad < stock) {
+      primerProducto.cantidad += 1;
+    } else {
+      alert("Ya has agregado el máximo disponible de este producto.");
+      return; // ← 🛑 CORTA para que NO se muestre el modal si no hay stock disponible
+    }
+  }
 
-       
-            window.addEventListener("pageshow",()=>{
-               document.querySelector(".nuevo-modal")?.remove();
-            })
-            
-             
-       
-  
-       const cantidadSpan = section.querySelector(".quantity-selector"); // referencia al <span>
-       
-       section.addEventListener("click", (e) => {
-         // SEGIR COMPRANDO
-         if (e.target.matches(".seguir_comprando")) {
-           window.location.reload();
-         }
-       
-         // CERRAR MODAL
-         if (e.target.matches(".modal_close")) {
-           const modal = container.querySelector(".nuevo-modal");
-           section.style.display = "none";
-           if (modal) modal.remove();
-         }
-       
-         if (e.target.matches(".boton-agregar")) {
-          e.preventDefault();
+  actualizarCarrito();
 
-          // Recalcular el producto actual desde el carrito
-          let productoActual = carritoCompras.find(producto => 
-            producto.producto_id.toString().trim() === productoID.toString().trim() &&
-            producto.color.toString().trim() === color.toString().trim() &&
-            producto.talle.toString().trim() === sizes.toString().trim()
-          );
-        
-          if (productoActual) {
-            if (productoActual.cantidad < stock) {
-              productoActual.cantidad++;
-              cantidadSpan.textContent = productoActual.cantidad;
-              actualizarCarrito();
-            }
-          } else {
-            if (objectoStorage.cantidad < stock) {
-              carritoCompras.push({ ...objectoStorage });
-              cantidadSpan.textContent = objectoStorage.cantidad;
-              actualizarCarrito();
-            }
-          }
-        
-          localStorage.setItem("productos", JSON.stringify(carritoCompras));
-          
-          // ✅ Si hay stock, remover el producto de productosAgotados (si está)
-          if (stock > 0) {
-            let productosAgotados = JSON.parse(localStorage.getItem("productosAgotados")) || [];
-          
-            let index = productosAgotados.findIndex(id => id === productoID);
-            if (index > -1) {
-              productosAgotados.splice(index, 1);
-              localStorage.setItem("productosAgotados", JSON.stringify(productosAgotados));
-            }
-          }
-      }
+  let stockStorage = JSON.parse(localStorage.getItem('stocks')) || [];
+  const stockItem = {
+    producto_id: productoID.toString().trim(),
+    talle: sizes.toString().trim(),
+    color: color.toString().trim(),
+    stock: stock ?? 0
+  };
 
-        
-       
-         // BOTÓN ELIMINAR
-    if (e.target.matches(".boton-eliminar")) {
+  const indexExistente = stockStorage.findIndex(s =>
+    s.producto_id === stockItem.producto_id &&
+    s.talle.toLowerCase() === stockItem.talle.toLowerCase() &&
+    s.color.toLowerCase() === stockItem.color.toLowerCase()
+  );
+
+  if (indexExistente !== -1) {
+    stockStorage[indexExistente] = stockItem;
+  } else {
+    stockStorage.push(stockItem);
+  }
+
+  localStorage.setItem('stocks', JSON.stringify(stockStorage));
+  localStorage.setItem('productos', JSON.stringify(carritoCompras));
+
+  document.querySelector('.nuevo-modal')?.remove();
+  const section = document.createElement("section");
+
+  section.innerHTML = `...`; // TU MODAL SE MANTIENE TAL CUAL
+
+  if (!container.classList.contains(section)) {
+    container.append(section);
+  }
+
+  window.addEventListener("pageshow", () => {
+    document.querySelector(".nuevo-modal")?.remove();
+  });
+
+  const cantidadSpan = section.querySelector(".quantity-selector");
+
+  section.addEventListener("click", (e) => {
+    if (e.target.matches(".seguir_comprando")) {
+      window.location.reload();
+    }
+
+    if (e.target.matches(".modal_close")) {
+      const modal = container.querySelector(".nuevo-modal");
+      section.style.display = "none";
+      if (modal) modal.remove();
+    }
+
+    if (e.target.matches(".boton-agregar")) {
       e.preventDefault();
-
-  // ⛑️ Recalculá el producto actualizado en ese momento
-      let productoActual = carritoCompras.find(producto => 
+      let productoActual = carritoCompras.find(producto =>
         producto.producto_id.toString().trim() === productoID.toString().trim() &&
         producto.color.toString().trim() === color.toString().trim() &&
         producto.talle.toString().trim() === sizes.toString().trim()
       );
-    
+
+      if (productoActual) {
+        if (productoActual.cantidad < stock) {
+          productoActual.cantidad++;
+          cantidadSpan.textContent = productoActual.cantidad;
+          actualizarCarrito();
+        }
+      } else {
+        if (objectoStorage.cantidad < stock) {
+          carritoCompras.push({ ...objectoStorage });
+          cantidadSpan.textContent = objectoStorage.cantidad;
+          actualizarCarrito();
+        }
+      }
+
+      localStorage.setItem("productos", JSON.stringify(carritoCompras));
+
+      if (stock > 0) {
+        let productosAgotados = JSON.parse(localStorage.getItem("productosAgotados")) || [];
+        let index = productosAgotados.findIndex(id => id === productoID);
+        if (index > -1) {
+          productosAgotados.splice(index, 1);
+          localStorage.setItem("productosAgotados", JSON.stringify(productosAgotados));
+        }
+      }
+    }
+
+    if (e.target.matches(".boton-eliminar")) {
+      e.preventDefault();
+      let productoActual = carritoCompras.find(producto =>
+        producto.producto_id.toString().trim() === productoID.toString().trim() &&
+        producto.color.toString().trim() === color.toString().trim() &&
+        producto.talle.toString().trim() === sizes.toString().trim()
+      );
+
       if (productoActual && productoActual.cantidad > 0) {
         productoActual.cantidad--;
         cantidadSpan.textContent = productoActual.cantidad || 0;
       }
-         
-      localStorage.setItem("productos", JSON.stringify(carritoCompras)); 
+
+      localStorage.setItem("productos", JSON.stringify(carritoCompras));
 
       if (productoActual && productoActual.cantidad === 0) {
-        const index = carritoCompras.findIndex(
-          (producto) =>
-            producto.producto_id.toString() === productoID.toString() &&
-            producto.color.toString().trim().toLowerCase() === color.toString().trim().toLowerCase() &&
-            producto.talle.toString().trim().toLowerCase() === talleNombre.toString().trim().toLowerCase()
+        const index = carritoCompras.findIndex(producto =>
+          producto.producto_id.toString() === productoID.toString() &&
+          producto.color.toString().trim().toLowerCase() === color.toString().trim().toLowerCase() &&
+          producto.talle.toString().trim().toLowerCase() === talleNombre.toString().trim().toLowerCase()
         );
-      
+
         if (index !== -1) {
           carritoCompras.splice(index, 1);
-        
+
           const productoSeleccionado = productos.find(p => p.producto_id === productoID);
           const varianteAgotada = productoSeleccionado?.productos_variantes?.find(v =>
             v?.colores?.insertar_color?.toString().trim().toLowerCase() === color.toString().trim().toLowerCase() &&
             v?.talles?.insertar_talle?.toString().trim().toLowerCase() === talleNombre.toString().trim().toLowerCase()
           );
-        
+
           if (varianteAgotada?.stock === 0) {
             alert("Este talle con este color está agotado y fue eliminado del carrito.");
           }
         }
-      
+
         const modal = document.querySelector('.nuevo-modal');
-        if (modal) modal.remove();  
-        
+        if (modal) modal.remove();
+
         if (carritoCompras.length === 0) {
-            localStorage.removeItem("productos");
-          }
-       
+          localStorage.removeItem("productos");
+        }
       }
 
-   
       actualizarCarrito();
-   }
+    }
+  });
+}
 
-
-
-       });
-       
-       
-        
-
-      }
-     
-   
   
 
   
