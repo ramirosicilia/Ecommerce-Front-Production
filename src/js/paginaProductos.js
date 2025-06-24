@@ -748,7 +748,7 @@ async function selectorCategorys() {
 
   // --- PRIMERO calculamos el stock real ---
   let stock = null;
-  ca
+  
   const productoSeleccionado = productos.find(producto => producto.producto_id === producto_ID);
   if (!productoSeleccionado) {
     alert("Producto no encontrado.");
