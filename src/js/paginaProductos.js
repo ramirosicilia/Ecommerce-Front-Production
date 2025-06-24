@@ -992,7 +992,11 @@ async function selectorCategorys() {
 
   if (!document.body.contains(div)) {
     document.body.append(div);
-  }
+  } 
+
+     window.addEventListener("pageshow", function () {
+    actualizarCarrito();
+  });
 
   // Delegación de eventos dentro del modal
   div.addEventListener('click', (e) => {
@@ -1020,7 +1024,7 @@ async function selectorCategorys() {
         localStorage.setItem('productos', JSON.stringify(carritoCompras));
       }
         actualizarCarrito(); 
-        
+
          if (stock > 0) {
             let productosAgotados = JSON.parse(localStorage.getItem("productosAgotados")) || [];
           
@@ -1074,7 +1078,8 @@ async function selectorCategorys() {
         localStorage.setItem("productos", JSON.stringify(carritoCompras));
         actualizarCarrito();
       }
-    });
+    }); 
+  
   }
 
   // Función para actualizar carrito en el icono
@@ -1091,9 +1096,7 @@ async function selectorCategorys() {
   actualizarCarrito();
 
   // Ejecutar cuando el usuario vuelve con el botón "Atrás"
-  window.addEventListener("pageshow", function () {
-    actualizarCarrito();
-  });
+  
 
   function restaurarCarrito() {
     let carritoStorage = localStorage.getItem('productos');
