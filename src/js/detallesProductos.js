@@ -1033,9 +1033,9 @@ function validarCombinacion(talle, color) {
                <p style="color: red;">color:${color}</p>
                <p style="color: red;">el maximo permitido:${stock} unidades</p>
                <div style="font-size: 18px; font-weight: bold;" class="product-price">Precio:$${precio}</div>
-               <div style="display: flex; align-items: center; margin-top: 8px;" class="quantity-selector-container">
+               <div style="display: flex; align-items: center; margin-top: 8px;" class="quantity-selector">
                  <button class="boton-eliminar" id="btn-eliminar" style="width: 28px; height: 28px; font-size: 16px; border: 1px solid #ccc; background: white; cursor: pointer;">-</button>
-                 <span class="quantity-selector-1" style="width: 30px; text-align: center;">${primerProducto?.cantidad || objectoStorage.cantidad}</span>
+                 <span class="quantity-selector" style="width: 30px; text-align: center;">${primerProducto?.cantidad || objectoStorage.cantidad}</span>
                  <button class="boton-agregar" id="btn-agregar" style="width: 28px; height: 28px; font-size: 16px; border: 1px solid #ccc; background: white; cursor: pointer;">+</button>
                </div>
              </div>
@@ -1061,6 +1061,8 @@ function validarCombinacion(talle, color) {
              
        
   
+       const cantidadSpan = section.querySelector(".quantity-selector span"); // referencia al <span>
+       
        section.addEventListener("click", (e) => {
          // SEGIR COMPRANDO
          if (e.target.matches(".seguir_comprando")) {
@@ -1074,75 +1076,89 @@ function validarCombinacion(talle, color) {
            if (modal) modal.remove();
          }
        
-          if (e.target.matches(".boton-agregar")) {
-            e.preventDefault();
-                  
-            if (primerProducto.cantidad < stock) {
-              primerProducto.cantidad++;
-            
-              const cantidadSpan = e.target.closest(".quantity-selector-container").querySelector(".quantity-selector-1");
-              cantidadSpan.textContent = primerProducto.cantidad;
-            
-              // ✅ Actualizar localStorage del carrito
-              localStorage.setItem("productos", JSON.stringify(carritoCompras));
+         if (e.target.matches(".boton-agregar")) {
+          e.preventDefault();
+
+          // Recalcular el producto actual desde el carrito
+          let productoActual = carritoCompras.find(producto => 
+            producto.producto_id.toString().trim() === productoID.toString().trim() &&
+            producto.color.toString().trim() === color.toString().trim() &&
+            producto.talle.toString().trim() === sizes.toString().trim()
+          );
+        
+          if (productoActual) {
+            if (productoActual.cantidad < stock) {
+              productoActual.cantidad++;
+              cantidadSpan.textContent = productoActual.cantidad;
               actualizarCarrito();
-            
-              // ✅ Verificamos si estaba marcado como agotado y lo sacamos
-              if (stock > 0) {
-                let productosAgotados = JSON.parse(localStorage.getItem("productosAgotados")) || [];
-                    
-                let index = productosAgotados.findIndex(id => id === productoID);
-                if (index > -1) {
-                  productosAgotados.splice(index, 1);
-                  localStorage.setItem("productosAgotados", JSON.stringify(productosAgotados));
-                }
-              }
+            }
+          } else {
+            if (objectoStorage.cantidad < stock) {
+              carritoCompras.push({ ...objectoStorage });
+              cantidadSpan.textContent = objectoStorage.cantidad;
+              actualizarCarrito();
             }
           }
+        
+          localStorage.setItem("productos", JSON.stringify(carritoCompras));
+        
+          // ✅ Si hay stock, remover el producto de productosAgotados (si está)
+          if (stock > 0) {
+            let productosAgotados = JSON.parse(localStorage.getItem("productosAgotados")) || [];
+          
+            let index = productosAgotados.findIndex(id => id === productoID);
+            if (index > -1) {
+              productosAgotados.splice(index, 1);
+              localStorage.setItem("productosAgotados", JSON.stringify(productosAgotados));
+            }
+          }
+      }
 
-             
-               // Botón eliminar cantidad
-               if (e.target.matches(".boton-eliminar")) {
-                 e.preventDefault();
-                 if (primerProducto.cantidad > 0) {
-                   primerProducto.cantidad--;
-                     const cantidadSpan = e.target.closest(".quantity-selector-container").querySelector(".quantity-selector-1");
-                     cantidadSpan.textContent = primerProducto.cantidad || 0;
-                   } 
-
-               if (primerProducto.cantidad === 0) {
-                const index = carritoCompras.findIndex( 
-
-                  (producto) =>
-                    producto.producto_id.toString() === productoID.toString() &&
-                    producto.color.toString().trim().toLowerCase() === color.toString().trim().toLowerCase() &&
-                    producto.talle.toString().trim().toLowerCase() === sizes.toString().trim().toLowerCase()
+        
+       
+         // BOTÓN ELIMINAR
+         if (e.target.matches(".boton-eliminar")) {
+           e.preventDefault();
+           if (primerProducto.cantidad > 0) {
+           primerProducto.cantidad--;
+             cantidadSpan.textContent = primerProducto.cantidad || 0;
+           }
+       
+         if (primerProducto.cantidad === 0) {
+              const index = carritoCompras.findIndex(
+                (producto) =>
+                  producto.producto_id.toString() === productoID.toString() &&
+                  producto.color.toString().trim().toLowerCase() === color.toString().trim().toLowerCase() &&
+                  producto.talle.toString().trim().toLowerCase() === talleNombre.toString().trim().toLowerCase()
+              );
+            
+              if (index !== -1) {
+                carritoCompras.splice(index, 1);
+              
+                // Buscar si la combinación de talle y color está agotada
+                const productoSeleccionado = productos.find(p => p.producto_id === productoID);
+              
+                const varianteAgotada = productoSeleccionado?.productos_variantes?.find(v =>
+                  v?.colores?.insertar_color?.toString().trim().toLowerCase() === color.toString().trim().toLowerCase() &&
+                  v?.talles?.insertar_talle?.toString().trim().toLowerCase() === talleNombre.toString().trim().toLowerCase()
                 );
               
-                if (index !== -1) {
-                  carritoCompras.splice(index, 1);
-                
-                  // Verificamos si el stock de esa combinación es 0
-                  const productoSeleccionado = productos.find(p => p.producto_id === productoID);
-                  const variante = productoSeleccionado?.productos_variantes?.find(v =>
-                    v?.colores?.insertar_color?.toString().trim().toLowerCase() === color.toString().trim().toLowerCase() &&
-                    v?.talles?.insertar_talle?.toString().trim().toLowerCase() === sizes.toString().trim().toLowerCase()
-                  );
-                
-                  if (variante?.stock === 0) {
-                    alert("Este talle con este color está agotado y fue eliminado del carrito.");
-                  }
+                if (varianteAgotada?.stock === 0) {
+                  alert("Este talle con este color está agotado y fue eliminado del carrito.");
                 }
-              
-                // Elimina el modal correspondiente al producto
-                const modalId = `${productoID}-${color}-${sizes}`;
-                const modal = document.getElementById(modalId);
-                if (modal) modal.remove();
               }
             
-                 localStorage.setItem("productos", JSON.stringify(carritoCompras));
-                 actualizarCarrito()
-               }
+              const modal = document.querySelector('.nuevo-modal');
+              if (modal) {
+                modal.remove();
+              }
+            }
+
+           localStorage.setItem("productos", JSON.stringify(carritoCompras));
+           actualizarCarrito()
+         } 
+
+
        });
        
        
