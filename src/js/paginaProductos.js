@@ -290,7 +290,7 @@ async function selectorCategorys() {
 
      
        stockAgotado(section, producto.producto_id,filtradoCategoryYProduct);
-       recuperarImagenes( imagenDom) 
+       recuperarImagenes( imagenDom,filtradoCategoryYProduct) 
        
 
      }); 
