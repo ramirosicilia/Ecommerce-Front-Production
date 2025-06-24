@@ -574,6 +574,7 @@ function validarCombinacion(talle, color) {
   }
 
   localStorage.setItem("productos", JSON.stringify(carritoCompras));
+  localStorage.setItem("carritoActivo", "true");
   actualizarCarrito();
 
   
@@ -688,9 +689,17 @@ function validarCombinacion(talle, color) {
 
            }
       
-
+         
     
-        let carritoCompras=JSON.parse(localStorage.getItem('productos'))||[]
+        let carritoCompras 
+
+         if (localStorage.getItem("carritoActivo")) {
+
+             carritoCompras = JSON.parse(localStorage.getItem("productos")) || [];
+          } else {
+            console.log('no se obtuvo el nuevo carrito')
+          }
+
     
              const primerProducto=carritoCompras?.find(p=>p.producto_id===productoID&&
                                                       p?.color.toString().trim()===color.toString().trim() && p?.talle.toString().trim()===sizes.toString().trim()
@@ -778,6 +787,7 @@ function validarCombinacion(talle, color) {
             
               // ✅ Actualizar localStorage del carrito
               localStorage.setItem("productos", JSON.stringify(carritoCompras));
+              localStorage.setItem("carritoActivo", "true");
               actualizarCarrito();
             
               // ✅ Verificamos si estaba marcado como agotado y lo sacamos
@@ -833,7 +843,9 @@ function validarCombinacion(talle, color) {
                 if (modal) modal.remove();
               }
             
-                 localStorage.setItem("productos", JSON.stringify(carritoCompras));
+                   localStorage.setItem("productos", JSON.stringify(carritoCompras));
+                   localStorage.removeItem("carritoActivo"); // 🔴 El carrito quedó vacío
+               
                  actualizarCarrito()
                }
              });
@@ -841,6 +853,7 @@ function validarCombinacion(talle, color) {
              if (carritoCompras.length === 0) { 
             
               localStorage.removeItem("productos"); // Limpia si ya no hay nada
+                localStorage.removeItem("carritoActivo"); // 🔴 El carrito quedó vacío
               actualizarCarrito()
             } 
 
@@ -851,10 +864,16 @@ function validarCombinacion(talle, color) {
 
 
 
-      async function manejarCantidadesCarrito(productoID,sizes,color){ 
-       
+      async function manejarCantidadesCarrito(productoID,sizes,color){  
 
-        let carritoCompras=JSON.parse(localStorage.getItem('productos'))||[]
+        let carritoCompras
+       
+        if (localStorage.getItem("carritoActivo")) {
+           carritoCompras = JSON.parse(localStorage.getItem("productos")) || [];
+        } else {
+         console.log('no se reinicio el carrito ')
+        }
+
 
         const usuarioNombre=JSON.parse(localStorage.getItem('usuario'))||[]
      
@@ -1010,6 +1029,7 @@ function validarCombinacion(talle, color) {
         localStorage.setItem('stocks', JSON.stringify(stockStorage));
 
          localStorage.setItem('productos', JSON.stringify(carritoCompras));
+         localStorage.setItem("carritoActivo", "true");
       
      
          document.querySelector('.nuevo-modal')?.remove()
@@ -1101,6 +1121,7 @@ function validarCombinacion(talle, color) {
           }
         
           localStorage.setItem("productos", JSON.stringify(carritoCompras));
+          localStorage.setItem("carritoActivo", "true");
         
           // ✅ Si hay stock, remover el producto de productosAgotados (si está)
           if (stock > 0) {
@@ -1117,50 +1138,52 @@ function validarCombinacion(talle, color) {
         
        
          // BOTÓN ELIMINAR
-        if (e.target.matches(".boton-eliminar")) {
-  e.preventDefault();
+    if (e.target.matches(".boton-eliminar")) {
+      e.preventDefault();
 
   // ⛑️ Recalculá el producto actualizado en ese momento
-  let productoActual = carritoCompras.find(producto => 
-    producto.producto_id.toString().trim() === productoID.toString().trim() &&
-    producto.color.toString().trim() === color.toString().trim() &&
-    producto.talle.toString().trim() === sizes.toString().trim()
-  );
-
-  if (productoActual && productoActual.cantidad > 0) {
-    productoActual.cantidad--;
-    cantidadSpan.textContent = productoActual.cantidad || 0;
-  }
-
-  if (productoActual && productoActual.cantidad === 0) {
-    const index = carritoCompras.findIndex(
-      (producto) =>
-        producto.producto_id.toString() === productoID.toString() &&
-        producto.color.toString().trim().toLowerCase() === color.toString().trim().toLowerCase() &&
-        producto.talle.toString().trim().toLowerCase() === talleNombre.toString().trim().toLowerCase()
-    );
-
-    if (index !== -1) {
-      carritoCompras.splice(index, 1);
-
-      const productoSeleccionado = productos.find(p => p.producto_id === productoID);
-      const varianteAgotada = productoSeleccionado?.productos_variantes?.find(v =>
-        v?.colores?.insertar_color?.toString().trim().toLowerCase() === color.toString().trim().toLowerCase() &&
-        v?.talles?.insertar_talle?.toString().trim().toLowerCase() === talleNombre.toString().trim().toLowerCase()
+      let productoActual = carritoCompras.find(producto => 
+        producto.producto_id.toString().trim() === productoID.toString().trim() &&
+        producto.color.toString().trim() === color.toString().trim() &&
+        producto.talle.toString().trim() === sizes.toString().trim()
       );
-
-      if (varianteAgotada?.stock === 0) {
-        alert("Este talle con este color está agotado y fue eliminado del carrito.");
+    
+      if (productoActual && productoActual.cantidad > 0) {
+        productoActual.cantidad--;
+        cantidadSpan.textContent = productoActual.cantidad || 0;
       }
-    }
-
-    const modal = document.querySelector('.nuevo-modal');
-    if (modal) modal.remove();
-  }
-
-  localStorage.setItem("productos", JSON.stringify(carritoCompras));
-  actualizarCarrito();
-}
+    
+      if (productoActual && productoActual.cantidad === 0) {
+        const index = carritoCompras.findIndex(
+          (producto) =>
+            producto.producto_id.toString() === productoID.toString() &&
+            producto.color.toString().trim().toLowerCase() === color.toString().trim().toLowerCase() &&
+            producto.talle.toString().trim().toLowerCase() === talleNombre.toString().trim().toLowerCase()
+        );
+      
+        if (index !== -1) {
+          carritoCompras.splice(index, 1);
+        
+          const productoSeleccionado = productos.find(p => p.producto_id === productoID);
+          const varianteAgotada = productoSeleccionado?.productos_variantes?.find(v =>
+            v?.colores?.insertar_color?.toString().trim().toLowerCase() === color.toString().trim().toLowerCase() &&
+            v?.talles?.insertar_talle?.toString().trim().toLowerCase() === talleNombre.toString().trim().toLowerCase()
+          );
+        
+          if (varianteAgotada?.stock === 0) {
+            alert("Este talle con este color está agotado y fue eliminado del carrito.");
+          }
+        }
+      
+        const modal = document.querySelector('.nuevo-modal');
+        if (modal) modal.remove(); 
+           localStorage.removeItem("carritoActivo"); // 🔴 El carrito quedó vacío
+      }
+    
+      localStorage.setItem("productos", JSON.stringify(carritoCompras));
+   
+      actualizarCarrito();
+   }
 
 
 
