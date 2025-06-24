@@ -1090,7 +1090,17 @@ function validarCombinacion(talle, color) {
             if (productoActual.cantidad < stock) {
               productoActual.cantidad++;
               cantidadSpan.textContent = productoActual.cantidad;
-              actualizarCarrito()
+              actualizarCarrito() 
+
+               if (stock > 0) {
+                let productosAgotados = JSON.parse(localStorage.getItem("productosAgotados")) || [];
+                    
+                let index = productosAgotados.findIndex(id => id === productoID);
+                if (index > -1) {
+                  productosAgotados.splice(index, 1);
+                  localStorage.setItem("productosAgotados", JSON.stringify(productosAgotados));
+                }
+              }
             }
           } else {
             if (objectoStorage.cantidad < stock) {
