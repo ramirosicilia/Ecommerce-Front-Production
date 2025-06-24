@@ -1096,9 +1096,7 @@ async function selectorCategorys() {
 
    if (localStorage.getItem("carritoActivo")) {
      carrito = JSON.parse(localStorage.getItem("productos")) || [];
-    } else {
-      iconCart.textContent = "0"; // opcional
-    }
+    } 
   
     if (iconCart) {
       iconCart.innerHTML = carrito.reduce((acc, producto) => acc + (producto.cantidad ?? 0), 0) || 0;
@@ -1117,9 +1115,7 @@ async function selectorCategorys() {
     if (localStorage.getItem("carritoActivo")) {
         carrito = JSON.parse(localStorage.getItem("productos")) || [];
 
-    } else {
-      iconCart.textContent = "0"; // opcional
-    }
+    } 
 
 
   
