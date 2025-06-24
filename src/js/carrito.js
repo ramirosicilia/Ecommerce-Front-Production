@@ -4,7 +4,7 @@ import { enviarCompra } from "./comprar.js";
 
 
  
-  const productosEncarrito = JSON.parse(localStorage.getItem("productos")) || [];
+ let productosEncarrito = JSON.parse(localStorage.getItem("productos")) || [];
 
 
 let summary=document.getElementById("summary") 
@@ -326,8 +326,8 @@ function agregarProductoAlCarrito(e) {
 
       // Buscar variante en productos para stock y alerta 
       
-      const productoSeleccionado = productosEncarrito.find(p => p.producto_id === botonID);
-      const varianteAgotada = productoSeleccionado?.productos_variantes?.find(v =>
+   let productoSeleccionado = productosEncarrito.find(p => p.producto_id === botonID);
+    let varianteAgotada = productoSeleccionado?.productos_variantes?.find(v =>
         v?.colores?.color_id === colorID &&
         v?.talles?.talle_id === talleID
       );
