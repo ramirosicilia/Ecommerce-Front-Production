@@ -1010,30 +1010,36 @@ async function selectorCategorys() {
     }
 
     // Botón agregar cantidad
-    if (e.target.matches(".boton-agregar")) {
-      e.preventDefault();
-      if (primerProducto.cantidad < (stock ?? 0) && primerProducto.stock>0) { 
+   if (e.target.matches(".boton-agregar")) {
+  e.preventDefault();
 
+  // Siempre recalcular el producto actual desde el carrito
+  let productoActual = carritoCompras.find(producto => 
+    producto.producto_id.toString().trim() === productoID.toString().trim() &&
+    producto.color.toString().trim() === color.toString().trim() &&
+    producto.talle.toString().trim() === sizes.toString().trim()
+  );
 
-        primerProducto.cantidad++;
-        if (cantidadSpan) cantidadSpan.textContent = primerProducto.cantidad;
-        localStorage.setItem('productos', JSON.stringify(carritoCompras)); 
-         
-         let productosAgotados=JSON.parse(localStorage.getItem("productosAgotados"))||[]
+  if (productoActual && productoActual.cantidad < stock) {
+    productoActual.cantidad++;
 
-            let index=productosAgotados.findIndex(id=>id===productoID) 
+    const cantidadSpan = e.target.closest(".quantity-selector-container")?.querySelector(".quantity-selector");
+    if (cantidadSpan) cantidadSpan.textContent = productoActual.cantidad;
 
-            if(index > -1){ 
-           productosAgotados.splice(index,1) 
+    localStorage.setItem("productos", JSON.stringify(carritoCompras));
+    actualizarCarrito();
 
-            localStorage.setItem("productosAgotados",JSON.stringify(productosAgotados)) 
-
-            }
-
-         
+    if (stock > 0) {
+      let productosAgotados = JSON.parse(localStorage.getItem("productosAgotados")) || [];
+      let index = productosAgotados.findIndex(id => id === productoID);
+      if (index > -1) {
+        productosAgotados.splice(index, 1);
+        localStorage.setItem("productosAgotados", JSON.stringify(productosAgotados));
       }
-        actualizarCarrito(); 
-      }
+    }
+  }
+}
+
 
       // Botón eliminar cantidad
       if (e.target.matches(".boton-eliminar")) {
