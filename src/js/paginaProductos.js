@@ -995,7 +995,9 @@ async function selectorCategorys() {
   } 
 
      window.addEventListener("pageshow", function () {
+       actualizarCarrito()
      document.querySelector(".modal-2")?.remove();
+    
   });
 
   // Delegación de eventos dentro del modal
