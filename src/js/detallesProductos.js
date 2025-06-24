@@ -28,20 +28,27 @@ const imgID= JSON.parse(localStorage.getItem("id-imagen"));
 
 
 async function reendedizarDetallesProductos() {
+  
   await obtenerDatos();
 
-  const productosActivos = productos.filter(producto => producto?.activacion === true);
-  const categoriasFiltradas = categorias.filter(categoria => categoria?.activo === true);
-  const productosActivosFiltrados = productosActivos.filter(producto =>
+  const productosActivos= productos.filter(producto => producto?.activacion === true);
+  const categoriasFiltradas= categorias.filter(categoria => categoria?.activo === true);
+  const productosActivosFiltrados= productosActivos.filter(producto =>
     categoriasFiltradas.some(categoria => categoria.categoria_id === producto.categoria_id)
   );
 
   let varianteSeleccionada;
-  let imagenSeleccionada;
-  const productoSeleccionado = productosActivosFiltrados.find(producto => {
-    const variante = producto.productos_variantes.find(v => v.producto_id === imgID);
+  let imagenSeleccionada; // ✅ declarar variable para la imagen
+  const productoSeleccionado= productosActivosFiltrados.find(producto => {
+    const variante= producto.productos_variantes.find(v =>
+      v.producto_id === imgID 
+    );
+
     if (variante) {
-      imagenSeleccionada = producto.imagenes.find(img => img.producto_id === imgID);
+      // ✅ Guardar la imagen relacionada
+      imagenSeleccionada = producto.imagenes.find(img =>
+        img.producto_id === imgID
+      );
       varianteSeleccionada = variante;
       return true;
     }
@@ -53,9 +60,11 @@ async function reendedizarDetallesProductos() {
     return;
   }
 
+  // ✅ Usar la imagen seleccionada
   const imagenPrincipal = imagenSeleccionada?.urls?.[0] || './images/default.jpg';
   console.log(imagenPrincipal);
 
+  // Miniaturas (excluye la primera imagen, que ya se usa como principal)
   const todasLasImagenes = imagenSeleccionada?.urls || [];
   const miniaturas = todasLasImagenes.slice(1).map(url => `
     <img src="${url}" class="url" style="width: 70px; height: 70px; border-radius: 5px; cursor: pointer; transition: transform 0.3s, box-shadow 0.3s; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);"
@@ -65,7 +74,8 @@ async function reendedizarDetallesProductos() {
 
   const nombre = productoSeleccionado?.nombre_producto || "Producto sin nombre";
   const descripcion = productoSeleccionado?.descripcion || "Sin descripción";
-  const detalle = productoSeleccionado?.detalles || "Sin detalle";
+  const detalle= productoSeleccionado?.detalles || "Sin detalle";
+
   const precioBase = productoSeleccionado?.precio || 0;
   const precio = ((precioBase ?? 0) / 100).toFixed(2);
   const precioOriginal = ((precioBase ?? 0) * 1.3 / 100).toFixed(2);
@@ -74,27 +84,34 @@ async function reendedizarDetallesProductos() {
   const talles = productoSeleccionado.productos_variantes.map(v => v.talles);
   const colores = productoSeleccionado.productos_variantes.map(v => v.colores);
 
-  const tallesHTML = talles.filter(t => t && t.insertar_talle).map(t => `
-    <button class="insertar_talle" style="padding: 10px; border: 1px solid gray; background: white; cursor: pointer; border-radius: 5px; margin: 5px;">
-      ${t.insertar_talle}
-    </button>
-  `).join('');
+  // ✅ Filtrar los talles que NO sean undefined
+  const tallesHTML = talles
+    .filter(talle => talle && talle?.insertar_talle) // filtra si talle es null o undefined o si insertar_talle es falsy
+    .map(talle => `
+      <button class="insertar_talle" style="padding: 10px; border: 1px solid gray; background: white; cursor: pointer; border-radius: 5px; margin: 5px;">
+        ${talle?.insertar_talle}
+      </button>
+    `).join('');
 
-  const coloresHTML = colores.filter(c => c && c.insertar_color).map(c => `
-    <button class="insertar_color" style="padding: 10px; border: 1px solid gray; background: white; cursor: pointer; border-radius: 5px; margin: 5px;">
-      ${c.insertar_color}
-    </button>
-  `).join('');
+  const coloresHTML = colores
+    .filter(color => color && color?.insertar_color)
+    .map(color => `
+      <button class="insertar_color" style="padding: 10px; border: 1px solid gray; background: white; cursor: pointer; border-radius: 5px; margin: 5px;">
+        ${color?.insertar_color}
+      </button>
+    `).join('');
 
   container.innerHTML = `
     <div style="max-width: 1200px; width: 100%; display: flex; justify-content: center; align-items: center; gap: 50px; flex-wrap: wrap;">
       <div style="flex: 1; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 25px;">
         <img src="${imagenPrincipal}" id="imagen-principal" alt="${nombre}"
              style="width: 300px; height: auto; margin-bottom: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); animation: rotate 5s infinite linear; transition: transform 0.3s ease;">
+        
         <div style="display: flex; justify-content: center; gap: 2rem;">
           ${miniaturas}
         </div>
       </div>
+
       <div style="flex: 1; max-width: 500px; padding-left: 20px;">
         <h1 style="font-size: 2rem; font-weight: bold; color: #333;">${nombre}</h1>
         <p>${detalle}</p>
@@ -103,102 +120,143 @@ async function reendedizarDetallesProductos() {
           <span style="text-decoration: line-through; color: gray; margin-left: 10px;">$/ ${precioOriginal}</span>
           <span style="background-color: red; color: white; padding: 2px 5px; border-radius: 3px; font-size: 14px;">-${descuento}%</span>
         </p>
+
         <h3>Talla:</h3>
         <div>${tallesHTML}</div>
+
         <h3>Colores:</h3>
         <div>${coloresHTML}</div>
+        
         <div style="overflow-y: auto; height: 200px">
-          <h3>Descripción del producto</h3>
-          <p style="line-height: 25px">${descripcion}</p>
+
+        <h3>Descripción del producto</h3>
+        <p style="line-height: 25px">${descripcion}</p>
+
         </div>
+
         <h3>Opciones de entrega:</h3>
         <p>✔ Llega mañana | ✔ Retira mañana</p>
+
         <div>
           <button id=boton-descripcion style="padding: 12px 20px; border: none; font-size: 16px; border-radius: 5px; cursor: pointer; margin: 10px 0; background:rgb(255, 0, 179); color: white;">Elije tus opciones</button>
           <button id=boton-agregar-carrito style="padding: 12px 20px; display: none; border: none; font-size: 16px; border-radius: 5px; cursor: pointer; margin: 10px 0; background:rgb(255, 0, 179); color: white;">agregar al carrito</button>
+
         </div>
       </div>
     </div>
   `;
 
-  const coloresDescripcion = document.querySelectorAll(".insertar_color");
-  const tallesDescripcion = document.querySelectorAll(".insertar_talle");
-  const botonDescripcion = document.getElementById("boton-descripcion");
-  const botoAgregarCarrito = document.getElementById("boton-agregar-carrito");
+  const coloresDescripcion=document.querySelectorAll(".insertar_color")
+  const tallesDescripcion=document.querySelectorAll(".insertar_talle") 
+  const botonDescripcion=document.getElementById("boton-descripcion") 
+  const botoAgregarCarrito=document.getElementById("boton-agregar-carrito")
+  console.log(coloresDescripcion,tallesDescripcion)
 
   setTimeout(() => {
     const miniaturas = document.querySelectorAll('.url');
     const imagenPrincipal = document.querySelector('#imagen-principal');
+  
+    // Guardamos el src original de la imagen principal (para que siempre exista)
     let srcPrincipalActual = imagenPrincipal.src;
+  
     miniaturas.forEach(miniatura => {
       miniatura.addEventListener('mouseenter', () => {
+        // Guardamos el src actual de la miniatura
         const srcMini = miniatura.src;
+  
+        // Intercambiamos: la miniatura recibe el actual de la principal,
+        // la principal recibe el de la miniatura
         miniatura.src = srcPrincipalActual;
         imagenPrincipal.src = srcMini;
+  
+        // Actualizamos el src actual de la principal para el próximo cambio
         srcPrincipalActual = srcMini;
       });
     });
   }, 50);
 
-  let seleccion = { color: null, talle: null };
+  let seleccion = {
+    color: null,
+    talle: null
+  };
 
-  function obtenerStockYExistencia(productoID, talle, color) {
+  function obtenerStock(productoID, talle, color) {
     const producto = productos.find(p => p.producto_id === productoID);
-    if (!producto) return { existe: false, stock: null };
+    if (!producto) return null;
+        
     const variante = producto.productos_variantes.find(v =>
       v.talles?.insertar_talle?.toLowerCase().trim() === talle.toLowerCase().trim() &&
       v.colores?.insertar_color?.toLowerCase().trim() === color.toLowerCase().trim()
     );
-    if (!variante) return { existe: false, stock: null };
-    return { existe: true, stock: variante.stock ?? 0 };
-  }
-
-  function validarSeleccion() {
-    if (seleccion.color && seleccion.talle) {
-      const { existe, stock } = obtenerStockYExistencia(imgID, seleccion.talle, seleccion.color);
-      if (!existe) {
-        alert("No existe esa combinación de talle y color.");
-        botoAgregarCarrito.style.display = "none";
-        botonDescripcion.style.display = "block";
-        botonDescripcion.disabled = true;
-        return;
-      }
-      if (stock === 0) {
-        alert("Esta combinación está agotada.");
-        botoAgregarCarrito.style.display = "none";
-        botonDescripcion.style.display = "block";
-        botonDescripcion.disabled = true;
-        return;
-      }
-      botoAgregarCarrito.style.display = "block";
-      botonDescripcion.style.display = "none";
-      botonDescripcion.disabled = false;
-    } else {
-      botoAgregarCarrito.style.display = "none";
-      botonDescripcion.style.display = "block";
-      botonDescripcion.disabled = true;
-    }
+  
+    return variante?.stock ?? null;
   }
 
   coloresDescripcion.forEach(color => {
-    color.addEventListener("click", e => {
+    color.addEventListener("click", async (e) => {
+      botonDescripcion.disabled = true;
       coloresDescripcion.forEach(c => c.classList.remove("seleccion_opciones_colores"));
       e.target.classList.add("seleccion_opciones_colores");
+
       seleccion.color = color.textContent;
-      validarSeleccion();
+
+      // Si ya hay talle seleccionado, chequeamos stock
+      if (seleccion.color && seleccion.talle) {
+        const stock = obtenerStock(imgID, seleccion.talle, seleccion.color);
+
+        if (stock === 0 || stock === null) {
+          alert("Este producto está agotado en esa combinación.");
+          botoAgregarCarrito.style.display = "none";
+          botonDescripcion.style.display = "block";
+          botonDescripcion.disabled = true;
+          return;
+        }
+
+        botonDescripcion.disabled = false;
+        botonDescripcion.style.display = "none";
+        botoAgregarCarrito.style.display = "block";
+      } else {
+        // Si no hay talle seleccionado, mostramos botón para elegir opciones
+        botoAgregarCarrito.style.display = "none";
+        botonDescripcion.style.display = "block";
+        botonDescripcion.disabled = true;
+      }
     });
   });
 
   tallesDescripcion.forEach(talle => {
-    talle.addEventListener("click", e => {
+    talle?.addEventListener("click", async (e) => {
+      botonDescripcion.disabled = true;
       tallesDescripcion.forEach(t => t.classList.remove("seleccion_opciones_talles"));
       e.target.classList.add("seleccion_opciones_talles");
+
       seleccion.talle = talle.textContent;
-      validarSeleccion();
+
+      // ✅ VERIFICAR SI HAY COLOR SELECCIONADO TAMBIÉN
+      if (seleccion.color && seleccion.talle) {
+        const stock = obtenerStock(imgID, seleccion.talle, seleccion.color);
+
+        if (stock === 0 || stock === null) {
+          alert("Este producto está agotado en esa combinación.");
+          botoAgregarCarrito.style.display = "none";
+          botonDescripcion.style.display = "block";
+          botonDescripcion.disabled = true;
+          return; // ⛔ cortás acá
+        }
+
+        // ✅ SI HAY STOCK
+        botonDescripcion.disabled = false;
+        botonDescripcion.style.display = "none";
+        botoAgregarCarrito.style.display = "block";
+      } else {
+        botoAgregarCarrito.style.display = "none";
+        botonDescripcion.style.display = "block";
+        botonDescripcion.disabled = true;
+      }
     });
   });
 
-  let producto_ID = imgID;
+  let producto_ID=imgID
   gestionarTallesYcolores(producto_ID, seleccion);
 }
 
