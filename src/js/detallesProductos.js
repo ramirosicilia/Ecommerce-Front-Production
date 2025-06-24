@@ -978,16 +978,14 @@ function validarCombinacion(talle, color) {
            
             console.log(carritoCompras)
       
-           let primerProducto = carritoCompras.find(producto => 
+           let primerProducto = carritoCompras?.find(producto => 
             producto.producto_id.toString().trim()===productoID.toString().trim()&&
             producto.color.toString().trim() === color.toString().trim()&&
             producto.talle.toString().trim() === sizes.toString().trim()
           );
                  console.log(primerProducto) 
 
-                 
- 
-
+                
                   if (stock === null) {
                     alert("No se pudo determinar el stock.");
                     return;
