@@ -1076,9 +1076,9 @@ function validarCombinacion(talle, color) {
            if (modal) modal.remove();
          }
        
-         if (e.target.matches(".boton-agregar")) {
+          if (e.target.matches(".boton-agregar")) {
           e.preventDefault();
-
+        
           // Recalcular el producto actual desde el carrito
           let productoActual = carritoCompras.find(producto => 
             producto.producto_id.toString().trim() === productoID.toString().trim() &&
@@ -1090,29 +1090,19 @@ function validarCombinacion(talle, color) {
             if (productoActual.cantidad < stock) {
               productoActual.cantidad++;
               cantidadSpan.textContent = productoActual.cantidad;
-              actualizarCarrito();
+              actualizarCarrito()
             }
           } else {
             if (objectoStorage.cantidad < stock) {
-              carritoCompras.push({ ...objectoStorage });
+              carritoCompras.push({...objectoStorage});
               cantidadSpan.textContent = objectoStorage.cantidad;
-              actualizarCarrito();
+              actualizarCarrito()
             }
           }
         
           localStorage.setItem("productos", JSON.stringify(carritoCompras));
         
-          // ✅ Si hay stock, remover el producto de productosAgotados (si está)
-          if (stock > 0) {
-            let productosAgotados = JSON.parse(localStorage.getItem("productosAgotados")) || [];
-          
-            let index = productosAgotados.findIndex(id => id === productoID);
-            if (index > -1) {
-              productosAgotados.splice(index, 1);
-              localStorage.setItem("productosAgotados", JSON.stringify(productosAgotados));
-            }
-          }
-      }
+        }
 
         
        
