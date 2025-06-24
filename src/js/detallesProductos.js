@@ -866,13 +866,7 @@ function validarCombinacion(talle, color) {
 
       async function manejarCantidadesCarrito(productoID,sizes,color){  
 
-        let carritoCompras
        
-        if (localStorage.getItem("carritoActivo")) {
-           carritoCompras = JSON.parse(localStorage.getItem("productos")) || [];
-        } else {
-         console.log('no se reinicio el carrito ')
-        }
 
 
         const usuarioNombre=JSON.parse(localStorage.getItem('usuario'))||[]
@@ -972,11 +966,18 @@ function validarCombinacion(talle, color) {
           console.log(talleNombre)
   
        
-         
-  
+            let carritoCompras 
 
+         if (localStorage.getItem("carritoActivo")) {
+
+             carritoCompras = JSON.parse(localStorage.getItem("productos")) || [];
+          } else {
+            console.log('no se obtuvo el nuevo carrito')
+          }
+  
+                  
            
-            console.log(carritoCompras)
+            console.log(carritoCompras) 
       
            let primerProducto = carritoCompras?.find(producto => 
             producto.producto_id.toString().trim()===productoID.toString().trim()&&
