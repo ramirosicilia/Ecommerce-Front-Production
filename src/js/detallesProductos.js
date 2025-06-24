@@ -1149,7 +1149,7 @@ function validarCombinacion(talle, color) {
       }
          
       localStorage.setItem("productos", JSON.stringify(carritoCompras)); 
-      
+
       if (productoActual && productoActual.cantidad === 0) {
         const index = carritoCompras.findIndex(
           (producto) =>
@@ -1173,8 +1173,12 @@ function validarCombinacion(talle, color) {
         }
       
         const modal = document.querySelector('.nuevo-modal');
-        if (modal) modal.remove(); 
-           localStorage.removeItem("carritoActivo"); // 🔴 El carrito quedó vacío
+        if (modal) modal.remove();  
+        
+        if (carritoCompras.length === 0) {
+            localStorage.removeItem("carritoActivo");
+          }
+       
       }
 
    
