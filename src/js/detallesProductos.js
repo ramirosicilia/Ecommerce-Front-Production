@@ -1061,8 +1061,6 @@ function validarCombinacion(talle, color) {
              
        
   
-       const cantidadSpan = section.querySelector(".quantity-selector span"); // referencia al <span>
-       
        section.addEventListener("click", (e) => {
          // SEGIR COMPRANDO
          if (e.target.matches(".seguir_comprando")) {
@@ -1076,23 +1074,21 @@ function validarCombinacion(talle, color) {
            if (modal) modal.remove();
          }
        
-          if (e.target.matches(".boton-agregar")) {
-          e.preventDefault();
-        
-          // Recalcular el producto actual desde el carrito
-          let productoActual = carritoCompras.find(producto => 
-            producto.producto_id.toString().trim() === productoID.toString().trim() &&
-            producto.color.toString().trim() === color.toString().trim() &&
-            producto.talle.toString().trim() === sizes.toString().trim()
-          );
-        
-          if (productoActual) {
-            if (productoActual.cantidad < stock) {
-              productoActual.cantidad++;
-              cantidadSpan.textContent = productoActual.cantidad;
-              actualizarCarrito() 
-
-               if (stock > 0) {
+          if (target.matches(".boton-agregar")) {
+            e.preventDefault();
+          
+            if (primerProducto.cantidad < stock) {
+              primerProducto.cantidad++;
+            
+              const cantidadSpan = target.closest(".quantity-selector-container").querySelector(".quantity-selector");
+              cantidadSpan.textContent = primerProducto.cantidad;
+            
+              // ✅ Actualizar localStorage del carrito
+              localStorage.setItem("productos", JSON.stringify(carritoCompras));
+              actualizarCarrito();
+            
+              // ✅ Verificamos si estaba marcado como agotado y lo sacamos
+              if (stock > 0) {
                 let productosAgotados = JSON.parse(localStorage.getItem("productosAgotados")) || [];
                     
                 let index = productosAgotados.findIndex(id => id === productoID);
@@ -1102,63 +1098,51 @@ function validarCombinacion(talle, color) {
                 }
               }
             }
-          } else {
-            if (objectoStorage.cantidad < stock) {
-              carritoCompras.push({...objectoStorage});
-              cantidadSpan.textContent = objectoStorage.cantidad;
-              actualizarCarrito()
-            }
           }
-        
-          localStorage.setItem("productos", JSON.stringify(carritoCompras));
-        
-        }
 
-        
-       
-         // BOTÓN ELIMINAR
-         if (e.target.matches(".boton-eliminar")) {
-           e.preventDefault();
-           if (primerProducto.cantidad > 0) {
-           primerProducto.cantidad--;
-             cantidadSpan.textContent = primerProducto.cantidad || 0;
-           }
-       
-         if (primerProducto.cantidad === 0) {
-              const index = carritoCompras.findIndex(
-                (producto) =>
-                  producto.producto_id.toString() === productoID.toString() &&
-                  producto.color.toString().trim().toLowerCase() === color.toString().trim().toLowerCase() &&
-                  producto.talle.toString().trim().toLowerCase() === talleNombre.toString().trim().toLowerCase()
-              );
-            
-              if (index !== -1) {
-                carritoCompras.splice(index, 1);
-              
-                // Buscar si la combinación de talle y color está agotada
-                const productoSeleccionado = productos.find(p => p.producto_id === productoID);
-              
-                const varianteAgotada = productoSeleccionado?.productos_variantes?.find(v =>
-                  v?.colores?.insertar_color?.toString().trim().toLowerCase() === color.toString().trim().toLowerCase() &&
-                  v?.talles?.insertar_talle?.toString().trim().toLowerCase() === talleNombre.toString().trim().toLowerCase()
+             
+               // Botón eliminar cantidad
+               if (target.matches(".boton-eliminar")) {
+                 e.preventDefault();
+                 if (primerProducto.cantidad > 0) {
+                   primerProducto.cantidad--;
+                     const cantidadSpan = target.closest(".quantity-selector-container").querySelector(".quantity-selector");
+                     cantidadSpan.textContent = primerProducto.cantidad || 0;
+                   } 
+
+               if (primerProducto.cantidad === 0) {
+                const index = carritoCompras.findIndex( 
+
+                  (producto) =>
+                    producto.producto_id.toString() === productoID.toString() &&
+                    producto.color.toString().trim().toLowerCase() === color.toString().trim().toLowerCase() &&
+                    producto.talle.toString().trim().toLowerCase() === sizes.toString().trim().toLowerCase()
                 );
               
-                if (varianteAgotada?.stock === 0) {
-                  alert("Este talle con este color está agotado y fue eliminado del carrito.");
+                if (index !== -1) {
+                  carritoCompras.splice(index, 1);
+                
+                  // Verificamos si el stock de esa combinación es 0
+                  const productoSeleccionado = productos.find(p => p.producto_id === productoID);
+                  const variante = productoSeleccionado?.productos_variantes?.find(v =>
+                    v?.colores?.insertar_color?.toString().trim().toLowerCase() === color.toString().trim().toLowerCase() &&
+                    v?.talles?.insertar_talle?.toString().trim().toLowerCase() === sizes.toString().trim().toLowerCase()
+                  );
+                
+                  if (variante?.stock === 0) {
+                    alert("Este talle con este color está agotado y fue eliminado del carrito.");
+                  }
                 }
+              
+                // Elimina el modal correspondiente al producto
+                const modalId = `${productoID}-${color}-${sizes}`;
+                const modal = document.getElementById(modalId);
+                if (modal) modal.remove();
               }
             
-              const modal = document.querySelector('.nuevo-modal');
-              if (modal) {
-                modal.remove();
-              }
-            }
-
-           localStorage.setItem("productos", JSON.stringify(carritoCompras));
-           actualizarCarrito()
-         } 
-
-
+                 localStorage.setItem("productos", JSON.stringify(carritoCompras));
+                 actualizarCarrito()
+               }
        });
        
        
