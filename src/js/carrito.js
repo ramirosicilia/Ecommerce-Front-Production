@@ -1,15 +1,10 @@
 import { enviarCompra } from "./comprar.js"; 
 
 
-let productosEncarrito 
-let iconCart=document.querySelector("#cart-count")
 
- if (localStorage.getItem("carritoActivo")) {
-    productosEncarrito = JSON.parse(localStorage.getItem("productos")) || [];
-} else {
-  iconCart.textContent = "0"; // opcional
-}
 
+ 
+  const productosEncarrito = JSON.parse(localStorage.getItem("productos")) || [];
 
 
 let summary=document.getElementById("summary") 
@@ -186,7 +181,7 @@ botonVaciar.addEventListener('click',() => {
 
     if (confirmar) {
         localStorage.removeItem('productos'); // Borra solo 'productos' del localStorage
-         localStorage.removeItem('carritoActivo');
+   
         productosEncarrito = []; // Vacía el array correctamente 
        
         Swal.fire({
@@ -305,7 +300,7 @@ function agregarProductoAlCarrito(e) {
     if (typeof localStorage !== 'undefined') {
       try {
         localStorage.setItem("productos", JSON.stringify(productosEncarrito));
-         localStorage.removeItem("carritoActivo"); // 🔴 El carrito quedó vacío
+    
       } catch (e) {
         console.error("Error al guardar en localStorage", e);
       }
@@ -322,7 +317,7 @@ function agregarProductoAlCarrito(e) {
 
     // Si la cantidad es 0, eliminar el producto del carrito
     if (primerProducto.cantidad === 0) { 
-       localStorage.removeItem("carritoActivo"); // 🔴 El carrito quedó vacío
+ 
       productosEncarrito = productosEncarrito.filter(producto =>
         !(producto?.producto_id.toString().trim() === botonID.toString().trim() &&
           producto?.color.toString().trim() === colorID.toString().trim() &&
