@@ -748,7 +748,7 @@ async function selectorCategorys() {
 
   // --- PRIMERO calculamos el stock real ---
   let stock = null;
-
+  ca
   const productoSeleccionado = productos.find(producto => producto.producto_id === producto_ID);
   if (!productoSeleccionado) {
     alert("Producto no encontrado.");
@@ -810,7 +810,6 @@ async function selectorCategorys() {
 
   localStorage.setItem("productos", JSON.stringify(carritoCompras)); 
 
-  localStorage.setItem("carritoActivo", "true");
 
   // ✅ Guardar correctamente el stock después de haberlo encontrado
   let stockStorage = JSON.parse(localStorage.getItem('stocks')) || [];
@@ -1092,11 +1091,11 @@ async function selectorCategorys() {
   // Función para actualizar carrito en el icono
   export async function actualizarCarrito() { 
       const iconCart = document.getElementById("cart-count");
-      let carrito=[] 
+   
 
-   if (localStorage.getItem("carritoActivo")) {
-     carrito = JSON.parse(localStorage.getItem("productos")) || [];
-    } 
+  
+     const carrito = JSON.parse(localStorage.getItem("productos")) || [];
+    
   
     if (iconCart) {
       iconCart.innerHTML = carrito.reduce((acc, producto) => acc + (producto.cantidad ?? 0), 0) || 0;
@@ -1111,11 +1110,9 @@ async function selectorCategorys() {
 
   function restaurarCarrito() { 
       let iconCart = document.getElementById("cart-count");
-      let carrito=[]
-    if (localStorage.getItem("carritoActivo")) {
-        carrito = JSON.parse(localStorage.getItem("productos")) || [];
 
-    } 
+       const carrito = JSON.parse(localStorage.getItem("productos")) || [];
+
 
     if (iconCart) {
       iconCart.innerHTML = carrito.reduce((acc, producto) => acc + (producto.cantidad ?? 0), 0);

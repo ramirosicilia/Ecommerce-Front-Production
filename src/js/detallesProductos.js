@@ -691,14 +691,12 @@ function validarCombinacion(talle, color) {
       
          
     
-        let carritoCompras 
+      
 
-         if (localStorage.getItem("carritoActivo")) {
+     
 
-             carritoCompras = JSON.parse(localStorage.getItem("productos")) || [];
-          } else {
-            console.log('no se obtuvo el nuevo carrito')
-          }
+           let carritoCompras = JSON.parse(localStorage.getItem("productos")) || [];
+          
 
     
              const primerProducto=carritoCompras?.find(p=>p.producto_id===productoID&&
@@ -787,7 +785,7 @@ function validarCombinacion(talle, color) {
             
               // ✅ Actualizar localStorage del carrito
               localStorage.setItem("productos", JSON.stringify(carritoCompras));
-              localStorage.setItem("carritoActivo", "true");
+             
               actualizarCarrito();
             
               // ✅ Verificamos si estaba marcado como agotado y lo sacamos
@@ -852,7 +850,7 @@ function validarCombinacion(talle, color) {
              
              if (carritoCompras.length === 0) { 
             
-                localStorage.removeItem("carritoActivo"); // 🔴 El carrito quedó vacío
+              
               actualizarCarrito()
             } 
 
@@ -962,14 +960,12 @@ function validarCombinacion(talle, color) {
           console.log(talleNombre)
   
        
-            let carritoCompras 
+    
 
-         if (localStorage.getItem("carritoActivo")) {
+        
 
-             carritoCompras = JSON.parse(localStorage.getItem("productos")) || [];
-          } else {
-            console.log('no se obtuvo el nuevo carrito')
-          }
+           const carritoCompras = JSON.parse(localStorage.getItem("productos")) || [];
+          
   
                   
            
@@ -1024,7 +1020,7 @@ function validarCombinacion(talle, color) {
         localStorage.setItem('stocks', JSON.stringify(stockStorage));
 
          localStorage.setItem('productos', JSON.stringify(carritoCompras));
-         localStorage.setItem("carritoActivo", "true");
+      
       
      
          document.querySelector('.nuevo-modal')?.remove()
@@ -1116,8 +1112,7 @@ function validarCombinacion(talle, color) {
           }
         
           localStorage.setItem("productos", JSON.stringify(carritoCompras));
-          localStorage.setItem("carritoActivo", "true");
-        
+          
           // ✅ Si hay stock, remover el producto de productosAgotados (si está)
           if (stock > 0) {
             let productosAgotados = JSON.parse(localStorage.getItem("productosAgotados")) || [];
@@ -1176,7 +1171,7 @@ function validarCombinacion(talle, color) {
         if (modal) modal.remove();  
         
         if (carritoCompras.length === 0) {
-            localStorage.removeItem("carritoActivo");
+            localStorage.removeItem("productos");
           }
        
       }
