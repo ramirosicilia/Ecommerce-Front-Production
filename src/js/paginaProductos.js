@@ -958,7 +958,7 @@ async function selectorCategorys() {
 
   // Crear el modal con los datos del producto agregado
   const div = document.createElement("div");
-  div.innerHTML = `
+div.innerHTML = `
   <div style="background: white; border-radius: 12px; width: 640px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%);" class="modal-2">
     <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px; border-bottom: 1px solid #ddd;" class="modal-header">
       <h2 style="font-size: 18px; margin: 0; display: flex; align-items: center;">
@@ -977,7 +977,7 @@ async function selectorCategorys() {
         <div style="font-size: 18px; font-weight: bold;" class="product-price">Precio: $${primerProducto?.precio_producto ?? 0}</div>
         <div style="display: flex; align-items: center; margin-top: 8px;" class="quantity-selector">
           <button class="boton-eliminar" id="btn-eliminar" style="width: 28px; height: 28px; font-size: 16px; border: 1px solid #ccc; background: white; cursor: pointer;">-</button>
-          <span class="quantity-selector" style="width: 30px; text-align: center;">${primerProducto?.cantidad ?? 1}</span>
+          <span class="cantidad-span" style="width: 30px; text-align: center;">${primerProducto?.cantidad ?? 1}</span>
           <button class="boton-agregar" id="btn-agregar" style="width: 28px; height: 28px; font-size: 16px; border: 1px solid #ccc; background: white; cursor: pointer;">+</button>
         </div>
       </div>
@@ -988,102 +988,88 @@ async function selectorCategorys() {
     </div>
   </div>`;
 
- 
+if (!document.body.contains(div)) {
+  document.body.append(div);
+}
 
-  if (!document.body.contains(div)) {
-    document.body.append(div);
+div.addEventListener('click', (e) => {
+  const cantidadSpan = div.querySelector(".cantidad-span");
+
+  if (e.target.matches(".modal_close")) {
+    const modal = div.querySelector(".modal-2");
+    if (modal) modal.remove();
   }
 
-  // Delegación de eventos dentro del modal
-  div.addEventListener('click', (e) => {
-    const cantidadSpan = div.querySelector(".quantity-selector span");
+  if (e.target.matches(".seguir_comprando")) {
+    window.location.reload();
+  }
 
-    // Cerrar el modal
-    if (e.target.matches(".modal_close")) {
-      const modal = div.querySelector(".modal-2");
+  if (e.target.matches(".boton-agregar")) {
+    e.preventDefault();
+
+    let productoActual = carritoCompras.find(producto => 
+      producto.producto_id.toString().trim() === productoID.toString().trim() &&
+      producto.color.toString().trim() === color.toString().trim() &&
+      producto.talle.toString().trim() === sizes.toString().trim()
+    );
+
+    if (productoActual && productoActual.cantidad < stock) {
+      productoActual.cantidad++;
+      if (cantidadSpan) cantidadSpan.textContent = productoActual.cantidad;
+
+      localStorage.setItem("productos", JSON.stringify(carritoCompras));
+      actualizarCarrito();
+
+      if (stock > 0) {
+        let productosAgotados = JSON.parse(localStorage.getItem("productosAgotados")) || [];
+        let index = productosAgotados.findIndex(id => id === productoID);
+        if (index > -1) {
+          productosAgotados.splice(index, 1);
+          localStorage.setItem("productosAgotados", JSON.stringify(productosAgotados));
+        }
+      }
+    }
+  }
+
+  if (e.target.matches(".boton-eliminar")) {
+    e.preventDefault();
+
+    if (primerProducto.cantidad > 0 ) {
+      primerProducto.cantidad--;
+      if (cantidadSpan) cantidadSpan.textContent = primerProducto.cantidad || 0; 
+    } 
+    
+    if (primerProducto.cantidad === 0) {
+      const index = carritoCompras.findIndex(
+        (producto) =>
+          producto?.producto_id?.toString() === productoID.toString() &&
+          producto?.color?.toString().trim() === color.toString().trim() &&
+          producto?.talle?.toString().trim() === sizes.toString().trim()
+      );
+    
+      if (index !== -1) {
+        carritoCompras.splice(index, 1);
+      
+        const productoSeleccionado = productos.find(p => p.producto_id === productoID);
+        const variante = productoSeleccionado?.productos_variantes?.find(variacion =>
+          variacion?.talles?.insertar_talle?.toString().trim().toLowerCase() === sizes.toString().trim().toLowerCase() &&
+          variacion?.colores?.insertar_color?.toString().trim().toLowerCase() === color.toString().trim().toLowerCase()
+        );
+      
+        if (variante?.stock === 0) {
+          alert("Este talle con este color está agotado y fue eliminado del carrito.");
+        }
+      }
+    
+      const modal = document.querySelector('.modal-2');
       if (modal) modal.remove();
     }
 
-    // Seguir comprando (recargar página)
-    if (e.target.matches(".seguir_comprando")) {
-      window.location.reload();
-    }
-
-    // Botón agregar cantidad
-   if (e.target.matches(".boton-agregar")) {
-  e.preventDefault();
-
-  // Siempre recalcular el producto actual desde el carrito
-  let productoActual = carritoCompras.find(producto => 
-    producto.producto_id.toString().trim() === productoID.toString().trim() &&
-    producto.color.toString().trim() === color.toString().trim() &&
-    producto.talle.toString().trim() === sizes.toString().trim()
-  );
-
-  if (productoActual && productoActual.cantidad < stock) {
-    productoActual.cantidad++;
-
-    const cantidadSpan = e.target.closest(".quantity-selector-container")?.querySelector(".quantity-selector");
-    if (cantidadSpan) cantidadSpan.textContent = productoActual.cantidad;
-
     localStorage.setItem("productos", JSON.stringify(carritoCompras));
     actualizarCarrito();
-
-    if (stock > 0) {
-      let productosAgotados = JSON.parse(localStorage.getItem("productosAgotados")) || [];
-      let index = productosAgotados.findIndex(id => id === productoID);
-      if (index > -1) {
-        productosAgotados.splice(index, 1);
-        localStorage.setItem("productosAgotados", JSON.stringify(productosAgotados));
-      }
-    }
   }
-}
+});
 
-
-      // Botón eliminar cantidad
-      if (e.target.matches(".boton-eliminar")) {
-        e.preventDefault();
-
-        if (primerProducto.cantidad > 0 ) {
-          primerProducto.cantidad--;
-          if (cantidadSpan) cantidadSpan.textContent = primerProducto.cantidad || 0; 
-          
-    
-        } 
-        
-       if (primerProducto.cantidad === 0) {
-          const index = carritoCompras.findIndex(
-            (producto) =>
-              producto?.producto_id?.toString() === productoID.toString() &&
-              producto?.color?.toString().trim() === color.toString().trim() &&
-              producto?.talle?.toString().trim() === sizes.toString().trim()
-          );
-        
-          if (index !== -1) {
-            carritoCompras.splice(index, 1);
-          
-            // 🔍 Verificamos si ese talle y color ya no tiene stock
-            const productoSeleccionado = productos.find(p => p.producto_id === productoID);
-            const variante = productoSeleccionado?.productos_variantes?.find(variacion =>
-              variacion?.talles?.insertar_talle?.toString().trim().toLowerCase() === sizes.toString().trim().toLowerCase() &&
-              variacion?.colores?.insertar_color?.toString().trim().toLowerCase() === color.toString().trim().toLowerCase()
-            );
-          
-            if (variante?.stock === 0) {
-              alert("Este talle con este color está agotado y fue eliminado del carrito.");
-            }
-          }
-        
-          const modal = document.querySelector('.modal-2');
-          if (modal) modal.remove();
-        }
-
-
-        localStorage.setItem("productos", JSON.stringify(carritoCompras));
-        actualizarCarrito();
-      }
-    });
   }
 
   // Función para actualizar carrito en el icono
