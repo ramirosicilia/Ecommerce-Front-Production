@@ -1033,9 +1033,9 @@ function validarCombinacion(talle, color) {
                <p style="color: red;">color:${color}</p>
                <p style="color: red;">el maximo permitido:${stock} unidades</p>
                <div style="font-size: 18px; font-weight: bold;" class="product-price">Precio:$${precio}</div>
-               <div style="display: flex; align-items: center; margin-top: 8px;" class="quantity-selector">
+               <div style="display: flex; align-items: center; margin-top: 8px;" class="quantity-selector-container">
                  <button class="boton-eliminar" id="btn-eliminar" style="width: 28px; height: 28px; font-size: 16px; border: 1px solid #ccc; background: white; cursor: pointer;">-</button>
-                 <span class="quantity-selector" style="width: 30px; text-align: center;">${primerProducto?.cantidad || objectoStorage.cantidad}</span>
+                 <span class="quantity-selector-1" style="width: 30px; text-align: center;">${primerProducto?.cantidad || objectoStorage.cantidad}</span>
                  <button class="boton-agregar" id="btn-agregar" style="width: 28px; height: 28px; font-size: 16px; border: 1px solid #ccc; background: white; cursor: pointer;">+</button>
                </div>
              </div>
@@ -1076,11 +1076,11 @@ function validarCombinacion(talle, color) {
        
           if (e.target.matches(".boton-agregar")) {
             e.preventDefault();
-          
+                  
             if (primerProducto.cantidad < stock) {
               primerProducto.cantidad++;
             
-              const cantidadSpan = target.closest(".quantity-selector-container").querySelector(".quantity-selector");
+              const cantidadSpan = e.target.closest(".quantity-selector-container").querySelector(".quantity-selector-1");
               cantidadSpan.textContent = primerProducto.cantidad;
             
               // ✅ Actualizar localStorage del carrito
@@ -1106,7 +1106,7 @@ function validarCombinacion(talle, color) {
                  e.preventDefault();
                  if (primerProducto.cantidad > 0) {
                    primerProducto.cantidad--;
-                     const cantidadSpan = target.closest(".quantity-selector-container").querySelector(".quantity-selector");
+                     const cantidadSpan = e.target.closest(".quantity-selector-container").querySelector(".quantity-selector-1");
                      cantidadSpan.textContent = primerProducto.cantidad || 0;
                    } 
 
