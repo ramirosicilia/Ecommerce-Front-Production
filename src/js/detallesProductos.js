@@ -812,7 +812,7 @@ function validarCombinacion(talle, color) {
                      const cantidadSpan = target.closest(".quantity-selector-container").querySelector(".quantity-selector");
                      cantidadSpan.textContent = primerProducto.cantidad || 0;
                    } 
-
+                  localStorage.setItem("productos", JSON.stringify(carritoCompras));
                if (primerProducto.cantidad === 0) {
                 const index = carritoCompras.findIndex( 
 
@@ -843,8 +843,8 @@ function validarCombinacion(talle, color) {
                 if (modal) modal.remove();
               }
             
-                   localStorage.setItem("productos", JSON.stringify(carritoCompras));
-                   localStorage.removeItem("carritoActivo"); // 🔴 El carrito quedó vacío
+             
+              
                
                  actualizarCarrito()
                }
@@ -852,7 +852,6 @@ function validarCombinacion(talle, color) {
              
              if (carritoCompras.length === 0) { 
             
-              localStorage.removeItem("productos"); // Limpia si ya no hay nada
                 localStorage.removeItem("carritoActivo"); // 🔴 El carrito quedó vacío
               actualizarCarrito()
             } 
@@ -866,13 +865,10 @@ function validarCombinacion(talle, color) {
 
       async function manejarCantidadesCarrito(productoID,sizes,color){  
 
-       
-
 
         const usuarioNombre=JSON.parse(localStorage.getItem('usuario'))||[]
      
-       
-
+      
         
          let stock=null 
          let colorNombre=null
@@ -1151,7 +1147,9 @@ function validarCombinacion(talle, color) {
         productoActual.cantidad--;
         cantidadSpan.textContent = productoActual.cantidad || 0;
       }
-    
+         
+      localStorage.setItem("productos", JSON.stringify(carritoCompras)); 
+      
       if (productoActual && productoActual.cantidad === 0) {
         const index = carritoCompras.findIndex(
           (producto) =>
@@ -1178,8 +1176,7 @@ function validarCombinacion(talle, color) {
         if (modal) modal.remove(); 
            localStorage.removeItem("carritoActivo"); // 🔴 El carrito quedó vacío
       }
-    
-      localStorage.setItem("productos", JSON.stringify(carritoCompras));
+
    
       actualizarCarrito();
    }
