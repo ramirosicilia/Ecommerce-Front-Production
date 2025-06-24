@@ -1033,7 +1033,7 @@ function validarCombinacion(talle, color) {
                <p style="color: red;">color:${color}</p>
                <p style="color: red;">el maximo permitido:${stock} unidades</p>
                <div style="font-size: 18px; font-weight: bold;" class="product-price">Precio:$${precio}</div>
-               <div style="display: flex; align-items: center; margin-top: 8px;" class="quantity-selector-padre">
+               <div style="display: flex; align-items: center; margin-top: 8px;" class="quantity-selector-container">
                  <button class="boton-eliminar" id="btn-eliminar" style="width: 28px; height: 28px; font-size: 16px; border: 1px solid #ccc; background: white; cursor: pointer;">-</button>
                  <span class="quantity-selector" style="width: 30px; text-align: center;">${primerProducto?.cantidad || objectoStorage.cantidad}</span>
                  <button class="boton-agregar" id="btn-agregar" style="width: 28px; height: 28px; font-size: 16px; border: 1px solid #ccc; background: white; cursor: pointer;">+</button>

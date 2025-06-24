@@ -977,7 +977,7 @@ div.innerHTML = `
         <div style="font-size: 18px; font-weight: bold;" class="product-price">Precio: $${primerProducto?.precio_producto ?? 0}</div>
         <div style="display: flex; align-items: center; margin-top: 8px;" class="quantity-selector">
           <button class="boton-eliminar" id="btn-eliminar" style="width: 28px; height: 28px; font-size: 16px; border: 1px solid #ccc; background: white; cursor: pointer;">-</button>
-          <span class="cantidad-span" style="width: 30px; text-align: center;">${primerProducto?.cantidad ?? 1}</span>
+          <span class="quantity-selector" style="width: 30px; text-align: center;">${primerProducto?.cantidad ?? 1}</span>
           <button class="boton-agregar" id="btn-agregar" style="width: 28px; height: 28px; font-size: 16px; border: 1px solid #ccc; background: white; cursor: pointer;">+</button>
         </div>
       </div>
@@ -993,7 +993,7 @@ if (!document.body.contains(div)) {
 }
 
 div.addEventListener('click', (e) => {
-  const cantidadSpan = div.querySelector(".cantidad-span");
+  const cantidadSpan = div.querySelector(".quantity-selector");
 
   if (e.target.matches(".modal_close")) {
     const modal = div.querySelector(".modal-2");
