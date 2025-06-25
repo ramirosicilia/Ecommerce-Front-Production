@@ -49,7 +49,7 @@ const obtenerToken = async () => {
           <tr>
             <td>${payment.payment_id}</td>
             <td>${payment.status}</td>
-            <td>${payment.transaction_amount}</td>
+            <td>$${payment.transaction_amount}</td>
             <td>${nombreUsuario}</td>
             <td>
               <button class="btn btn-sm btn-info detalle-btn" data-id="${payment.payment_id}">Detalles</button>
