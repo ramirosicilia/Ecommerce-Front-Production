@@ -30,6 +30,7 @@ const obtenerToken = async () => {
  const fetchPayments = async () => {
   try {
     const usuarios = await obtenerUsuarios(); // primero traemos los usuarios
+    console.log(usuarios.user,"usuarios")
     const response = await axios.get(`${apiUrl}/pagos-mercadopago`);
     const pagosData = response.data;
 
@@ -37,7 +38,7 @@ const obtenerToken = async () => {
 
     if (pagosData?.length > 0) {
       tableBody.innerHTML = pagosData.map(payment => {
-        const nombreUsuario = usuarios.find(user => user.usuario_id === payment.usuario_id)?.usuario || 'Usuario desconocido';
+        const nombreUsuario = usuarios.user.find(user => user.usuario_id === payment.usuario_id)?.usuario || 'Usuario desconocido';
 
         return `
           <tr>
