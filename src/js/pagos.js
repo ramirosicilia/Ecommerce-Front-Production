@@ -3,7 +3,12 @@ import { obtenerUsuarios } from "./api/productos.js";
 
 
 
-const apiUrl=import.meta.env.VITE_PAYMENT_URL
+const apiUrl=import.meta.env.VITE_PAYMENT_URL  
+
+ document.addEventListener('DOMContentLoaded', async () => {
+    await obtenerToken();
+    await fetchPayments();
+  });
 
 const obtenerToken = async () => { 
 
@@ -47,7 +52,7 @@ const obtenerToken = async () => {
             <td>${payment.transaction_amount}</td>
             <td>${nombreUsuario}</td>
             <td>
-              <button class="btn btn-sm btn-info" onclick="viewDetails('${payment.payment_id}')">Detalles</button>
+              <button class="btn btn-sm btn-info detalle-btn" data-id="${payment.payment_id}">Detalles</button>
             </td>
           </tr>
         `;
@@ -66,16 +71,15 @@ const obtenerToken = async () => {
   }
 };
 
+    document.querySelectorAll('.detalle-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const id = btn.getAttribute('data-id');
+    alert(`Mostrando detalles para el pago: ${id}`);
+  });
+});
 
 
-  // Ver detalles (placeholder)
-  const viewDetails = (paymentId) => {
-    alert(`Mostrando detalles para el pago: ${paymentId}`);
-    // Aquí podés cargar más información si querés
-  };
+ 
 
   // Ejecutar al cargar
-  document.addEventListener('DOMContentLoaded', async () => {
-    await obtenerToken();
-    await fetchPayments();
-  });
+ 
