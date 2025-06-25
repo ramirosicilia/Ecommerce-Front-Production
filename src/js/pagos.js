@@ -56,14 +56,24 @@ const obtenerToken = async () => {
             </td>
           </tr>
         `;
-      }).join('');
+      }).join(''); 
+
+        document.querySelectorAll('.detalle-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.getAttribute('data-id');
+          alert(`Mostrando detalles para el pago: ${id}`);
+        });
+      });
+
     } else {
       tableBody.innerHTML = `
         <tr>
           <td colspan="5" class="text-center">No se encontraron pagos registrados.</td>
         </tr>
       `;
-    }
+    }  
+
+    
 
   } catch (error) {
     console.error("Error al obtener los pagos:", error.message);
@@ -71,13 +81,7 @@ const obtenerToken = async () => {
   }
 };
 
-    document.querySelectorAll('.detalle-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const id = btn.getAttribute('data-id');
-    alert(`Mostrando detalles para el pago: ${id}`);
-  });
-});
-
+  
 
  
 
