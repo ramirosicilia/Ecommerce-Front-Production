@@ -188,44 +188,27 @@ const coloresHTML = colores
     
        coloresDescripcion.forEach(color=>{
 
-        color.addEventListener("click", async (e) => {  
+        color.addEventListener("click",async(e)=>{ 
+    
+             
+          botonDescripcion.disabled=true
+          
+          coloresDescripcion.forEach(color=>color.classList.remove("seleccion_opciones_colores")) 
+          e.target.classList.add("seleccion_opciones_colores") 
 
-        botonDescripcion.disabled = true;
-              
-        coloresDescripcion.forEach(color => color.classList.remove("seleccion_opciones_colores"));
-        e.target.classList.add("seleccion_opciones_colores");
+          if(e.target.classList.contains("seleccion_opciones_colores") && botonDescripcion.disabled===true){ 
+            
+           e.target.classList.add("seleccion_opciones_colores") 
+           botonDescripcion.style.display="none"
+           botoAgregarCarrito.style.display="block"
+   
+          seleccion.color=color.textContent
 
-      if (e.target.classList.contains("seleccion_opciones_colores") && botonDescripcion.disabled === true) {
-      
-        e.target.classList.add("seleccion_opciones_colores");
-        botonDescripcion.style.display = "none";
-        botoAgregarCarrito.style.display = "block";
-      
-        seleccion.color = color.textContent;
-      
-        // ========== VERIFICACIÓN DE STOCK ==========
-        let producto = productos.find(p => p.producto_id === producto_ID);
-      
-        let variante = producto?.productos_variantes.find(v =>
-          v.color?.toLowerCase().trim() === seleccion.color?.toLowerCase().trim() &&
-          v.talle?.toLowerCase().trim() === seleccion.talle?.toLowerCase().trim()
-        );
-      
-        let stockParaEstaCombinacion = variante ? variante.stock : 0;
-      
-        if (stockParaEstaCombinacion === 0) {
-          alert("No hay stock disponible para esta combinación.");
-          e.target.classList.remove("seleccion_opciones_colores");
-          seleccion.color = null;
-          botonDescripcion.disabled = true;
-          botonDescripcion.style.display = "block";
-          botoAgregarCarrito.style.display = "none";
-          return;
-        }
-        // ===========================================
-      }
-    });
+  
+        
+          }
 
+        })
        })  
 
 
@@ -233,46 +216,28 @@ const coloresHTML = colores
 
         tallesDescripcion.forEach(talle=>{
 
-         talle?.addEventListener("click", async (e) => {  
+          talle?.addEventListener("click",async(e)=>{  
+             
 
-  botonDescripcion.disabled = true;
+            botonDescripcion.disabled=true
+          
+        tallesDescripcion.forEach(talle=>talle.classList.remove("seleccion_opciones_talles")) 
 
-  tallesDescripcion.forEach(talle => talle.classList.remove("seleccion_opciones_talles"));
+            e.target.classList.add("seleccion_opciones_talles") 
+  
+            if(e.target.classList.contains("seleccion_opciones_talles")){ 
+               
+             e.target.classList.add("seleccion_opciones_talles") 
+             botonDescripcion.disabled=false
+             botonDescripcion.style.display="none"
+             botoAgregarCarrito.style.display="block"
+             seleccion.talle=talle.textContent 
 
-  e.target.classList.add("seleccion_opciones_talles");
+           
+            } 
+              
 
-  if (e.target.classList.contains("seleccion_opciones_talles")) {
-
-    e.target.classList.add("seleccion_opciones_talles");
-    botonDescripcion.disabled = false;
-    botonDescripcion.style.display = "none";
-    botoAgregarCarrito.style.display = "block";
-
-    seleccion.talle = talle.textContent;
-
-    // ========== VERIFICACIÓN DE STOCK ==========
-    let producto = productos.find(p => p.producto_id === producto_ID);
-
-    let variante = producto?.productos_variantes.find(v =>
-      v.color?.toLowerCase().trim() === seleccion.color?.toLowerCase().trim() &&
-      v.talle?.toLowerCase().trim() === seleccion.talle?.toLowerCase().trim()
-    );
-
-    let stockParaEstaCombinacion = variante ? variante.stock : 0;
-
-    if (stockParaEstaCombinacion === 0) {
-      alert("No hay stock disponible para esta combinación.");
-      e.target.classList.remove("seleccion_opciones_talles");
-      seleccion.talle = null;
-      botonDescripcion.disabled = true;
-      botonDescripcion.style.display = "block";
-      botoAgregarCarrito.style.display = "none";
-      return;
-    }
-    // ===========================================
-  }
-});
-
+          })
          }) 
 
          let producto_ID=imgID
@@ -623,7 +588,48 @@ function validarCombinacion(talle, color) {
   
     botonAgregarCarrito.addEventListener("click", async (e) => { 
 
-      let ingreso=JSON.parse(localStorage.getItem("admin")) 
+      let ingreso=JSON.parse(localStorage.getItem("admin"))  
+
+      let stock = null; 
+
+      let varianteSeleccionada=productos.find(producto_ID.producto_id===imgID)
+    
+  for (const element of varianteSeleccionada.productos_variantes) {
+    if (
+      element?.talles?.insertar_talle.toString().trim().toLowerCase() ===seleccion.talle.toString().trim().toLowerCase() &&
+      element?.colores?.insertar_color.toString().trim().toLowerCase() === seleccion.color.toString().trim().toLowerCase()
+    ) {
+      stock = element?.stock;
+      break;
+    }
+  }
+
+  if (stock === null) {
+    alert("No se pudo determinar el stock.");
+    return;
+  } 
+
+   if (stock === 0) {
+        alert("Este talle con este color está agotado.");
+        return;
+      } 
+
+
+          if(stock>0){ 
+          
+           let productosAgotados=JSON.parse(localStorage.getItem("productosAgotados"))||[]
+          
+            let index=productosAgotados.findIndex(id=>id===producto_ID) 
+          
+            if(index > -1){ 
+           productosAgotados.splice(index,1) 
+        
+           localStorage.setItem("productosAgotados",JSON.stringify(productosAgotados))
+        
+        }
+      
+      }
+      
 
       if(ingreso===true){ 
         alert('no podes comprarte vos mismo')
