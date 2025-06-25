@@ -1,5 +1,6 @@
 
-const apiUrl=import.meta.env.VITE_BACKEND_URL
+const apiUrl=import.meta.env.VITE_PAYMENT_URL
+
 
 
 
@@ -19,11 +20,11 @@ const saveConfig = (event) => {
   };
 
   const fetchPayments = () => {
-    axios.get('/api/payments')
+    axios.get(`${apiUrl}/pagos-mercadopago`)
       .then(response => {
         const tableBody = document.getElementById('paymentsTable');
-        if (response.data.length > 0) {
-          tableBody.innerHTML = response.data.map(payment => `
+        if (response.data.data.length > 0) {
+          tableBody.innerHTML = response.data.data.map(payment => `
             <tr>
               <td>${payment.payment_id}</td>
               <td>${payment.status}</td>
