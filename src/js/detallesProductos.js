@@ -285,6 +285,7 @@ tallesDescripcion.forEach(talle => {
 let producto_ID = imgID;
 gestionarTallesYcolores(producto_ID, seleccion);
 
+
 }
 
     
