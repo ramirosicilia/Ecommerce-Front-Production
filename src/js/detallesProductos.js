@@ -628,15 +628,10 @@ function validarCombinacion(talle, color) {
 
 
   
-  function gestionarTallesYcolores(producto_ID, seleccion) {
-  const botonAgregarCarrito = document.querySelector("#boton-agregar-carrito");
+ async function gestionarTallesYcolores(producto_ID, seleccion) {
+  let botonAgregarCarrito = document.querySelector("#boton-agregar-carrito");
 
-  // Elimina listeners previos (solo si tenés la referencia)
-  // Sino podés hacer esta trampa simple para eliminar listeners:
-  botonAgregarCarrito.replaceWith(botonAgregarCarrito.cloneNode(true));
-  const nuevoBoton = document.querySelector("#boton-agregar-carrito");
-
-  nuevoBoton.addEventListener("click", async (e) => {
+  botonAgregarCarrito.addEventListener("click", async (e) => {
     let ingreso = JSON.parse(localStorage.getItem("admin"));
 
     if (ingreso === true) {
@@ -647,11 +642,10 @@ function validarCombinacion(talle, color) {
     if (seleccion.talle && seleccion.color) {
       console.log(seleccion.talle, seleccion.color);
       manejarCantidadesCarrito(producto_ID, seleccion.talle, seleccion.color);
-    } else {
-      alert('Debes seleccionar talle y color antes de agregar al carrito');
     }
   });
 }
+
 
   
     
