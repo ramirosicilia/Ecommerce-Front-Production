@@ -177,101 +177,95 @@ async function reendedizarDetallesProductos() {
 
 function existeCombinacion(productoID, talle, color) {
   const producto = productos.find(p => p.producto_id === productoID);
-  if (!producto) return false;
+  if (!producto || !producto.productos_variantes) return false;
 
   return producto.productos_variantes.some(variacion => {
     const t = variacion?.talles?.insertar_talle?.toLowerCase().trim();
     const c = variacion?.colores?.insertar_color?.toLowerCase().trim();
-
     return t === talle.toLowerCase().trim() && c === color.toLowerCase().trim();
   });
 }
 
 function obtenerStock(productoID, talle, color) {
   const producto = productos.find(p => p.producto_id === productoID);
-  if (!producto) return null;
+  if (!producto || !producto.productos_variantes) return null;
 
   const variante = producto.productos_variantes.find(v =>
-    v.talles?.insertar_talle?.toLowerCase().trim() === talle.toLowerCase().trim() &&
-    v.colores?.insertar_color?.toLowerCase().trim() === color.toLowerCase().trim()
+    v?.talles?.insertar_talle?.toLowerCase().trim() === talle.toLowerCase().trim() &&
+    v?.colores?.insertar_color?.toLowerCase().trim() === color.toLowerCase().trim()
   );
 
   return variante?.stock ?? null;
 }
 
-coloresDescripcion.forEach(colorBtn => {
-  colorBtn.addEventListener("click", async (e) => {
+function actualizarUI(stockDisponible) {
+  if (stockDisponible) {
+    botonDescripcion.disabled = false;
+    botonDescripcion.style.display = "none";
+    botoAgregarCarrito.style.display = "block";
+  } else {
+    botoAgregarCarrito.style.display = "none";
+    botonDescripcion.style.display = "block";
     botonDescripcion.disabled = true;
+  }
+}
+
+coloresDescripcion.forEach(color => {
+  color.addEventListener("click", async (e) => {
+    // Limpieza visual
     coloresDescripcion.forEach(c => c.classList.remove("seleccion_opciones_colores"));
+    e.target.classList.add("seleccion_opciones_colores");
 
-    const nuevoColor = colorBtn.textContent.trim();
-    const talleActual = seleccion.talle?.trim();
+    seleccion.color = color.textContent.trim();
 
-    // Si hay talle seleccionado, validar primero
-    if (talleActual) {
-      const existe = existeCombinacion(imgID, talleActual, nuevoColor);
+    if (seleccion.color && seleccion.talle) {
+      const existe = existeCombinacion(imgID, seleccion.talle, seleccion.color);
       if (!existe) {
+        actualizarUI(false);
         alert("Esta combinación no existe.");
         return;
       }
 
-      const stock = obtenerStock(imgID, talleActual, nuevoColor);
+      const stock = obtenerStock(imgID, seleccion.talle, seleccion.color);
       if (stock === 0) {
+        actualizarUI(false);
         alert("Este producto está agotado en esa combinación.");
         return;
       }
-    }
 
-    // ✅ Si todo bien, actualizar
-    seleccion.color = nuevoColor;
-    colorBtn.classList.add("seleccion_opciones_colores");
-
-    if (seleccion.color && seleccion.talle) {
-      botonDescripcion.disabled = false;
-      botonDescripcion.style.display = "none";
-      botoAgregarCarrito.style.display = "block";
+      actualizarUI(true);
     } else {
-      botoAgregarCarrito.style.display = "none";
-      botonDescripcion.style.display = "block";
-      botonDescripcion.disabled = true;
+      actualizarUI(false);
     }
   });
 });
 
-tallesDescripcion.forEach(talleBtn => {
-  talleBtn.addEventListener("click", async (e) => {
-    botonDescripcion.disabled = true;
+tallesDescripcion.forEach(talle => {
+  talle?.addEventListener("click", async (e) => {
+    // Limpieza visual
     tallesDescripcion.forEach(t => t.classList.remove("seleccion_opciones_talles"));
+    e.target.classList.add("seleccion_opciones_talles");
 
-    const nuevoTalle = talleBtn.textContent.trim();
-    const colorActual = seleccion.color?.trim();
+    seleccion.talle = talle.textContent.trim();
 
-    if (colorActual) {
-      const existe = existeCombinacion(imgID, nuevoTalle, colorActual);
+    if (seleccion.color && seleccion.talle) {
+      const existe = existeCombinacion(imgID, seleccion.talle, seleccion.color);
       if (!existe) {
+        actualizarUI(false);
         alert("Esta combinación no existe.");
         return;
       }
 
-      const stock = obtenerStock(imgID, nuevoTalle, colorActual);
+      const stock = obtenerStock(imgID, seleccion.talle, seleccion.color);
       if (stock === 0) {
+        actualizarUI(false);
         alert("Este producto está agotado en esa combinación.");
         return;
       }
-    }
 
-    // ✅ Si todo bien, actualizar
-    seleccion.talle = nuevoTalle;
-    talleBtn.classList.add("seleccion_opciones_talles");
-
-    if (seleccion.color && seleccion.talle) {
-      botonDescripcion.disabled = false;
-      botonDescripcion.style.display = "none";
-      botoAgregarCarrito.style.display = "block";
+      actualizarUI(true);
     } else {
-      botoAgregarCarrito.style.display = "none";
-      botonDescripcion.style.display = "block";
-      botonDescripcion.disabled = true;
+      actualizarUI(false);
     }
   });
 });
