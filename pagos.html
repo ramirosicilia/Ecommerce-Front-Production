@@ -24,19 +24,19 @@
       <form id="mercadoPagoConfig" onsubmit="saveConfig(event)">
         <div class="mb-3">
           <label for="accessToken" class="form-label">clikea el input y pega el Access Token</label>
-          <input type="text" class="form-control" id="accessToken" placeholder="Ingresa tu Access Token" required>
+          <input type="text" class="form-control" id="input-Token" placeholder="Ingresa tu Access Token" required>
         </div>
         <div class="contaner_submit">
-          <button type="submit" class="btn btn-custom">Guardar Configuración</button> 
+          <button type="button" id="btn-token" class="btn btn-custom">Enviar Token</button> 
 
           <div class="contenedor-claves"> 
               <p class="texto-clave">clickea sobre el cuadradado el token</p>
-               <div class="container-secret"> 
+                <div class="container-secret" id="container-secret"> 
                  <p class="clave-secret"> 
-                 
+                  Access Token
                  </p>
                  
-               </div> 
+                </div> 
           </div>
         </div>
     

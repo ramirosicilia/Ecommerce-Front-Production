@@ -1,14 +1,47 @@
 import { obtenerUsuarios } from "./api/productos.js";
 
 
+   (async()=>{     
+
+    const apiUrl=import.meta.env.VITE_PAYMENT_URL  
+     const btnToken=document.getElementById("btn-token") 
+     const containerSecret=document.getElementById("container-secret")  
+    const inputToken=document.getElementById("input-Token")  
 
 
-const apiUrl=import.meta.env.VITE_PAYMENT_URL  
+    let token 
 
- document.addEventListener('DOMContentLoaded', async () => {
-    await obtenerToken();
-    await fetchPayments();
-  });
+    let tokenRecibido
+
+     containerSecret.addEventListener('click',async()=>{ 
+  
+        token=await obtenerToken() 
+
+        console.log(token,"token recibido")
+
+
+    }) 
+function onFocusToken() { 
+
+  if (!token) { 
+    alert("Clickeá el rectángulo para obtener el token");
+  } else { 
+    tokenRecibido=token
+    alert("Token ingresado");
+  }
+
+  inputToken.removeEventListener("focus", onFocusToken);
+}
+
+inputToken.addEventListener("focus", onFocusToken);
+
+
+
+   btnToken.addEventListener('click',async()=>{ 
+     await fetchPayments();
+
+  
+   })
 
 const obtenerToken = async () => { 
 
@@ -32,7 +65,13 @@ const obtenerToken = async () => {
   };
 
   // Obtener pagos y renderizar la tabla
- const fetchPayments = async () => {
+ const fetchPayments = async () => { 
+       if(!tokenRecibido){ 
+
+        alert('no se enviado el token')
+        return
+       }
+
   try {
     const usuarios = await obtenerUsuarios(); // primero traemos los usuarios
     console.log(usuarios.user,"usuarios")
@@ -81,6 +120,12 @@ const obtenerToken = async () => {
   }
 };
 
+
+   })()
+
+   
+ 
+    
   
 
  
