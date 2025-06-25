@@ -14,7 +14,7 @@ export default defineConfig({
         index: resolve(__dirname, 'index.html'),
         carrito: resolve(__dirname, 'carrito.html'),
         categorias: resolve(__dirname, 'categorias.html'),
-        configuracion: resolve(__dirname, 'configuracion.html'),
+        configuracion: resolve(__dirname, 'pagos.html'),
         dashboard: resolve(__dirname, 'dashboard.html'),
         descripcion: resolve(__dirname, 'descripcionProducto.html'),
         envioRecuperacion: resolve(__dirname, 'envioRecuperacion.html'),
