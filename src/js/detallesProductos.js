@@ -205,13 +205,13 @@ coloresDescripcion.forEach(color => {
   coloresDescripcion.forEach(c => c.classList.remove("seleccion_opciones_colores"));
   e.target.classList.add("seleccion_opciones_colores");
 
-  seleccion.color = color.textContent.trim();
+  seleccion.color = color.textContent.toString().trim();
 
   if (seleccion.color && seleccion.talle) {
     const existe = existeCombinacion(imgID, seleccion.talle, seleccion.color);
 
     if (!existe) {
-      alert("Esta combinación no existe.");
+      
       botoAgregarCarrito.style.display = "none";
       botonDescripcion.style.display = "block";
       botonDescripcion.disabled = true;
@@ -245,7 +245,7 @@ talle?.addEventListener("click", async (e) => {
   tallesDescripcion.forEach(t => t.classList.remove("seleccion_opciones_talles"));
   e.target.classList.add("seleccion_opciones_talles");
 
-  seleccion.talle = talle.textContent.trim();
+  seleccion.talle = talle.textContent.toString().trim();
 
   if (seleccion.color && seleccion.talle) {
     const existe = existeCombinacion(imgID, seleccion.talle, seleccion.color);
