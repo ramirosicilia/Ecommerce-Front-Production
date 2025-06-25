@@ -1,7 +1,13 @@
+import { obtenerUsuarios } from "./api/productos.js";
+
+
+
 
 const apiUrl=import.meta.env.VITE_PAYMENT_URL
 
-const obtenerToken = async () => {
+const obtenerToken = async () => { 
+
+
     try {
       const response = await axios.get(`${apiUrl}/token-mercadopago`);
 
@@ -21,39 +27,43 @@ const obtenerToken = async () => {
   };
 
   // Obtener pagos y renderizar la tabla
-  const fetchPayments = async () => {
-    try {
-      const response = await axios.get(`${apiUrl}/pagos-mercadopago`);
-      const pagosData = response.data;
-      console.log("los pagos",pagosData)
+ const fetchPayments = async () => {
+  try {
+    const usuarios = await obtenerUsuarios(); // primero traemos los usuarios
+    const response = await axios.get(`${apiUrl}/pagos-mercadopago`);
+    const pagosData = response.data;
 
-      const tableBody = document.getElementById('paymentsTable');
+    const tableBody = document.getElementById('paymentsTable');
 
-      if (pagosData?.length > 0) {
-        tableBody.innerHTML = pagosData.map(payment => `
+    if (pagosData?.length > 0) {
+      tableBody.innerHTML = pagosData.map(payment => {
+        const nombreUsuario = usuarios.find(user => user.usuario_id === payment.usuario_id)?.usuario || 'Usuario desconocido';
+
+        return `
           <tr>
             <td>${payment.payment_id}</td>
             <td>${payment.status}</td>
             <td>${payment.transaction_amount}</td>
-            <td>${payment.usuario_id}</td>
+            <td>${nombreUsuario}</td>
             <td>
               <button class="btn btn-sm btn-info" onclick="viewDetails('${payment.payment_id}')">Detalles</button>
             </td>
           </tr>
-        `).join('');
-      } else {
-        tableBody.innerHTML = `
-          <tr>
-            <td colspan="5" class="text-center">No se encontraron pagos registrados.</td>
-          </tr>
         `;
-      }
-
-    } catch (error) {
-      console.error("Error al obtener los pagos:", error.message);
-      alert("Error al obtener los pagos.");
+      }).join('');
+    } else {
+      tableBody.innerHTML = `
+        <tr>
+          <td colspan="5" class="text-center">No se encontraron pagos registrados.</td>
+        </tr>
+      `;
     }
-  }; 
+
+  } catch (error) {
+    console.error("Error al obtener los pagos:", error.message);
+    alert("Error al obtener los pagos.");
+  }
+};
 
 
 

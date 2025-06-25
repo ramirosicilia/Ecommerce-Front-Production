@@ -88,8 +88,6 @@ export const obtenerUsuarios=async()=>{
   console.log(token) 
   console.log( typeof token)
 
-
-
   try {
     const response = await fetch(`${apiUrl}/obtener-usuarios`, {
       method: 'GET',
