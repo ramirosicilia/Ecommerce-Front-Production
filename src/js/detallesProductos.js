@@ -22,11 +22,6 @@ import { actualizarCarrito } from "./paginaProductos.js";
 const imgID= JSON.parse(localStorage.getItem("id-imagen"));
 
 
-
-
-
-
-
 async function reendedizarDetallesProductos() {
   
   await obtenerDatos();
@@ -204,34 +199,34 @@ function obtenerStock(productoID, talle, color) {
   return variante?.stock ?? null;
 }
 
-coloresDescripcion.forEach(color => {
-  color.addEventListener("click", async (e) => {
+coloresDescripcion.forEach(colorBtn => {
+  colorBtn.addEventListener("click", async (e) => {
     botonDescripcion.disabled = true;
     coloresDescripcion.forEach(c => c.classList.remove("seleccion_opciones_colores"));
-    e.target.classList.add("seleccion_opciones_colores");
 
-    seleccion.color = color.textContent.trim();
+    const nuevoColor = colorBtn.textContent.trim();
+    const talleActual = seleccion.talle?.trim();
 
-    if (seleccion.color && seleccion.talle) {
-      const existe = existeCombinacion(imgID, seleccion.talle, seleccion.color);
-
+    // Si hay talle seleccionado, validar primero
+    if (talleActual) {
+      const existe = existeCombinacion(imgID, talleActual, nuevoColor);
       if (!existe) {
         alert("Esta combinación no existe.");
-        botoAgregarCarrito.style.display = "none";
-        botonDescripcion.style.display = "block";
-        botonDescripcion.disabled = true;
         return;
       }
 
-      const stock = obtenerStock(imgID, seleccion.talle, seleccion.color);
+      const stock = obtenerStock(imgID, talleActual, nuevoColor);
       if (stock === 0) {
         alert("Este producto está agotado en esa combinación.");
-        botoAgregarCarrito.style.display = "none";
-        botonDescripcion.style.display = "block";
-        botonDescripcion.disabled = true;
         return;
       }
+    }
 
+    // ✅ Si todo bien, actualizar
+    seleccion.color = nuevoColor;
+    colorBtn.classList.add("seleccion_opciones_colores");
+
+    if (seleccion.color && seleccion.talle) {
       botonDescripcion.disabled = false;
       botonDescripcion.style.display = "none";
       botoAgregarCarrito.style.display = "block";
@@ -243,34 +238,33 @@ coloresDescripcion.forEach(color => {
   });
 });
 
-tallesDescripcion.forEach(talle => {
-  talle?.addEventListener("click", async (e) => {
+tallesDescripcion.forEach(talleBtn => {
+  talleBtn.addEventListener("click", async (e) => {
     botonDescripcion.disabled = true;
     tallesDescripcion.forEach(t => t.classList.remove("seleccion_opciones_talles"));
-    e.target.classList.add("seleccion_opciones_talles");
 
-    seleccion.talle = talle.textContent.trim();
+    const nuevoTalle = talleBtn.textContent.trim();
+    const colorActual = seleccion.color?.trim();
 
-    if (seleccion.color && seleccion.talle) {
-      const existe = existeCombinacion(imgID, seleccion.talle, seleccion.color);
-
+    if (colorActual) {
+      const existe = existeCombinacion(imgID, nuevoTalle, colorActual);
       if (!existe) {
         alert("Esta combinación no existe.");
-        botoAgregarCarrito.style.display = "none";
-        botonDescripcion.style.display = "block";
-        botonDescripcion.disabled = true;
         return;
       }
 
-      const stock = obtenerStock(imgID, seleccion.talle, seleccion.color);
+      const stock = obtenerStock(imgID, nuevoTalle, colorActual);
       if (stock === 0) {
         alert("Este producto está agotado en esa combinación.");
-        botoAgregarCarrito.style.display = "none";
-        botonDescripcion.style.display = "block";
-        botonDescripcion.disabled = true;
         return;
       }
+    }
 
+    // ✅ Si todo bien, actualizar
+    seleccion.talle = nuevoTalle;
+    talleBtn.classList.add("seleccion_opciones_talles");
+
+    if (seleccion.color && seleccion.talle) {
       botonDescripcion.disabled = false;
       botonDescripcion.style.display = "none";
       botoAgregarCarrito.style.display = "block";
@@ -284,6 +278,7 @@ tallesDescripcion.forEach(talle => {
 
 let producto_ID = imgID;
 gestionarTallesYcolores(producto_ID, seleccion);
+
 
 
 }
