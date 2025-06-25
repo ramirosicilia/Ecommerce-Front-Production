@@ -30,7 +30,7 @@ const obtenerToken = async () => {
       const tableBody = document.getElementById('paymentsTable');
 
       if (pagosData?.length > 0) {
-        tableBody.innerHTML = pagosData.data.map(payment => `
+        tableBody.innerHTML = pagosData.map(payment => `
           <tr>
             <td>${payment.payment_id}</td>
             <td>${payment.status}</td>
