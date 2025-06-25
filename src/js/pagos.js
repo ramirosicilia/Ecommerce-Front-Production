@@ -25,6 +25,7 @@ const obtenerToken = async () => {
     try {
       const response = await axios.get(`${apiUrl}/pagos-mercadopago`);
       const pagosData = response.data;
+      console("los pagos",pagosData)
 
       const tableBody = document.getElementById('paymentsTable');
 
