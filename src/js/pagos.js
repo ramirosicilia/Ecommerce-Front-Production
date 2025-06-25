@@ -29,7 +29,7 @@ const obtenerToken = async () => {
 
       const tableBody = document.getElementById('paymentsTable');
 
-      if (pagosData?.data?.length > 0) {
+      if (pagosData?.length > 0) {
         tableBody.innerHTML = pagosData.data.map(payment => `
           <tr>
             <td>${payment.payment_id}</td>
@@ -53,7 +53,9 @@ const obtenerToken = async () => {
       console.error("Error al obtener los pagos:", error.message);
       alert("Error al obtener los pagos.");
     }
-  };
+  }; 
+
+
 
   // Ver detalles (placeholder)
   const viewDetails = (paymentId) => {
