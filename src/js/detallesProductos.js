@@ -177,29 +177,56 @@ async function reendedizarDetallesProductos() {
 
 function existeCombinacion(productoID, talle, color) {
   const producto = productos.find(p => p.producto_id === productoID);
-  if (!producto || !producto.productos_variantes) return false;
+  if (!producto) return false;
 
   return producto.productos_variantes.some(variacion => {
     const t = variacion?.talles?.insertar_talle?.toLowerCase().trim();
     const c = variacion?.colores?.insertar_color?.toLowerCase().trim();
+
     return t === talle.toLowerCase().trim() && c === color.toLowerCase().trim();
   });
 }
 
 function obtenerStock(productoID, talle, color) {
   const producto = productos.find(p => p.producto_id === productoID);
-  if (!producto || !producto.productos_variantes) return null;
+  if (!producto) return null;
 
   const variante = producto.productos_variantes.find(v =>
-    v?.talles?.insertar_talle?.toLowerCase().trim() === talle.toLowerCase().trim() &&
-    v?.colores?.insertar_color?.toLowerCase().trim() === color.toLowerCase().trim()
+    v.talles?.insertar_talle?.toLowerCase().trim() === talle.toLowerCase().trim() &&
+    v.colores?.insertar_color?.toLowerCase().trim() === color.toLowerCase().trim()
   );
 
   return variante?.stock ?? null;
 }
 
-function actualizarUI(stockDisponible) {
-  if (stockDisponible) {
+coloresDescripcion.forEach(color => {
+  color.addEventListener("click", async (e) => {
+  botonDescripcion.disabled = true;
+  coloresDescripcion.forEach(c => c.classList.remove("seleccion_opciones_colores"));
+  e.target.classList.add("seleccion_opciones_colores");
+
+  seleccion.color = color.textContent.trim();
+
+  if (seleccion.color && seleccion.talle) {
+    const existe = existeCombinacion(imgID, seleccion.talle, seleccion.color);
+
+    if (!existe) {
+      alert("Esta combinación no existe.");
+      botoAgregarCarrito.style.display = "none";
+      botonDescripcion.style.display = "block";
+      botonDescripcion.disabled = true;
+      return;
+    }
+
+    const stock = obtenerStock(imgID, seleccion.talle, seleccion.color);
+    if (stock === 0) {
+      alert("Este producto está agotado en esa combinación.");
+      botoAgregarCarrito.style.display = "none";
+      botonDescripcion.style.display = "block";
+      botonDescripcion.disabled = true;
+      return;
+    }
+
     botonDescripcion.disabled = false;
     botonDescripcion.style.display = "none";
     botoAgregarCarrito.style.display = "block";
@@ -208,71 +235,52 @@ function actualizarUI(stockDisponible) {
     botonDescripcion.style.display = "block";
     botonDescripcion.disabled = true;
   }
-}
+});
 
-coloresDescripcion.forEach(color => {
-  color.addEventListener("click", async (e) => {
-    // Limpieza visual
-    coloresDescripcion.forEach(c => c.classList.remove("seleccion_opciones_colores"));
-    e.target.classList.add("seleccion_opciones_colores");
-
-    seleccion.color = color.textContent.trim();
-
-    if (seleccion.color && seleccion.talle) {
-      const existe = existeCombinacion(imgID, seleccion.talle, seleccion.color);
-      if (!existe) {
-        actualizarUI(false);
-        alert("Esta combinación no existe.");
-        return;
-      }
-
-      const stock = obtenerStock(imgID, seleccion.talle, seleccion.color);
-      if (stock === 0) {
-        actualizarUI(false);
-        alert("Este producto está agotado en esa combinación.");
-        return;
-      }
-
-      actualizarUI(true);
-    } else {
-      actualizarUI(false);
-    }
-  });
 });
 
 tallesDescripcion.forEach(talle => {
-  talle?.addEventListener("click", async (e) => {
-    // Limpieza visual
-    tallesDescripcion.forEach(t => t.classList.remove("seleccion_opciones_talles"));
-    e.target.classList.add("seleccion_opciones_talles");
+talle?.addEventListener("click", async (e) => {
+  botonDescripcion.disabled = true;
+  tallesDescripcion.forEach(t => t.classList.remove("seleccion_opciones_talles"));
+  e.target.classList.add("seleccion_opciones_talles");
 
-    seleccion.talle = talle.textContent.trim();
+  seleccion.talle = talle.textContent.trim();
 
-    if (seleccion.color && seleccion.talle) {
-      const existe = existeCombinacion(imgID, seleccion.talle, seleccion.color);
-      if (!existe) {
-        actualizarUI(false);
-        alert("Esta combinación no existe.");
-        return;
-      }
+  if (seleccion.color && seleccion.talle) {
+    const existe = existeCombinacion(imgID, seleccion.talle, seleccion.color);
 
-      const stock = obtenerStock(imgID, seleccion.talle, seleccion.color);
-      if (stock === 0) {
-        actualizarUI(false);
-        alert("Este producto está agotado en esa combinación.");
-        return;
-      }
-
-      actualizarUI(true);
-    } else {
-      actualizarUI(false);
+    if (!existe) {
+      alert("Esta combinación no existe.");
+      botoAgregarCarrito.style.display = "none";
+      botonDescripcion.style.display = "block";
+      botonDescripcion.disabled = true;
+      return;
     }
-  });
+
+    const stock = obtenerStock(imgID, seleccion.talle, seleccion.color);
+    if (stock === 0) {
+      alert("Este producto está agotado en esa combinación.");
+      botoAgregarCarrito.style.display = "none";
+      botonDescripcion.style.display = "block";
+      botonDescripcion.disabled = true;
+      return;
+    }
+
+    botonDescripcion.disabled = false;
+    botonDescripcion.style.display = "none";
+    botoAgregarCarrito.style.display = "block";
+  } else {
+    botoAgregarCarrito.style.display = "none";
+    botonDescripcion.style.display = "block";
+    botonDescripcion.disabled = true;
+  }
+});
+
 });
 
 let producto_ID = imgID;
 gestionarTallesYcolores(producto_ID, seleccion);
-
 
 
 }
@@ -620,28 +628,31 @@ function validarCombinacion(talle, color) {
 
 
   
-  async function gestionarTallesYcolores(producto_ID, seleccion) {
-    let botonAgregarCarrito = document.querySelector("#boton-agregar-carrito");
-  
-    botonAgregarCarrito.addEventListener("click", async (e) => { 
+  function gestionarTallesYcolores(producto_ID, seleccion) {
+  const botonAgregarCarrito = document.querySelector("#boton-agregar-carrito");
 
-      let ingreso=JSON.parse(localStorage.getItem("admin")) 
+  // Elimina listeners previos (solo si tenés la referencia)
+  // Sino podés hacer esta trampa simple para eliminar listeners:
+  botonAgregarCarrito.replaceWith(botonAgregarCarrito.cloneNode(true));
+  const nuevoBoton = document.querySelector("#boton-agregar-carrito");
 
-      if(ingreso===true){ 
-        alert('no podes comprarte vos mismo')
+  nuevoBoton.addEventListener("click", async (e) => {
+    let ingreso = JSON.parse(localStorage.getItem("admin"));
 
-        return
+    if (ingreso === true) {
+      alert('no podes comprarte vos mismo');
+      return;
+    }
 
-      }
+    if (seleccion.talle && seleccion.color) {
+      console.log(seleccion.talle, seleccion.color);
+      manejarCantidadesCarrito(producto_ID, seleccion.talle, seleccion.color);
+    } else {
+      alert('Debes seleccionar talle y color antes de agregar al carrito');
+    }
+  });
+}
 
-
-      if (seleccion.talle && seleccion.color) {
-        console.log(seleccion.talle, seleccion.color);
-
-          manejarCantidadesCarrito(producto_ID, seleccion.talle, seleccion.color);
-      }
-    });
-  }
   
     
 
@@ -870,9 +881,9 @@ function validarCombinacion(talle, color) {
               }
             
              
-              
-               
-                 actualizarCarrito()
+                 actualizarCarrito() 
+
+
                }
              });
              
