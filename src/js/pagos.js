@@ -2,7 +2,7 @@
 const apiUrl=import.meta.env.VITE_PAYMENT_URL
 
 
-
+alert('eee')
 
 const saveConfig = (event) => {
     event.preventDefault();
