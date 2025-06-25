@@ -592,7 +592,7 @@ function validarCombinacion(talle, color) {
 
       let stock = null; 
 
-      let varianteSeleccionada=productos.find(producto_ID.producto_id===imgID)
+      let varianteSeleccionada=productos.find(prod=>prod.producto_id===imgID)
     
   for (const element of varianteSeleccionada.productos_variantes) {
     if (
@@ -639,7 +639,7 @@ function validarCombinacion(talle, color) {
       }
 
 
-      if (seleccion.talle && seleccion.color) {
+      if (seleccion.talle && seleccion.color && stock>0) {
         console.log(seleccion.talle, seleccion.color);
 
           manejarCantidadesCarrito(producto_ID, seleccion.talle, seleccion.color);
