@@ -1,5 +1,6 @@
 
 const apiUrl = import.meta.env.VITE_BACKEND_URL;
+const apiUrlPayMent=import.meta.env.VITE_PAYMENT_URL
 
 
 export const obtenerProductos=async()=>{ 
@@ -123,5 +124,48 @@ export const obtenerUsuarios=async()=>{
 
 
 }  
+
+
+export async function pedidos(){
+
+  try { 
+
+    const response= await fetch(`${apiUrlPayMent}/pedidos`) 
+
+     if(response.status!=200){ 
+       throw new Error("No llegaron los productos");
+
+     }
+    const data= await response.json()
+     
+    return data
+
+    
+  } catch (error) {
+    console.log("no se obtuvieron los pedidos")
+    return null
+    
+  }
+} 
+
+
+export async function detallesPedidos(){
+
+  try { 
+
+    const response=await fetch (`${apiUrlPayMent}/detalles-productos`) 
+
+     
+    const data=response.json()
+     
+    return data
+
+    
+  } catch (error) {
+    console.log("no se obtuvieron los pedidos")
+    return null
+    
+  }
+}
 
 

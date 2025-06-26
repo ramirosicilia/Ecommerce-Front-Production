@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./src/styles/ordenes.css">
+</head>
+<body>
+
+  <button class="btn-action" onclick="window.history.back()" aria-label="Volver atrás">Volver</button>
+
+  <div class="card" role="region" aria-label="Detalle de la orden">
+
+    <header class="card-header">
+      <h2>Pedido <span id="pedido_id">123e4567-e89b-12d3-a456-426614174000</span></h2>
+      <div id="estado" class="status procesando" aria-live="polite">Procesando</div>
+    </header>
+
+    <!-- Detalle de Productos -->
+    <section class="detalle-productos">
+      <h3>Detalle de Productos</h3>
+      <table>
+        <thead>
+  <tr>
+    <th>Producto</th>
+    <th>Talle</th>
+    <th>Color</th>
+    <th>Cantidad</th>
+    <th>Precio</th>
+    <th>Subtotal</th>
+  </tr>
+</thead>
+<tbody id="detalle-productos">
+  <tr>
+    <td>Producto A</td>
+    <td>M</td>
+    <td>Rojo</td>
+    <td>2</td>
+    <td>$ 150.00</td>
+    <td>$ 300.00</td>
+  </tr>
+  <tr>
+    <td>Producto B</td>
+    <td>L</td>
+    <td>Azul</td>
+    <td>1</td>
+    <td>$ 500.00</td>
+    <td>$ 500.00</td>
+  </tr>
+</tbody>
+<tfoot>
+  <tr>
+    <td colspan="5" style="text-align: right;">Total:</td>
+    <td>$ 800.00</td>
+  </tr>
+</tfoot>
+
+      </table>
+    </section>
+
+    <!-- Info General -->
+    <section class="info-grid">
+      <article class="info-item">
+        <div class="icon" aria-hidden="true">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="6" x2="12" y2="18"></line>
+            <path d="M8 10h8a2 2 0 0 1 0 4H8"></path>
+          </svg>
+        </div>
+        <div class="info-text">
+          <div class="info-label">Total</div>
+          <div class="info-value" id="total">$ 1234.56</div>
+        </div>
+      </article>
+
+      <article class="info-item">
+        <div class="icon" aria-hidden="true">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <circle cx="12" cy="7" r="4"></circle>
+            <path d="M5.5 21a6.5 6.5 0 0 1 13 0"></path>
+          </svg>
+        </div>
+        <div class="info-text">
+          <div class="info-label">Usuario ID</div>
+          <div class="info-value" id="usuario_id">f47ac10b-58cc-4372-a567-0e02b2c3d479</div>
+        </div>
+      </article>
+
+      <article class="info-item">
+        <div class="icon" aria-hidden="true">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+        </div>
+        <div class="info-text">
+          <div class="info-label">Fecha de creación</div>
+          <div class="info-value" id="fecha_creacion">2025-06-25 14:23:05</div>
+        </div>
+      </article>
+
+      <article class="info-item">
+        <div class="icon" aria-hidden="true">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"></path>
+            <circle cx="12" cy="12" r="10"></circle>
+          </svg>
+        </div>
+        <div class="info-text">
+          <div class="info-label">Preference ID</div>
+          <div class="info-value" id="preference_id">abc123xyz789</div>
+        </div>
+      </article>
+    </section>
+
+    <footer class="card-footer">
+      Detalle generado automáticamente por el sistema
+    </footer>
+
+  </div> 
+
+
+  <script type="module" src="./src/js/ordenes.js"></script>
+</body>
+</html>

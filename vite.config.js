@@ -26,6 +26,7 @@ export default defineConfig({
         registroProducto: resolve(__dirname, 'registroProductos.html'),
         ventas: resolve(__dirname, 'ventas.html'),
         compraRealizada:resolve(__dirname, 'compraRealizada.html'),
+        ordenes: resolve(__dirname, 'ordenes.html'),
         // puedes agregar más si luego sumas páginas nuevas
       }
     }

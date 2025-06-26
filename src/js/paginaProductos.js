@@ -392,7 +392,7 @@ async function selectorCategorys() {
         setTimeout(() => {
          
           window.location.href ="./descripcionProducto.html";
-        }, 1000);
+        }, 800);
        
       })
     })

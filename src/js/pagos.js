@@ -1,4 +1,5 @@
-import { obtenerUsuarios } from "./api/productos.js";
+import { obtenerUsuarios,} from "./api/productos.js"; 
+
 
 
    (async()=>{     
@@ -10,34 +11,38 @@ import { obtenerUsuarios } from "./api/productos.js";
 
 
     let token 
+            
+    let tokenRecibido 
 
-    let tokenRecibido
+   
 
      containerSecret.addEventListener('click',async()=>{ 
   
-        token=await obtenerToken() 
+        token=await obtenerToken()
 
-        console.log(token,"token recibido")
+        console.log(token,"token recibido00002222")
 
 
     }) 
 function onFocusToken() { 
   
-  inputToken.readOnly = true;
+ 
 
 
   if (!token) { 
+     inputToken.readOnly = true;
     alert("Clickeá el rectángulo para obtener el token");
   } else { 
+     inputToken.readOnly = true;
     tokenRecibido=token 
     inputToken.placeholder=tokenRecibido
     alert("Token ingresado");
   }
 
-  inputToken.removeEventListener("focus", onFocusToken);
+
 }
 
-inputToken.addEventListener("focus", onFocusToken);
+inputToken.addEventListener("click", onFocusToken);
 
 
 
@@ -76,7 +81,7 @@ const obtenerToken = async () => {
         return
        } 
 
-      inputToken.placeholder="Access token ingresado una una vez "
+      inputToken.placeholder="Access token ingresado"
 
   try {
     const usuarios = await obtenerUsuarios(); // primero traemos los usuarios
@@ -97,7 +102,7 @@ const obtenerToken = async () => {
             <td>$${payment.transaction_amount.toFixed(2)}</td>
             <td>${nombreUsuario}</td>
             <td>
-              <button class="btn btn-sm btn-info detalle-btn" data-id="${payment.payment_id}">Detalles</button>
+              <button class="btn btn-sm btn-info detalle-btn" data-preference_id="${payment.preference_id}" data-user_id="${payment.usuario_id}">Detalles</button>
             </td>
           </tr>
         `;
@@ -105,8 +110,32 @@ const obtenerToken = async () => {
 
         document.querySelectorAll('.detalle-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-          const id = btn.getAttribute('data-id');
-          alert(`Mostrando detalles para el pago: ${id}`);
+          const user_id = btn.getAttribute('data-user_id');
+          const preference_id = btn.getAttribute('data-preference_id'); 
+           
+           console.log(user_id,'user')
+           console.log(preference_id,'id pago') 
+
+           if(user_id!=null && preference_id!=null){ 
+
+            const objectoStorage={
+              user:user_id,
+              pagoID:preference_id
+            } 
+
+             localStorage.setItem("pagos",JSON.stringify(objectoStorage)) 
+
+             setTimeout(() => {
+                  window.location.href="./ordenes.html"
+              
+             }, 800);
+
+      
+           } 
+
+           else{
+            alert('no se pudo recuperar la orden')
+           }
         });
       });
 
@@ -137,4 +166,6 @@ const obtenerToken = async () => {
  
 
   // Ejecutar al cargar
- 
+
+  
+   
