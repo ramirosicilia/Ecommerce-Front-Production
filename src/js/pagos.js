@@ -10,9 +10,10 @@ import { obtenerUsuarios,} from "./api/productos.js";
     const inputToken=document.getElementById("input-Token")  
 
 
-    let token 
-            
+
+    let token        
     let tokenRecibido 
+
 
    
 
@@ -94,7 +95,7 @@ const obtenerToken = async () => {
     if (pagosData?.length > 0) {
       tableBody.innerHTML = pagosData.map(payment => {
         const nombreUsuario = usuarios.user.find(user => user.usuario_id === payment.usuario_id)?.usuario || 'Usuario desconocido';
-
+       
         return `
           <tr>
             <td>${payment.payment_id}</td>
@@ -102,7 +103,7 @@ const obtenerToken = async () => {
             <td>$${payment.transaction_amount.toFixed(2)}</td>
             <td>${nombreUsuario}</td>
             <td>
-              <button class="btn btn-sm btn-info detalle-btn" data-preference_id="${payment.preference_id}" data-user_id="${payment.usuario_id}">Detalles</button>
+              <button class="btn btn-sm btn-info detalle-btn" data-status="${payment.status}" data-preference_id="${payment.preference_id}" data-user_id="${payment.usuario_id}">Detalles</button>
             </td>
           </tr>
         `;
@@ -110,11 +111,20 @@ const obtenerToken = async () => {
 
         document.querySelectorAll('.detalle-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-          const user_id = btn.getAttribute('data-user_id');
-          const preference_id = btn.getAttribute('data-preference_id'); 
+          const user_id=btn.getAttribute('data-user_id');
+          const preference_id=btn.getAttribute('data-preference_id'); 
+          const paymentStatus=btn.getAttribute('data-status');  
+
+
+          if(String(paymentStatus).trim()==="rejected"){ 
+            alert("El pago fue rechazado por Mercado Pago") 
+            return 
+          }
            
            console.log(user_id,'user')
-           console.log(preference_id,'id pago') 
+           console.log(preference_id,'id pago')  
+
+          
 
            if(user_id!=null && preference_id!=null){ 
 
