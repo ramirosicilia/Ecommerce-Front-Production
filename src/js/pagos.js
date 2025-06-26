@@ -22,11 +22,15 @@ import { obtenerUsuarios } from "./api/productos.js";
 
     }) 
 function onFocusToken() { 
+  
+  inputToken.readOnly = true;
+
 
   if (!token) { 
     alert("Clickeá el rectángulo para obtener el token");
   } else { 
-    tokenRecibido=token
+    tokenRecibido=token 
+    inputToken.placeholder=tokenRecibido
     alert("Token ingresado");
   }
 
@@ -70,7 +74,9 @@ const obtenerToken = async () => {
 
         alert('no se enviado el token')
         return
-       }
+       } 
+
+      inputToken.placeholder="Access token ingresado una una vez "
 
   try {
     const usuarios = await obtenerUsuarios(); // primero traemos los usuarios
