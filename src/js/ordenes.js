@@ -93,9 +93,13 @@ const fechaDate = new Date(fechaCruda); // convierte a objeto Date
 const dia = String(fechaDate.getDate()).padStart(2, '0');
 const mes = String(fechaDate.getMonth() + 1).padStart(2, '0'); // +1 porque enero es 0
 const anio = fechaDate.getFullYear();
+const horas = String(fechaDate.getHours()).padStart(2, '0');
+const minutos = String(fechaDate.getMinutes()).padStart(2, '0');
+const segundos = String(fechaDate.getSeconds()).padStart(2, '0');
 
 // Formato final "dd-mm-aaaa"
-const fechaFormateada = `${dia}-${mes}-${anio}`;
+
+const fechaFormateada = `${dia}-${mes}-${anio} ${horas}:${minutos}:${segundos}`;
 
 
 console.log(usuariosUnicos);
