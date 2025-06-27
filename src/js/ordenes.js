@@ -40,21 +40,25 @@ function obtenerDatosOrden(){
 
 
      const pedido=ordenes.find(id=>id.preference_id===objectoStorage?.pagoID) 
-     const detallePedido=detalleOrdenes.find(id=>id.pedido_id===pedido.pedido_id) 
-     const varianteSeleccionada=variantes.find(id=>id.variante_id===detallePedido.variante_id) 
-     const productoSeleccionado=productos.find(id=>id.producto_id===varianteSeleccionada.producto_id) 
-
+    
+     
    
      
 
-     const seleccion=[{
-        pedido:pedido,
-        detallePedido:detallePedido,
-        varianteSeleccionada:varianteSeleccionada,
-        productoSeleccionado:productoSeleccionado,
-        usuario_id:objectoStorage?.user
-     }]
+    const detallesPedido = detalleOrdenes.filter(id => id.pedido_id === pedido.pedido_id);
 
+    const seleccion = detallesPedido.map(detalle => {
+        const varianteSeleccionada = variantes.find(v => v.variante_id === detalle.variante_id);
+        const productoSeleccionado = productos.find(p => p.producto_id === varianteSeleccionada.producto_id);
+
+        return {
+            pedido: pedido,
+            detallePedido: detalle,
+            varianteSeleccionada: varianteSeleccionada,
+            productoSeleccionado: productoSeleccionado,
+            usuario_id: objectoStorage?.user
+        };
+    });
 
   
     
@@ -77,7 +81,8 @@ function mostrarOrden(data){
  
  const contenedor = document.getElementById("container-orden");
 
-const total = data.reduce((acc, prod) => acc + prod.pedido.total, 0);
+const total = data.reduce((acc, prod) => acc + (prod.productoSeleccionado.precio * prod.detallePedido.cantidad), 0);
+
 const usuariosUnicos = [...new Set(data.map(d => d.usuario_id))];
 const preferenciasUnicas = [...new Set(data.map(d => d.pedido.preference_id))];
 const fechasUnicas = [...new Set(data.map(d => d.pedido.fecha_creacion))];
