@@ -163,16 +163,16 @@ const listaProductos = document.getElementById("productos_lista");
   userIngresado.innerHTML = `
     Ingreso:
     <span style="
-      margin-left: 10px;
-      padding: 2px 6px;
-      background-color: #ffccbc;
-      color: #d32f2f;
-      border-radius: 5px;
-      font-weight: bold;
-      font-size: 16px;
-      display: inline-block;">
-      Ingresa Tu usuario
-    </span>
+        margin-left: 10px;
+        padding: 2px 6px;
+        background-color: #ffe0b2;
+        color: #ef6c00;
+        border-radius: 5px;
+        font-weight: bold;
+        font-size: 16px;
+        display: inline-block;">
+         Ingresa tu usuario
+      </span>
   `; 
    userIngresado.style.visibility = "visible";
   } 
