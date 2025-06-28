@@ -91,7 +91,8 @@ const listaProductos = document.getElementById("productos_lista");
   // Si no hay contenedor, salimos
   if (!userIngresado) return;
 
-    userIngresado.style.visibility = "hidden";
+    userIngresado.style.visibility = "hidden"; 
+      userIngresado.innerHTML=""
   // Si no hay usuario en localStorage o está vacío
   if (!usuarioActual || usuarioActual?.length === 0) {
     userIngresado.innerHTML = `
