@@ -18,6 +18,13 @@ let administrador
 const cierreSeccion=document.getElementById("cerrar-seccion") 
 
 cierreSeccion?.addEventListener("click",()=>{ 
+  const verificado=JSON.parse(localStorage.getItem("verificado")) 
+
+  if(verificado==="desactivado"){ 
+      window.location.href="./index.html" 
+      return
+
+  }
 
   const confirmacion=confirm("¿esta usted seguro que desea cerrar seccion?") 
 
