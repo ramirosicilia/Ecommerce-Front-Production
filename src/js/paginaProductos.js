@@ -10,6 +10,21 @@ let usuario
 let administrador
 
 const userIngresado=document?.querySelector('.user__ingresado')    
+const cierreSeccion=document.getElementById("cerrar-seccion") 
+
+cierreSeccion?.addEventListener("click",()=>{ 
+
+  const confirmacion=confirm("¿esta usted seguro que desea cerrar seccion?") 
+
+  if(!confirmacion){
+    return
+
+  }
+
+  localStorage.removeItem("usuario") 
+
+  window.location.href="./index.html"
+})
 
 async function data(){ 
     const [producto,categoria]= await Promise.all([obtenerProductos(),obtenerCategorys()]) 
@@ -51,65 +66,101 @@ const listaProductos = document.getElementById("productos_lista");
    
    }  
 
- function reendedizarUsuario(listaUsuarios,admin) {  
-  console.log(listaUsuarios)
-  console.log(admin)
+ function reendedizarUsuario(listaUsuarios, admin) {  
+  console.log(listaUsuarios);
+  console.log(admin);
 
- const ultimoUsuario = usuarioActual[usuarioActual.length- 1]
+  const usuarioActual = JSON.parse(localStorage.getItem('usuario'));
 
-// Buscar el usuario en listaUsuarios con el nombre del último usuario activo
- const obtenerUSer = listaUsuarios.find(usuario => usuario.usuario === ultimoUsuario);
- 
+  const userIngresado = document?.querySelector('.user__ingresado');
 
-      console.log(obtenerUSer)
-     
-const userIngresado=document?.querySelector('.user__ingresado')    
+  // Si no hay contenedor, salimos
+  if (!userIngresado) return;
 
-  
- if (obtenerUSer) { 
-
-   ingreso=obtenerUSer?.usuario
-   if(userIngresado){ 
+  // Si no hay usuario en localStorage o está vacío
+  if (!usuarioActual || usuarioActual?.length === 0) {
     userIngresado.innerHTML = `
-    Ingreso: 
-    <span style="
-      margin-left: 10px;
-      padding: 2px 6px;
-      background-color: #e0f7fa;
-      color: #00796b;
-      border-radius: 5px;
-      font-weight: bold;
-      font-size: 16px;
-      display: inline-block;
-    ">
-      ${obtenerUSer.usuario}
-    </span>
-  `;
-    
-   }
-  
-} else { 
-   ingreso=admin
-  // No se encontró el usuario, mostrar admin
+      Ingreso: 
+      <span style="
+        margin-left: 10px;
+        padding: 2px 6px;
+       
+        border-radius: 5px;
+        font-weight: bold;
+        font-size: 16px;
+        display: inline-block;">
+        
+      </span>
+    `;
+     localStorage.setItem("verificado",JSON.stringify("desactivado")) 
+     return
+  }
+
+  // Hay al menos un usuario en el array
+     if(usuarioActual.length>0){ 
+       const ultimoUsuario = usuarioActual[usuarioActual?.length - 1]; 
+        const obtenerUser= listaUsuarios?.find(usuario => usuario.usuario === ultimoUsuario); 
+ 
+        
+
+       if (obtenerUser) {
+    ingreso = obtenerUser.usuario;
+    userIngresado.innerHTML = `
+      Ingreso:
+      <span style="
+        margin-left: 10px;
+        padding: 2px 6px;
+        background-color: #e0f7fa;
+        color: #00796b;
+        border-radius: 5px;
+        font-weight: bold;
+        font-size: 16px;
+        display: inline-block;">
+        ${obtenerUser.usuario}
+      </span>
+    `;
+    return;
+  }
+
+  if (admin) {
+    ingreso = admin
+    userIngresado.innerHTML = `
+      Ingreso:
+      <span style="
+        margin-left: 10px;
+        padding: 2px 6px;
+        background-color: #ffe0b2;
+        color: #ef6c00;
+        border-radius: 5px;
+        font-weight: bold;
+        font-size: 16px;
+        display: inline-block;">
+        ${admin}
+      </span>
+    `;
+    return;
+  }
+
+  // Si no se encuentra ni en usuarios ni en administradores
   userIngresado.innerHTML = `
-    Ingreso: 
+    Ingreso:
     <span style="
       margin-left: 10px;
       padding: 2px 6px;
-      background-color: #ffe0b2;
-      color: #ef6c00;
+      background-color: #ffccbc;
+      color: #d32f2f;
       border-radius: 5px;
       font-weight: bold;
       font-size: 16px;
-      display: inline-block;
-    ">
-      ${admin}
+      display: inline-block;">
+      Usuario desconocido
     </span>
   `;
+  } 
+  return
 }
 
-  
- } 
+
 
 
 
@@ -449,18 +500,17 @@ async function selectorCategorys() {
     console.log(usuario11.user,'recibimos usuario')
     console.log(productos); // Debería ser un array
     console.log( producto_ID); 
+    let obtenerUSer 
    
-      console.log('usuario actual',usuarioActual)
-      const obtenerUSer = usuario.user?.find(user=>user.usuario===usuarioActual[usuarioActual.length-1].toString())
-  
-      
-   
+     if(usuarioActual.length>0){ 
+        obtenerUSer = usuario.user?.find(user=>user.usuario===usuarioActual[usuarioActual.length-1].toString())
 
-    console.log(obtenerUSer,"USER")
+      console.log(obtenerUSer,"USER")
 
 
+     }
 
-     
+
     console.log(filtradoCategoryYProduct) 
 
     let imagenSeleccionada;
@@ -477,8 +527,6 @@ async function selectorCategorys() {
    // Buscar color en las variantes de productos
 
    
-
-
    const nombre=filtradoCategoryYProduct?.find(producto=>producto.producto_id===producto_ID)?.nombre_producto 
    const detalles=filtradoCategoryYProduct?.find(producto=>producto.producto_id===producto_ID)?.detalles
    const precio=filtradoCategoryYProduct?.find(producto=>producto.producto_id===producto_ID)?.precio 
@@ -694,8 +742,18 @@ async function selectorCategorys() {
 
   if (!sizes.length || !colors.length) {
     return;
-  }
+  } 
 
+   const verificacion=JSON.parse(localStorage.getItem("verificado"))
+   if(verificacion==="desactivado"){ 
+
+    alert("por favor debes loguearte para poder agregar productos") 
+    window.location.href="./login.html" 
+    return
+
+   }
+
+    
   let objectoStorage = {
     user: obtenerUSer.usuario,
     user_id: obtenerUSer.usuario_id,
@@ -1157,3 +1215,11 @@ async function selectorCategorys() {
 
 
 
+
+
+  
+    
+
+
+
+  

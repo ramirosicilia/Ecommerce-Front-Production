@@ -259,7 +259,58 @@ button{
     padding: .2rem 2rem; 
     background-color: aliceblue;
     font-size: 12px;
+} 
+
+.auth-links {
+  margin-top: 20px;
+  font-size: 0.95rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
 }
+
+.auth-link {
+  display: inline-block;
+  color: #0056b3;
+  text-decoration: none;
+  font-weight: 500;
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+.auth-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 0%;
+  height: 2px;
+  background-color: #007bff;
+  transition: width 0.3s ease;
+}
+
+.auth-link:hover {
+  color: #003d80;
+}
+
+.auth-link:hover::after {
+  width: 100%;
+}
+
+.create-account {
+  color: #2b08f3;
+}
+
+.create-account:hover {
+  color: #146c43;
+}
+
+.create-account::after {
+  background-color: #198754;
+}
+
 
 @media (max-width:1000px) { 
     input{ 

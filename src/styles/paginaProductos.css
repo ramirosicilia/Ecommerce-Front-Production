@@ -518,3 +518,26 @@ span{
   font-size: 18px; /* ajusta el tamaño si es necesario */
   opacity: 1; /* asegúrate de que no tenga opacidad baja */
 }
+
+.navbar-brand.user__ingresado {
+  font-size: 1.3rem;
+}
+
+.logout-icon:hover i {
+  transform: scale(1.2);
+  transition: transform 0.2s ease;
+}
+
+.cart-icon i,
+.logout-icon i {
+  transition: transform 0.2s ease;
+  margin-left: 5rem;
+}
+
+.cart-icon:hover i {
+  transform: scale(1.2);
+}
+
+#cart-count {
+  font-size: 0.65rem;
+}

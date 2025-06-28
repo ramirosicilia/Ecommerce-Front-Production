@@ -119,6 +119,7 @@ const obtenerToken = async () => {
           if(String(paymentStatus).trim()==="rejected"){ 
             alert("El pago fue rechazado por Mercado Pago") 
             return 
+            
           }
            
            console.log(user_id,'user')

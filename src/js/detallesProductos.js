@@ -82,7 +82,7 @@ async function reendedizarDetallesProductos() {
     const descuento = Math.round(100 - ((precio ?? 0) / (precioOriginal ?? 1)) * 100);
     
     const talles = productoSeleccionado.productos_variantes.map(v => v.talles);
-const colores = productoSeleccionado.productos_variantes.map(v => v.colores);
+    const colores = productoSeleccionado.productos_variantes.map(v => v.colores);
 
 // ✅ Filtrar los talles que NO sean undefined
 const tallesHTML = talles
@@ -315,11 +315,19 @@ const coloresHTML = colores
   
     let sizesTexto = "";
     let colorTexto = "";
+    let obtenerUSer
+    let usuario=null 
+    let usuario_id=null
+  
+    if(usuarioActual.length>0){
+     obtenerUSer = usuarios.user?.find(user=>user.usuario===usuarioActual[usuarioActual.length-1].toString())
+      let { Usuario, Usuario_id } = obtenerUSer;
+      usuario=Usuario 
+      usuario_id=Usuario_id
+    }
   
   
-  const obtenerUSer = usuarios.user?.find(user=>user.usuario===usuarioActual[usuarioActual.length-1].toString())
-  
-  let { usuario, usuario_id } = obtenerUSer;
+
   
     let imagenSeleccionada;
   
@@ -506,6 +514,16 @@ function validarCombinacion(talle, color) {
     }
   }
 
+
+  const verificacion=JSON.parse(localStorage.getItem("verificado"))
+   if(verificacion==="desactivado"){ 
+
+    alert("por favor debes loguearte para poder agregar productos") 
+    window.location.href="./login.html"
+       return
+   }
+
+
   if (stock === null) {
     alert("No se pudo determinar el stock.");
     return;
@@ -530,7 +548,9 @@ function validarCombinacion(talle, color) {
         
         }
       
-      }
+      } 
+
+
       
 
   const colorNormalizado = colorTexto.trim().toLowerCase();
@@ -727,7 +747,7 @@ function validarCombinacion(talle, color) {
       
          
     
-        let carritoCompras=  carritoCompras = JSON.parse(localStorage.getItem("productos")) || [];
+        let carritoCompras=JSON.parse(localStorage.getItem("productos")) || [];
 
        
 
@@ -903,14 +923,30 @@ function validarCombinacion(talle, color) {
         
          let stock=null 
          let colorNombre=null
-         let talleNombre=null
-  
-  
+         let talleNombre=null 
+         let usuario 
+         let usuario_id
+
+         if(usuarioNombre.length>0){ 
+          
          const obtenerUSer = usuarios.user?.find(user => usuarioNombre.includes(user.usuario));
        
-         const {usuario,usuario_id}=obtenerUSer
+         const {Usuario,Usuario_id}=obtenerUSer 
+         usuario=Usuario
+         usuario_id=Usuario_id
+
+  
+         }
   
   
+           const verificacion=JSON.parse(localStorage.getItem("verificado"))
+           if(verificacion==="desactivado"){ 
+          
+            alert("por favor debes loguearte para poder agregar productos") 
+            window.location.href="./login.html" 
+            return
+          
+           }
   
   
   let imagenSeleccionada; 

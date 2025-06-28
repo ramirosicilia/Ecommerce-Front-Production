@@ -9,6 +9,74 @@
 body, html {
   height: 100%;
   background-color: #f9f9f9;
+} 
+
+ a {
+  text-decoration: none;
+}
+
+.link-ancor {
+  margin-left: 3rem;
+  color: #ffffff;
+  font-weight: 900;
+  font-size: 1.6rem;
+  position: relative;
+  transition: transform 0.3s ease;
+  animation: glow 3s ease-in-out infinite;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* 🔥 Efecto de brillo mejorado */
+@keyframes glow {
+  0% {
+    text-shadow: 0 0 5px #ffffff,
+                 0 0 10px #00f0ff,
+                 0 0 15px #00f0ff;
+  }
+  50% {
+    text-shadow: 0 0 10px #ffffff,
+                 0 0 20px #00e6ff,
+                 0 0 30px #00ccff;
+  }
+  100% {
+    text-shadow: 0 0 5px #ffffff,
+                 0 0 10px #00f0ff,
+                 0 0 15px #00f0ff;
+  }
+}
+
+/* ✨ Efecto reflejo (shine sweep) */
+.link-ancor::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -75%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0.2) 0%,
+    rgba(255, 255, 255, 0.6) 50%,
+    rgba(255, 255, 255, 0.2) 100%
+  );
+  transform: skewX(-20deg);
+  animation: shine 4s infinite;
+}
+
+@keyframes shine {
+  0% {
+    left: -75%;
+  }
+  100% {
+    left: 125%;
+  }
+}
+
+/* Hover para levantarlo un poco */
+.link-ancor:hover {
+  transform: scale(1.08);
+  cursor: pointer;
 }
 
 /* Navbar */

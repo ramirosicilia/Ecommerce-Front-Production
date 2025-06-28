@@ -208,7 +208,7 @@ formularioLogin.addEventListener("submit", async (e) => {
         if (!yaExiste) {
           Users.push(userName);
         }
-      
+        localStorage.removeItem("verificado")
         localStorage.setItem('usuario', JSON.stringify(Users));
         localStorage.setItem('token', datos.token);
       }
