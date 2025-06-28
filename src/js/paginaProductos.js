@@ -77,6 +77,7 @@ const listaProductos = document.getElementById("productos_lista");
   // Si no hay contenedor, salimos
   if (!userIngresado) return;
 
+    userIngresado.style.visibility = "hidden";
   // Si no hay usuario en localStorage o está vacío
   if (!usuarioActual || usuarioActual?.length === 0) {
     userIngresado.innerHTML = `
@@ -93,6 +94,7 @@ const listaProductos = document.getElementById("productos_lista");
       </span>
     `;
      localStorage.setItem("verificado",JSON.stringify("desactivado")) 
+      userIngresado.style.visibility = "visible"; // mostrar aunque esté vacío
      return
   }
 
@@ -118,7 +120,8 @@ const listaProductos = document.getElementById("productos_lista");
         display: inline-block;">
         ${obtenerUser.usuario}
       </span>
-    `;
+    `; 
+        userIngresado.style.visibility = "visible";
     return;
   }
 
@@ -138,6 +141,7 @@ const listaProductos = document.getElementById("productos_lista");
         ${admin}
       </span>
     `;
+     userIngresado.style.visibility = "visible";
     return;
   }
 
@@ -155,7 +159,8 @@ const listaProductos = document.getElementById("productos_lista");
       display: inline-block;">
       Usuario desconocido
     </span>
-  `;
+  `; 
+   userIngresado.style.visibility = "visible";
   } 
   return
 }
@@ -1214,11 +1219,6 @@ async function selectorCategorys() {
 
 
 
-
-
-
-  
-    
 
 
 
