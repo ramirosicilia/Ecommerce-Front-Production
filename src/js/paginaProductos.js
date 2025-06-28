@@ -164,7 +164,7 @@ const listaProductos = document.getElementById("productos_lista");
       font-weight: bold;
       font-size: 16px;
       display: inline-block;">
-      Usuario desconocido
+      Ingresa Tu usuario
     </span>
   `; 
    userIngresado.style.visibility = "visible";
@@ -362,7 +362,7 @@ async function selectorCategorys() {
        let botonesAgregar=[...document.querySelectorAll(".btn-agregar")] 
 
          console.log(botonesAgregar,'btn btn') 
-         console.log(userIngresado,"user user ") 
+       
          console.log('este es el ingreso',ingreso)
            
       if(ingreso===administrador){  
