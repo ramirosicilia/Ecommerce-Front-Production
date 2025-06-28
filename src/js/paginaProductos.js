@@ -1,6 +1,11 @@
 import { adminApi } from "./api/administradorApi.js";
 import { obtenerCategorys, obtenerProductos, obtenerUsuarios } from "./api/productos.js";
 
+document.addEventListener("DOMContentLoaded", () => {
+  const userIngresado = document.querySelector(".user__ingresado");
+  if (userIngresado) userIngresado.style.visibility = "hidden";
+});
+
 
 let categoriasFiltrada = [];
 let filtradoCategoryYProduct=[] 
@@ -9,7 +14,7 @@ let categorias
 let usuario
 let administrador
 
-const userIngresado=document?.querySelector('.user__ingresado')    
+ 
 const cierreSeccion=document.getElementById("cerrar-seccion") 
 
 cierreSeccion?.addEventListener("click",()=>{ 
@@ -64,7 +69,9 @@ const listaProductos = document.getElementById("productos_lista");
     }
 
    
-   }  
+   }   
+
+  
 
  function reendedizarUsuario(listaUsuarios, admin) {  
   console.log(listaUsuarios);
