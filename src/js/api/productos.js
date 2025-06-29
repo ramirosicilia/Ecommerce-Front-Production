@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 
 const apiUrl = import.meta.env.VITE_BACKEND_URL;
 const apiUrlPayMent=import.meta.env.VITE_PAYMENT_URL
@@ -166,6 +168,22 @@ export async function detallesPedidos(){
     return null
     
   }
+} 
+
+ export async function pagoMercadoPago(){
+
+  try { 
+     const response = await axios.get(`${apiUrlPayMent}/pagos-mercadopago`);
+    const pagosData = response.data; 
+
+    return pagosData
+    
+  } catch (error) { 
+    console.timeLog('hubo un error alobtenerla data',error)
+    
+  }
+   
 }
+
 
 

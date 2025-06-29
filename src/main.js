@@ -25,6 +25,7 @@ import "./js/validacionesLogin.js"
 import "./js/validationNewForm.js"
 import "./js/pagos.js"
 import "./js/ordenes.js"
+import "./js/dashboard.js"
 
 
 

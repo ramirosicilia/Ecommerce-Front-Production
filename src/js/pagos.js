@@ -1,4 +1,6 @@
-import { obtenerUsuarios,} from "./api/productos.js"; 
+import { obtenerUsuarios, pagoMercadoPago,} from "./api/productos.js"; 
+import axios from 'axios';
+
 
 
 
@@ -87,8 +89,8 @@ const obtenerToken = async () => {
   try {
     const usuarios = await obtenerUsuarios(); // primero traemos los usuarios
     console.log(usuarios.user,"usuarios")
-    const response = await axios.get(`${apiUrl}/pagos-mercadopago`);
-    const pagosData = response.data;
+    
+         const pagosData=await pagoMercadoPago()
 
     const tableBody = document.getElementById('paymentsTable');
 
