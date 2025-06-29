@@ -3,7 +3,13 @@ import { obtenerProductos,pedidos,detallesPedidos, pagoMercadoPago } from "./api
 
 
 
-async function obtenerDatos() {
+async function obtenerDatos() { 
+
+  const reportesID=document.getElementById("reportes")
+  
+
+
+
     const productos = await obtenerProductos();
     const Pedidos = await pedidos();
     const detalles_pedidos = await detallesPedidos();
