@@ -76,6 +76,8 @@ async function promesas() {
 
 
 
+
+
   // Fechas actuales
   const hoy = new Date();
   const mesActual = hoy.getMonth();
@@ -130,7 +132,22 @@ const totalProductosVendidos = detallesFiltrados.reduce((acum, detalle) => {
 
 // Mostrarlo en el DOM
 const productosVendidosElem = document.getElementById("productos-vendidos-numero");
-if (productosVendidosElem) productosVendidosElem.textContent = totalProductosVendidos;
+if (productosVendidosElem) productosVendidosElem.textContent = totalProductosVendidos; 
+
+
+  // 🔢 Ventas por mes desde enero a junio
+  const ventasMensuales = [];
+
+  for (let mes = 0; mes <= 5; mes++) {
+    const total = calcularVentasPorMes(mes, añoActual, Pedidos, DetallesPedidos, productos);
+    ventasMensuales.push(total);
+  }
+
+  console.log("📈 Ventas reales por mes (enero a junio):", ventasMensuales);
+
+  // 📊 Renderizar gráfico con datos reales
+  renderizarGrafico(ventasMensuales);
+
 }
 
 promesas();
