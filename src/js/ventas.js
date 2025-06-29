@@ -1,3 +1,24 @@
+import { obtenerProductos,pedidos,detallesPedidos, pagoMercadoPago } from "./api/productos.js"; 
+
+
+
+
+async function obtenerDatos(){
+
+    const productos= await obtenerProductos()
+    const Pedidos=await pedidos() 
+    const detalles_pedidos= await detallesPedidos()
+    const mercadoPago=  await pagoMercadoPago() 
+
+    console.log(productos,"productos")
+    console.log(Pedidos,"pedidos")
+    console.log(detalles_pedidos,"detalle pedidos")
+    console.log(mercadoPago,"mercado pago")
+
+} 
+
+obtenerDatos()
+
 
 
 const ctx = document.getElementById('salesChart').getContext('2d');
@@ -29,4 +50,5 @@ const ctx = document.getElementById('salesChart').getContext('2d');
           }
         }
       }
-    });
+    });  
+
