@@ -14,6 +14,7 @@ async function promesas() {
   console.log(Pedidos, "pedidos");
   console.log(DetallesPedidos, "detalles pedidos");
 
+  // Función adaptada para calcular ventas
   function calcularVentasPorMes(mes, año, Pedidos, DetallesPedidos, productos) {
     const pedidosFiltrados = Pedidos?.filter(pedido => {
       const fecha = new Date(pedido.fecha_creacion);
@@ -35,6 +36,7 @@ async function promesas() {
     return total;
   }
 
+  // Función para obtener clientes activos
   function obtenerClientesActivos(Pedidos, Pagos) {
     const hoy = new Date();
     const mesActual = hoy.getMonth();
@@ -54,15 +56,22 @@ async function promesas() {
 
     const usuariosActivos = [...new Set(pedidosMesActual.map(p => p.usuario_id))];
 
+    console.log("Pagos aprobados:", pagosAprobados);
+    console.log("Preference IDs pagos aprobados:", preferenceIdsPagos);
+    console.log("Pedidos mes actual con pagos aprobados:", pedidosMesActual);
+    console.log("Usuarios activos:", usuariosActivos);
+
     return usuariosActivos.length;
   }
 
+  // Fechas actuales
   const hoy = new Date();
   const mesActual = hoy.getMonth();
   const añoActual = hoy.getFullYear();
   const mesPasado = mesActual === 0 ? 11 : mesActual - 1;
   const añoMesPasado = mesActual === 0 ? añoActual - 1 : añoActual;
 
+  // Totales de ventas
   const totalActual = calcularVentasPorMes(mesActual, añoActual, Pedidos, DetallesPedidos, productos);
   const totalPasado = calcularVentasPorMes(mesPasado, añoMesPasado, Pedidos, DetallesPedidos, productos);
   const diferencia = totalActual - totalPasado;
@@ -83,10 +92,12 @@ async function promesas() {
 
   if (comparacionElem) comparacionElem.textContent = mensajeComparacion;
 
+  // Clientes activos
   const totalClientesActivos = obtenerClientesActivos(Pedidos, pago);
   const clientesActivosElem = document.getElementById("clientes-activos-numero");
   if (clientesActivosElem) clientesActivosElem.textContent = totalClientesActivos;
 
+  // Cantidad de productos vendidos
   const pedidosFiltrados = Pedidos.filter(pedido => {
     const fecha = new Date(pedido.fecha_creacion);
     return fecha.getMonth() === mesActual && fecha.getFullYear() === añoActual;
@@ -105,6 +116,7 @@ async function promesas() {
   const productosVendidosElem = document.getElementById("productos-vendidos-numero");
   if (productosVendidosElem) productosVendidosElem.textContent = totalProductosVendidos;
 
+  // 🔢 Ventas por mes desde enero hasta diciembre, meses futuros con 0
   const ventasMensuales = [];
   const etiquetasMensuales = [];
   const nombresMeses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
@@ -120,54 +132,11 @@ async function promesas() {
     etiquetasMensuales.push(nombresMeses[mes]);
   }
 
+  console.log("📈 Ventas reales por mes:", ventasMensuales);
+  console.log("🗓️ Etiquetas del gráfico:", etiquetasMensuales);
+
+  // 📊 Renderizar gráfico con datos reales
   renderizarGrafico(ventasMensuales, etiquetasMensuales);
-
-  // ✳️ Modal de reporte al presionar botón
-  document.getElementById("reportes").addEventListener("click", () => {
-    const pedidosPagados = Pedidos.filter(p =>
-      pago.filter(pg => (pg.status || '').toLowerCase() === 'approved')
-          .map(pg => pg.preference_id)
-          .includes(p.preference_id)
-    );
-
-    const totalPedidos = pedidosPagados.length;
-
-    const totalVendidos = DetallesPedidos
-      .filter(d => pedidosPagados.map(p => p.pedido_id).includes(d.pedido_id))
-      .reduce((acc, d) => acc + d.cantidad, 0);
-
-    const totalIngresos = ventasMensuales.reduce((acc, n) => acc + n, 0);
-
-    const filas = ventasMensuales.map((valor, i) => `
-      <tr>
-        <td>${nombresMeses[i]}</td>
-        <td>$${valor.toFixed(2)}</td>
-      </tr>`).join("");
-
-    const html = `
-      <table style="width:100%; border-collapse: collapse; margin-top: 1rem;">
-        <thead>
-          <tr style="background:#f0f0f0;">
-            <th style="padding:8px; border-bottom:1px solid #ccc;">Mes</th>
-            <th style="padding:8px; border-bottom:1px solid #ccc;">Ventas</th>
-          </tr>
-        </thead>
-        <tbody>${filas}</tbody>
-      </table>
-      <div style="margin-top:1rem;">
-        <p><strong>Ingresos totales:</strong> $${totalIngresos.toFixed(2)}</p>
-        <p><strong>Productos vendidos:</strong> ${totalVendidos}</p>
-        <p><strong>Pedidos pagados:</strong> ${totalPedidos}</p>
-      </div>
-    `;
-
-    document.getElementById("contenido-reporte").innerHTML = html;
-    document.getElementById("modal-reporte").classList.remove("hidden");
-  });
-
-  document.querySelector(".close-button").addEventListener("click", () => {
-    document.getElementById("modal-reporte").classList.add("hidden");
-  });
 }
 
 function renderizarGrafico(datosVentas, etiquetas) {
